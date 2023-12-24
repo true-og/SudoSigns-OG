@@ -1,59 +1,83 @@
 package dev.mylesmor.sudosigns.commands;
 
+import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import net.md_5.bungee.chat.ComponentSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.StringJoiner;
 
 public class Reload {
 
-    /**
-     * Reloads the config file (signs.yml)
-     * @param p The player running the command.
-     * @param args Not required
-     */
-    public static void reload(Player p, String[] args) {
-        if (p.hasPermission(Permissions.RELOAD)) {
-            Util.sudoSignsMessage(p, ChatColor.GRAY, "Reloading config...", null);
-            SudoSigns.signs.clear();
-            if (SudoSigns.config.loadCustomConfig()) {
-                ArrayList<String> invalidSigns = SudoSigns.config.loadSigns();
-                if (invalidSigns != null) {
-                    if (invalidSigns.size() == 0) {
-                        Util.sudoSignsMessage(p, ChatColor.GREEN, "Config successfully reloaded! Found " + invalidSigns.size() + " invalid signs! ", null);
-                    } else {
-                        Util.sudoSignsMessage(p, ChatColor.GREEN, "Config successfully reloaded!" + ChatColor.RED + " Found " + invalidSigns.size() + " invalid sign(s): ", null);
-                        for (String name : invalidSigns) {
-                            StringBuilder clickableMessage = new StringBuilder("[\"\",{\"text\":\"[SUDOSIGNS] \",\"color\":\"yellow\"},{\"text\":\"Sign: \",\"color\":\"red\"},{\"text\":\"" + name + " \",\"bold\":true,\"color\":\"gold\"}]");
+	/**
+	 * Reloads the config file (signs.yml)
+	 * @param p The player running the command.
+	 * @param args Not required
+	 */
+	public static void reload(Player p, String[] args) {
 
-                            if (p.hasPermission(Permissions.PURGE)) {
-                                clickableMessage = new StringBuilder(clickableMessage.substring(0, clickableMessage.length() - 1));
-                                clickableMessage.append(",{\"text\":\"[FIX] \",\"bold\":true,\"color\":\"green\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/ss fix ").append(name).append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":[\"\",{\"text\":\"Fix ").append(name).append(" by placing a replica of the sign at the location\",\"color\":\"green\"}]}}]");
-                            }
-                            if (p.hasPermission(Permissions.FIX)) {
-                                clickableMessage = new StringBuilder(clickableMessage.substring(0, clickableMessage.length() - 1));
-                                clickableMessage.append(",{\"text\":\"[PURGE]\",\"bold\":true,\"color\":\"red\",\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/ss confirmpurge ").append(name).append("\"},\"hoverEvent\":{\"action\":\"show_text\",\"value\":[\"\",{\"text\":\"Remove ").append(name).append(" from the config file\",\"color\":\"red\"}]}}]");
-                            }
-                            p.spigot().sendMessage(ComponentSerializer.parse(clickableMessage.toString()));
-                        }
-                    }
-                    return;
-                }
-                Bukkit.getLogger().warning("[SUDOSIGNS] There was an error with the SudoSigns config!");
-                Util.sudoSignsMessage(p, ChatColor.RED, "There was an error with the SudoSigns config! Continuing to use old config...", null);
-            } else {
-                Bukkit.getLogger().warning("[SUDOSIGNS] There was an error with the SudoSigns config!");
-                Util.sudoSignsMessage(p, ChatColor.RED, "There was an error with the SudoSigns config! Please attempt to fix before the next server reload/restart.", null);
-            }
-        } else {
-            Util.sudoSignsMessage(p, ChatColor.RED, "You don't have permission to do this!", null);
-        }
+		if (p.hasPermission(Permissions.RELOAD)) {
 
-    }
+			Util.sudoSignsMessage(p, "&6Reloading config...");
+			SudoSigns.signs.clear();
+
+			if (SudoSigns.config.loadCustomConfig()) {
+
+				ArrayList<String> invalidSigns = SudoSigns.config.loadSigns();
+				if (invalidSigns != null) {
+
+					if (invalidSigns.size() == 0) {
+
+						Util.sudoSignsMessage(p, "&aConfig successfully reloaded! No invalid signs found.");
+
+					}
+					else {
+
+						Util.sudoSignsMessage(p, "&aConfig successfully reloaded! &cERROR: Found &e" + invalidSigns.size() + " &cinvalid signs!");
+						for (String name : invalidSigns) {
+
+							// If the player has permission to purge a sign, do this...
+							if (p.hasPermission(Permissions.PURGE)) {
+
+								// Send a fix confirmation menu with a clickable button.
+								Util.selectMenuParser(p, "&a&l[FIX]", ("&cSign: &e&l" + name), name, ("/ss fix " + name), ("&6Fix &e" + name + "&6by placing a replica of the sign at the location."));
+
+							}
+
+							// If the player has permission to fix a sign, do this...
+							if (p.hasPermission(Permissions.FIX)) {
+
+								// Send a purge confirmation menu with a clickable button.
+								Util.selectMenuParser(p, "&c&l[PURGE]", ("&cSign: &e&l" + name), name, ("/ss confirmpurge " + name), (("&cRemove &e" + name + "&6from the config file.")));
+
+							}
+
+						}
+
+					}
+
+					return;
+
+				}
+
+				Bukkit.getLogger().warning("[SUDOSIGNS] There was an error with the SudoSigns config!");
+				Util.sudoSignsMessage(p, "&cERROR: The latest update to the SudoSigns config was invalid! &6Continuing to use old config...");
+
+			}
+			else {
+				Bukkit.getLogger().warning("[SUDOSIGNS] There was an error with the SudoSigns config!");
+				Util.sudoSignsMessage(p, "&cERROR: The latest update to the SudoSigns config was invalid! &6Please attempt to fix it before the next server restart or plugin reload attempt.");
+			}
+
+		}
+		else {
+
+			Util.sudoSignsErrorMessage(p);
+
+		}
+
+	}
+
 }

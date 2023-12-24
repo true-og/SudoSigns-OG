@@ -1,9 +1,9 @@
-name: SudoSigns
-version: 1.1.0
+name: SudoSigns-OG
+version: '${version}' 
 author: MylesMor
 main: dev.mylesmor.sudosigns.SudoSigns
 softdepend: [Multiverse-Core, Vault]
-api-version: 1.13
+api-version: '${apiVersion}'
 commands:
   sudosigns:
     description: Opens the SudoSigns help menu.
