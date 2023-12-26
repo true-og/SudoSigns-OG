@@ -18,7 +18,6 @@ import dev.mylesmor.sudosigns.data.SudoUser;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class PermissionsMenu {
 
@@ -52,7 +51,7 @@ public class PermissionsMenu {
 
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("&6Default or Custom?");
+		TextComponent nameHandler = Util.legacySerializerAnyCase("&6Default or Custom?");
 
 		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 		for (int i = 0; i < menu.getSize(); i++) {
@@ -64,13 +63,13 @@ public class PermissionsMenu {
 		ItemStack arrow = new ItemStack(Material.ARROW);
 		ItemMeta arrowMeta = arrow.getItemMeta();
 
-		arrowMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dBACK"));
+		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
 		arrow.setItemMeta(arrowMeta);
 
 		ItemStack barrier = new ItemStack(Material.BARRIER);
 		ItemMeta barrierMeta = barrier.getItemMeta();
 
-		barrierMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Permissions"));
+		barrierMeta.displayName(Util.legacySerializerAnyCase("&r&5Permissions"));
 		barrier.setItemMeta(barrierMeta);
 
 		if (p.hasPermission(Permissions.ADD_PERMISSION)) {
@@ -78,7 +77,7 @@ public class PermissionsMenu {
 			ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
 			ItemMeta bqMeta = bookQuill.getItemMeta();
 
-			bqMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&aAdd new permission"));
+			bqMeta.displayName(Util.legacySerializerAnyCase("&aAdd new permission"));
 			bookQuill.setItemMeta(bqMeta);
 			menu.setItem(40, bookQuill);
 
@@ -96,7 +95,7 @@ public class PermissionsMenu {
 
 			ItemStack book = new ItemStack(Material.BOOK);
 			ItemMeta bookMeta = book.getItemMeta();
-			bookMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&6" + perm));
+			bookMeta.displayName(Util.legacySerializerAnyCase("&r&6" + perm));
 			if (p.hasPermission(Permissions.DELETE_PERMISSION)) {
 
 				lore.add("");
@@ -127,7 +126,7 @@ public class PermissionsMenu {
 
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("&6Default or Custom?");
+		TextComponent nameHandler = Util.legacySerializerAnyCase("&6Default or Custom?");
 		Inventory choiceInv = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 
 		int inventorySize = choiceInv.getSize();
@@ -144,7 +143,7 @@ public class PermissionsMenu {
 		ItemStack arrow = new ItemStack(Material.ARROW);
 		ItemMeta arrowMeta = arrow.getItemMeta();
 
-		arrowMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dBACK"));
+		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
 		arrow.setItemMeta(arrowMeta);
 
 		ItemStack head = new ItemStack(Material.PLAYER_HEAD);
@@ -152,14 +151,14 @@ public class PermissionsMenu {
 		List<String> loreString = new ArrayList<>();
 
 		loreString.add("&6sudosigns.sign." + sign.getName());
-		headMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dDefault Permission"));
+		headMeta.displayName(Util.legacySerializerAnyCase("&r&dDefault Permission"));
 		headMeta.lore(Util.convertToTextComponents(loreString));
 		head.setItemMeta(headMeta);
 
 		ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
 		ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
 
-		cmdBlockMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Custom Permission"));
+		cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Custom Permission"));
 		cmdBlock.setItemMeta(cmdBlockMeta);
 
 		choiceInv.setItem(21, head);

@@ -14,7 +14,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.util.Util;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -102,7 +101,7 @@ public class SudoSign {
 			String line = PlainTextComponentSerializer.plainText().serialize(sign.line(i));
 
 			text.add(line.replaceAll("§", "&"));
-			sign.line(i, LegacyComponentSerializer.legacyAmpersand().deserialize(line));
+			sign.line(i, Util.legacySerializerAnyCase(line));
 
 		}
 

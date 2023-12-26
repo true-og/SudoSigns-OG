@@ -17,7 +17,6 @@ import dev.mylesmor.sudosigns.data.SudoSign;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class MainMenu {
 
@@ -46,7 +45,7 @@ public class MainMenu {
 
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("&r&2Editing: &e" + sign.getName());
+		TextComponent nameHandler = Util.legacySerializerAnyCase("&r&2Editing: &e" + sign.getName());
 
 		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 		for (int i = 0; i < menu.getSize(); i++) {
@@ -64,7 +63,7 @@ public class MainMenu {
 			ItemStack nametag = new ItemStack(Material.NAME_TAG);
 			ItemMeta ntMeta = nametag.getItemMeta();
 
-			ntMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Rename Sign"));
+			ntMeta.displayName(Util.legacySerializerAnyCase("&r&5Rename Sign"));
 
 			List<String> lore = new ArrayList<>();
 			lore.add("&eChange the text that refers");
@@ -83,7 +82,7 @@ public class MainMenu {
 			ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
 			ItemMeta bookMeta = book.getItemMeta();
 
-			bookMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Edit Sign Text"));
+			bookMeta.displayName(Util.legacySerializerAnyCase("&r&5Edit Sign Text"));
 
 			List<String> lore = new ArrayList<>();
 			lore.add("&eChange the text that displays");
@@ -102,7 +101,7 @@ public class MainMenu {
 			ItemStack barrier = new ItemStack(Material.BARRIER);
 			ItemMeta barrierMeta = barrier.getItemMeta();
 
-			barrierMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dPermissions"));
+			barrierMeta.displayName(Util.legacySerializerAnyCase("&r&dPermissions"));
 
 			List<String> lore = new ArrayList<>();
 			lore.add("&ePlayers must have all permissions");
@@ -126,7 +125,7 @@ public class MainMenu {
 			lore.add("&ewhen a player uses the sign.");
 
 			cmdBlockMeta.lore(Util.convertToTextComponents(lore));
-			cmdBlockMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Commands"));
+			cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Commands"));
 			cmdBlock.setItemMeta(cmdBlockMeta);
 
 			items.add(cmdBlock);
@@ -138,7 +137,7 @@ public class MainMenu {
 			ItemStack signBlock = new ItemStack(Material.OAK_SIGN);
 			ItemMeta signMeta = signBlock.getItemMeta();
 
-			signMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Messages"));
+			signMeta.displayName(Util.legacySerializerAnyCase("&r&5Messages"));
 
 			List<String> lore = new ArrayList<>();
 			lore.add("&eMessages listed here will be shown");
@@ -183,7 +182,7 @@ public class MainMenu {
 
 					goldNuggetItemMeta.lore(Util.convertToTextComponents(lore));
 					goldNuggetItemMeta
-					.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dPrice"));
+					.displayName(Util.legacySerializerAnyCase("&r&dPrice"));
 					goldNugget.setItemMeta(goldNuggetItemMeta);
 
 					items.add(goldNugget);

@@ -22,7 +22,6 @@ import dev.mylesmor.sudosigns.data.SudoUser;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class CommandsMenu {
 
@@ -53,7 +52,7 @@ public class CommandsMenu {
 
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("Commands: " + sign.getName());
+		TextComponent nameHandler = Util.legacySerializerAnyCase("Commands: " + sign.getName());
 
 		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 		for (int i = 0; i < menu.getSize(); i++) {
@@ -65,7 +64,7 @@ public class CommandsMenu {
 		ItemStack arrow = new ItemStack(Material.ARROW);
 		ItemMeta arrowMeta = arrow.getItemMeta();
 
-		arrowMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dBACK"));
+		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
 		arrow.setItemMeta(arrowMeta);
 
 		if (p.hasPermission(Permissions.ADD_COMMAND)) {
@@ -73,7 +72,7 @@ public class CommandsMenu {
 			ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
 			ItemMeta bqMeta = bookQuill.getItemMeta();
 
-			bqMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&2Add new command"));
+			bqMeta.displayName(Util.legacySerializerAnyCase("&r&2Add new command"));
 			bookQuill.setItemMeta(bqMeta);
 
 			menu.setItem(40, bookQuill);
@@ -83,13 +82,13 @@ public class CommandsMenu {
 		ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
 		ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
 
-		cmdBlockMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&5Console Commands"));
+		cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Console Commands"));
 		cmdBlock.setItemMeta(cmdBlockMeta);
 
 		ItemStack head = new ItemStack(Material.PLAYER_HEAD);
 		ItemMeta headMeta = head.getItemMeta();
 
-		headMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&d Player Commands"));
+		headMeta.displayName(Util.legacySerializerAnyCase("&r&d Player Commands"));
 		head.setItemMeta(headMeta);
 
 		List<String> lore = new ArrayList<>();
@@ -108,7 +107,7 @@ public class CommandsMenu {
 			ItemMeta bookMeta = book.getItemMeta();
 
 			lore.add("&6Player Command");
-			bookMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&6/" + sc.getCommand()));
+			bookMeta.displayName(Util.legacySerializerAnyCase("&r&6/" + sc.getCommand()));
 			lore.add("&6Delay: &e" + (sc.getDelay() / 1000) + "s");
 
 			if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
@@ -144,7 +143,7 @@ public class CommandsMenu {
 			ItemMeta bookMeta = book.getItemMeta();
 
 			lore.add("&6Console Command");
-			bookMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&6/" + sc.getCommand()));
+			bookMeta.displayName(Util.legacySerializerAnyCase("&r&6/" + sc.getCommand()));
 			lore.add("&6Delay: &e" + (sc.getDelay() / 1000) + "s");
 
 			if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
@@ -180,7 +179,7 @@ public class CommandsMenu {
 
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("Player or Console command?");
+		TextComponent nameHandler = Util.legacySerializerAnyCase("Player or Console command?");
 
 		Inventory choiceInv = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 		for (int i = 0; i < choiceInv.getSize(); i++) {
@@ -192,7 +191,7 @@ public class CommandsMenu {
 		ItemStack arrow = new ItemStack(Material.ARROW);
 		ItemMeta arrowMeta = arrow.getItemMeta();
 
-		arrowMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dBACK"));
+		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
 		arrow.setItemMeta(arrowMeta);
 
 		ItemStack head = new ItemStack(Material.PLAYER_HEAD);
@@ -200,13 +199,13 @@ public class CommandsMenu {
 		List<String> lore = new ArrayList<>();
 
 		lore.add("&cThe player must have permission to run the command!");
-		headMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dPlayer Command"));
+		headMeta.displayName(Util.legacySerializerAnyCase("&r&dPlayer Command"));
 		headMeta.lore(Util.convertToTextComponents(lore));
 		head.setItemMeta(headMeta);
 
 		ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
 		ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
-		cmdBlockMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dConsole Command"));
+		cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&dConsole Command"));
 		cmdBlock.setItemMeta(cmdBlockMeta);
 
 		if (p.hasPermission(Permissions.CONSOLE_COMMAND)) {

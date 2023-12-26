@@ -13,7 +13,6 @@ import dev.mylesmor.sudosigns.data.SudoUser;
 import dev.mylesmor.sudosigns.menus.SignEditor;
 import dev.mylesmor.sudosigns.util.Util;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 
@@ -45,7 +44,7 @@ public class ChatListener implements Listener {
 					user.removeTextInput();
 
 				}
-				
+
 				e.setCancelled(true);
 
 			}
@@ -230,7 +229,7 @@ public class ChatListener implements Listener {
 
 					}
 
-					handle(e, true, null, editor, user, edit -> editor.getMainMenu().setText(LegacyComponentSerializer.legacyAmpersand().deserialize(PlainTextComponentSerializer.plainText().serialize(e.message()))), editor::goToMain);
+					handle(e, true, null, editor, user, edit -> editor.getMainMenu().setText(Util.legacySerializerAnyCase(PlainTextComponentSerializer.plainText().serialize(e.message()))), editor::goToMain);
 
 					break;
 				case SET_PRICE:
@@ -271,6 +270,7 @@ public class ChatListener implements Listener {
 					handle(e, true, null, editor, user, edit -> editor.getMainMenu().setPrice(finalPrice), editor::goToMain);
 
 					break;
+
 				}
 
 			}

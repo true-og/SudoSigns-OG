@@ -40,11 +40,15 @@ In your issue report, please include as much information as possible including:
 
 - Add a config option to change the currency symbol, and its placement.
 
-- Uppercase color code support.
-
 ## Changelog:
 
-1.2.0:
+**1.2.1:**
+
+- Uppercase color code support.
+
+- Fixed NullPointerException with unrecognized commands.
+
+**1.2.0:**
 
 - 1.19.4 Support.
 

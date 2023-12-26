@@ -14,7 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import dev.mylesmor.sudosigns.SudoSigns;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import dev.mylesmor.sudosigns.util.Util;
 
 public class InvalidEntriesManager {
 	/**
@@ -72,7 +72,7 @@ public class InvalidEntriesManager {
 				List<String> lines = getSignText(s);
 				int i = 0;
 				for (String line : lines) {
-					newSign.line(i, LegacyComponentSerializer.legacyAmpersand().deserialize(line));
+					newSign.line(i, Util.legacySerializerAnyCase(line));
 					i++;
 				}
 				newSign.update();
@@ -104,7 +104,7 @@ public class InvalidEntriesManager {
 	public List<String> getSignText(String name) {
 		List<String> signSec = config.getStringList("signs." + name + ".text");
 		for (String item : signSec) {
-			item = LegacyComponentSerializer.legacyAmpersand().deserialize(item).content();
+			item = Util.legacySerializerAnyCase(item).content();
 		}
 		if (signSec.size() != 0) {
 			return signSec;

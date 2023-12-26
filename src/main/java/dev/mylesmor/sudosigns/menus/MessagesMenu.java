@@ -22,7 +22,6 @@ import dev.mylesmor.sudosigns.data.SudoUser;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class MessagesMenu {
 
@@ -50,7 +49,7 @@ public class MessagesMenu {
 
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("&6Messages: " + sign.getName());
+		TextComponent nameHandler = Util.legacySerializerAnyCase("&6Messages: " + sign.getName());
 
 		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 
@@ -63,7 +62,7 @@ public class MessagesMenu {
 		ItemStack arrow = new ItemStack(Material.ARROW);
 		ItemMeta arrowMeta = arrow.getItemMeta();
 
-		arrowMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dBACK"));
+		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
 		arrow.setItemMeta(arrowMeta);
 
 		if (p.hasPermission(Permissions.ADD_MESSAGE)) {
@@ -71,7 +70,7 @@ public class MessagesMenu {
 			ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
 			ItemMeta bqMeta = bookQuill.getItemMeta();
 
-			bqMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&2Add new message"));
+			bqMeta.displayName(Util.legacySerializerAnyCase("&r&2Add new message"));
 			bookQuill.setItemMeta(bqMeta);
 
 			menu.setItem(40, bookQuill);
@@ -92,7 +91,7 @@ public class MessagesMenu {
 
 		ItemMeta signMeta = signItem.getItemMeta();
 
-		signMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dMessages"));
+		signMeta.displayName(Util.legacySerializerAnyCase("&r&dMessages"));
 		signItem.setItemMeta(signMeta);
 
 		List<String> lore = new ArrayList<>();
@@ -110,7 +109,7 @@ public class MessagesMenu {
 			ItemMeta bookMeta = book.getItemMeta();
 
 			lore.clear();
-			bookMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&dMessage:"));
+			bookMeta.displayName(Util.legacySerializerAnyCase("&dMessage:"));
 			lore.add("&r&f" + sm.getMessage());
 			lore.add("");
 			lore.add("");

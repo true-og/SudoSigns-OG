@@ -22,7 +22,6 @@ import dev.mylesmor.sudosigns.data.SudoUser;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
 import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class CommandOptionsMenu {
 
@@ -77,10 +76,10 @@ public class CommandOptionsMenu {
 	}
 
 	private void createCommandOptionsMenu() {
-		
+
 		Inventory playersInventory = p.getInventory();
 		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = LegacyComponentSerializer.legacyAmpersand().deserialize("Command options: /" + sc.getCommand());
+		TextComponent nameHandler = Util.legacySerializerAnyCase("Command options: /" + sc.getCommand());
 
 		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 		for (int i = 0; i < menu.getSize(); i++) {
@@ -93,21 +92,21 @@ public class CommandOptionsMenu {
 		ItemStack arrow = new ItemStack(Material.ARROW);
 		ItemMeta arrowMeta = arrow.getItemMeta();
 
-		arrowMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dBACK"));
+		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
 		arrow.setItemMeta(arrowMeta);
 
 		ItemStack clock = new ItemStack(Material.CLOCK);
 		ItemMeta clockMeta = clock.getItemMeta();
 
 		lore.add("&eChange the delay after which the command executes");
-		clockMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&dChange Delay"));
+		clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
 		clockMeta.lore(Util.convertToTextComponents(lore));
 		clock.setItemMeta(clockMeta);
 
 		ItemStack barrier = new ItemStack(Material.BARRIER);
 		ItemMeta barrierMeta = barrier.getItemMeta();
 
-		barrierMeta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize("&r&cDelete Command"));
+		barrierMeta.displayName(Util.legacySerializerAnyCase("&r&cDelete Command"));
 		barrier.setItemMeta(barrierMeta);
 
 		if (p.hasPermission(Permissions.COMMAND_OPTIONS) && p.hasPermission(Permissions.DELETE_COMMAND)) {

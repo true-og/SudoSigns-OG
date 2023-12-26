@@ -20,6 +20,7 @@ public class Commands implements CommandExecutor {
 	Map<String, BiConsumer<Player, String[]>> commands = new HashMap<>();
 
 	public Commands() {
+
 		commands.put("help", Help::help);
 		commands.put("near", Near::near);
 		commands.put("list", List::list);
@@ -36,36 +37,68 @@ public class Commands implements CommandExecutor {
 		commands.put("purge", Purge::purge);
 		commands.put("confirmpurge", Purge::confirmPurge);
 		commands.put("fix", Fix::fix);
+
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if ((sender instanceof Player)) {
+
+		if (sender instanceof Player) {
+
 			final Player p = (Player) sender;
 			SudoSigns.users.computeIfAbsent(p.getUniqueId(), k -> new SudoUser(p));
 			try {
+
 				BiConsumer<Player, String[]> command = commands.get(args[0].toLowerCase());
-				if (args.length > 1) {
-					String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
-					command.accept(p, newArgs);
+				
+				if(command != null) {
+
+					if (args.length > 1) {
+	
+						String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
+							
+						command.accept(p, newArgs);
+	
+					}
+					else {
+	
+						try {
+	
+							command.accept(p, null);
+	
+						}
+						catch(CommandException error) {
+	
+							invalidCommandError(p);
+	
+						}
+	
+					}
+
 				}
 				else {
-					try {
-						
-						command.accept(p, null);
-						
-					}
-					catch(CommandException error) {
-						
-						Util.sudoSignsMessage(p, "&cERROR: Invalid command! &6Type &d/ss help &6for a list of valid commands.");
-						
-					}
+					
+					invalidCommandError(p);
+					
 				}
+					
 			}
 			catch (ArrayIndexOutOfBoundsException e) {
-				Util.sudoSignsMessage(p, "&cERROR: Invalid command! &6Type &d/ss help &6for a list of valid commands.");
+
+				invalidCommandError(p);
+				
 			}
+
 		}
+
 		return true;
+
 	}
+	
+	private void invalidCommandError(Player p) {
+		
+		Util.sudoSignsMessage(p, "&cERROR: Invalid command! &6Type &d/ss help &6for a list of valid commands.");
+		
+	}
+
 }
