@@ -19,7 +19,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 public class Util {
 
 	// Create a colored chat prefix.
-	public static String chatPrefix = "&8[&2SudoSigns&4-OG&8] ";
+	public static String chatPrefix = SudoSigns.getPlugin().getConfig().getString("config.prefix");
 
 	// Send the sign selection menu according to permissions.
 	public static void sendSelectMenus(Player p, String name) {
@@ -231,6 +231,12 @@ public class Util {
 		}
 
 		return textComponents;
+	}
+
+	public static boolean priceIsInteger() {
+
+		return SudoSigns.getPlugin().getConfig().getBoolean("config.use-decimals-in-prices");
+
 	}
 
 }

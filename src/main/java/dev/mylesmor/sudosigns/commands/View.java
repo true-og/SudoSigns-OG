@@ -53,14 +53,32 @@ public class View {
 
 				}
 
-				if (sign.getPrice() == 1.0) {
+				if(Util.priceIsInteger()) {
 
-					Util.sudoSignsMessage(p, "&bPrice: " + sign.getPrice() + SudoSigns.econ.currencyNameSingular());
+					if (sign.getPriceAsInteger() == 1) {
+
+						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+					}
+					else {
+
+						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+					}
 
 				}
 				else {
 
-					Util.sudoSignsMessage(p, "&bPrice: " + sign.getPrice() + SudoSigns.econ.currencyNamePlural());
+					if (sign.getPriceAsDouble() == 1.0) {
+
+						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+					}
+					else {
+
+						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+					}
 
 				}
 

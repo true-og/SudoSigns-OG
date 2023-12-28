@@ -183,7 +183,7 @@ public class ConfigManager {
 			if (! signConfig.contains("version")) {
 
 				signConfig.createSection("version");
-				signConfig.set("version", "1.2.1");
+				signConfig.set("version", "1.2.2");
 
 				save();
 				fixConfig();

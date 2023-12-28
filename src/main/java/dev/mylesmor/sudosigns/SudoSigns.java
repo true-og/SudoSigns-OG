@@ -29,6 +29,7 @@ import net.milkbowl.vault.economy.Economy;
 public class SudoSigns extends JavaPlugin {
 
 	public static Map<String, SudoSign> signs = new HashMap<>();
+
 	public static ArrayList<String> invalidSigns = new ArrayList<>();
 
 	public static Map<UUID, SudoUser> users = new HashMap<>();
@@ -43,36 +44,71 @@ public class SudoSigns extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+
 		setupEconomy();
+
 		String version = getServer().getVersion().split("MC: ")[1];
-		SudoSigns.version = version.substring(0, version.length()-1);
+		SudoSigns.version = version.substring(0, version.length() - 1);
+
 		getServer().getPluginManager().registerEvents(new SignListener(), this);
 		getServer().getPluginManager().registerEvents(new InventoryListener(), this);
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+
 		sudoSignsPlugin = this;
+
+		// Import signs.yml file(s).
 		config = new ConfigManager();
 		config.loadModules();
+
+		// Import config.yml file.
+		getConfig().options().copyDefaults(true);
+		saveDefaultConfig();
+
 		this.getCommand("sudosigns").setExecutor(new Commands());
 		this.getCommand("sudosigns").setTabCompleter(new SudoSignsTabCompleter());
+
+	}
+
+	public static Plugin getPlugin() {
+		
+		return sudoSignsPlugin;
+		
+	}
+
+	public static void setSudoSignsPlugin(Plugin sudoSignsPlugin) {
+		SudoSigns.sudoSignsPlugin = sudoSignsPlugin;
 	}
 
 	public boolean setupEconomy() {
 		if (getServer().getPluginManager().getPlugin("Vault") == null) {
+
 			Bukkit.getLogger().warning("[SUDOSIGNS] Vault not found, sign prices disabled...");
+
 			return false;
+
 		}
+
 		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) {
+
 			Bukkit.getLogger().warning("[SUDOSIGNS] No compatible economy plugin found, sign prices disabled...");
+
 			return false;
+
 		}
+
 		econ = rsp.getProvider();
+
 		return true;
+
 	}
 
 	@Override
 	public void onDisable() {
 
+
+
 	}
+
 }

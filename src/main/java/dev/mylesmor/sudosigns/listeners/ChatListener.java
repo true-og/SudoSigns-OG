@@ -241,33 +241,64 @@ public class ChatListener implements Listener {
 
 					}
 
-					double price;
-					try {
+					if(Util.priceIsInteger()) {
 
-						price = Double.parseDouble(PlainTextComponentSerializer.plainText().serialize(e.message()));
+						int price;
+						try {
+
+							price = Integer.parseInt(PlainTextComponentSerializer.plainText().serialize(e.message()));
+
+						}
+						catch (NumberFormatException nfe) {
+
+							e.setCancelled(true);
+							Util.sudoSignsMessage(p, "&eERROR: Please enter a valid integer!");
+
+							return;
+
+						}
+
+						if (price < 0) {
+
+							e.setCancelled(true);
+							Util.sudoSignsMessage(p, "&cERROR: Please enter &e0&c, or a positive integer!");
+
+							return;
+
+						}
+
+						handle(e, true, null, editor, user, edit -> editor.getMainMenu().setPriceAsInteger(price), editor::goToMain);
 
 					}
-					catch (NumberFormatException nfe) {
+					else {
 
-						e.setCancelled(true);
-						Util.sudoSignsMessage(p, "&eERROR: Please enter a valid number!");
+						double price;
+						try {
 
-						return;
+							price = Double.parseDouble(PlainTextComponentSerializer.plainText().serialize(e.message()));
+
+						}
+						catch (NumberFormatException nfe) {
+
+							e.setCancelled(true);
+							Util.sudoSignsMessage(p, "&eERROR: Please enter a valid number!");
+
+							return;
+
+						}
+
+						if (price < 0) {
+
+							e.setCancelled(true);
+							Util.sudoSignsMessage(p, "&cERROR: Please enter &e0&c, or a positive number!");
+
+							return;
+
+						}
+
+						handle(e, true, null, editor, user, edit -> editor.getMainMenu().setPriceAsDouble(price), editor::goToMain);
 
 					}
-
-					if (price < 0) {
-
-						e.setCancelled(true);
-						Util.sudoSignsMessage(p, "&cERROR: Please enter &e0&c, or a positive number!");
-
-						return;
-
-					}
-
-					double finalPrice = price;
-
-					handle(e, true, null, editor, user, edit -> editor.getMainMenu().setPrice(finalPrice), editor::goToMain);
 
 					break;
 

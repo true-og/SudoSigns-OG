@@ -1,0 +1,5 @@
+config:
+  prefix: "&8[&2SudoSigns&4-OG&8] "
+  currency-symbol-singular: " &BDiamond"
+  currency-symbol-plural: " &BDiamonds"
+  use-decimals-in-prices: false

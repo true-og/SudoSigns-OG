@@ -163,13 +163,32 @@ public class MainMenu {
 					lore.add("&eThe cost to use this sign.");
 					lore.add("&e");
 
-					if (sign.getPrice() == 1.0) {
+					if(Util.priceIsInteger()) {
 
-						lore.add("&7" + SudoSigns.econ.currencyNameSingular() + "&c" + sign.getPrice());
+						if (sign.getPriceAsInteger() == 1) {
 
-					} else {
+							lore.add("&e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular"));
 
-						lore.add("&7" + SudoSigns.econ.currencyNamePlural() + "&c" + sign.getPrice());
+						}
+						else {
+
+							lore.add("&e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
+
+						}
+
+					}
+					else {
+
+						if (sign.getPriceAsDouble() == 1.0) {
+
+							lore.add("&e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular"));
+
+						}
+						else {
+
+							lore.add("&e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
+
+						}
 
 					}
 
@@ -181,8 +200,7 @@ public class MainMenu {
 					}
 
 					goldNuggetItemMeta.lore(Util.convertToTextComponents(lore));
-					goldNuggetItemMeta
-					.displayName(Util.legacySerializerAnyCase("&r&dPrice"));
+					goldNuggetItemMeta.displayName(Util.legacySerializerAnyCase("&r&dPrice"));
 					goldNugget.setItemMeta(goldNuggetItemMeta);
 
 					items.add(goldNugget);
@@ -237,30 +255,45 @@ public class MainMenu {
 
 	}
 
-	public void setPrice(double price) {
+	public void setPriceAsDouble(double price) {
 
-		sign.setPrice(price);
+		sign.setPriceAsDouble(price);
 		SudoSigns.config.setPrice(sign.getName(), price);
 
-		if (sign.getPrice() == 1.0) {
+		if (sign.getPriceAsDouble() == 1.0) {
 
-			Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: " + price + "&b"
-					+ SudoSigns.econ.currencyNameSingular() + "&6.");
+			Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
 
 		} else {
 
-			Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: " + price + "&b"
-					+ SudoSigns.econ.currencyNamePlural() + "&6.");
+			Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
 
 		}
 
 	}
 
+	public void setPriceAsInteger(int price) {
+
+		sign.setPriceAsInteger(price);
+		SudoSigns.config.setPrice(sign.getName(), price);
+
+		if (sign.getPriceAsInteger() == 1) {
+
+			Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+		} else {
+
+			Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+		}
+
+	}
+
+
 	public void setLineNumber(int lineNumber) {
 
 		this.lineNumber = lineNumber;
-		Util.sudoSignsMessage(p,
-				"&6Please enter the new text (maximum 15 characters), using the &e& &6symbol for color codes. Type &cCANCEL &6to cancel the operation.");
+		Util.sudoSignsMessage(p, "&6Please enter the new text (maximum 15 characters), using the &e& &6symbol for color codes. Type &cCANCEL &6to cancel the operation.");
 		SudoSigns.users.get(p.getUniqueId()).addTextInput(PlayerInput.EDIT_TEXT);
 
 	}

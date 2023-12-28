@@ -14,7 +14,7 @@ java {
 }
 
 group = "dev.mylesmor.sudosigns" // Declare bundle identifier.
-version = "1.2.1" // Declare plugin version (will be in .jar).
+version = "1.2.2" // Declare plugin version (will be in .jar).
 
 def apiVersion = "1.19" // Declare minecraft server target version.
 

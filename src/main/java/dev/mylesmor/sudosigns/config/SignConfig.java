@@ -80,16 +80,36 @@ public class SignConfig {
 						List<String> permissions = signConfig.getStringList("signs." + key + ".permissions");
 						List<Map<?, ?>> messages = signConfig.getMapList("signs." + key + ".messages");
 
-						try {
+						if(Util.priceIsInteger()) {
 
-							ss.setPrice((Double) signConfig.get("signs." + key + ".price"));
+							try {
+
+								ss.setPriceAsInteger((Integer) signConfig.get("signs." + key + ".price"));
+
+							}
+							catch (Exception e) {
+
+								Bukkit.getLogger().info("[SUDOSIGNS] Invalid price for sign " + name + "! Defaulting to 0...");
+
+								ss.setPriceAsInteger(0);
+
+							}
 
 						}
-						catch (Exception e) {
+						else {
 
-							Bukkit.getLogger().info("[SUDOSIGNS] Invalid price for sign " + name + "! Defaulting to 0...");
+							try {
 
-							ss.setPrice(0.0);
+								ss.setPriceAsDouble((Double) signConfig.get("signs." + key + ".price"));
+
+							}
+							catch (Exception e) {
+
+								Bukkit.getLogger().info("[SUDOSIGNS] Invalid price for sign " + name + "! Defaulting to 0...");
+
+								ss.setPriceAsDouble(0.0);
+
+							}
 
 						}
 

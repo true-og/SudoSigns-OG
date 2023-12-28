@@ -29,7 +29,8 @@ public class SudoSign {
 	private ArrayList<String> permissions = new ArrayList<>();
 	private ArrayList<SignMessage> messages = new ArrayList<>();
 	private ArrayList<String> text = new ArrayList<>();
-	private double price = 0;
+	private double priceAsDouble = 0;
+	private int priceAsInteger = 0;
 	private String worldName;
 	private double x;
 	private double y;
@@ -175,7 +176,17 @@ public class SudoSign {
 		this.playerCommands = s.getPlayerCommands();
 		this.consoleCommands = s.getConsoleCommands();
 		this.messages = s.getMessages();
-		this.price = s.getPrice();
+
+		if(Util.priceIsInteger()) {
+
+			this.priceAsInteger = s.getPriceAsInteger();
+
+		}
+		else {
+
+			this.priceAsDouble = s.getPriceAsDouble();
+
+		}
 
 	}
 
@@ -222,15 +233,27 @@ public class SudoSign {
 
 	}
 
-	public void setPrice(double price) {
+	public void setPriceAsDouble(double price) {
 
-		this.price = price;
+		this.priceAsDouble = price;
 
 	}
 
-	public double getPrice() {
+	public double getPriceAsDouble() {
 
-		return price;
+		return priceAsDouble;
+
+	}
+
+	public void setPriceAsInteger(int price) {
+
+		this.priceAsInteger = price;
+
+	}
+
+	public int getPriceAsInteger() {
+
+		return priceAsInteger;
 
 	}
 
@@ -252,33 +275,82 @@ public class SudoSign {
 		}
 		if (hasPermission) {
 
+			EconomyResponse r = null;
 			if (SudoSigns.econ != null) {
 
-				EconomyResponse r = SudoSigns.econ.withdrawPlayer(p, price);
+				if(Util.priceIsInteger()) {
+
+					r = SudoSigns.econ.withdrawPlayer(p, priceAsInteger);
+
+				}
+				else {
+
+					r = SudoSigns.econ.withdrawPlayer(p, priceAsDouble);
+
+				}
+
 				if (! r.transactionSuccess()) {
 
-					if (price == 1.0) {
+					if(Util.priceIsInteger()) {
 
-						Util.sudoSignsMessage(p, "&cERROR: You do not have a &b" + SudoSigns.econ.currencyNameSingular() + " &cto run this sign! &6The cost is: &b" + price + "&b" + SudoSigns.econ.currencyNameSingular() + "&6.");
+						if (priceAsInteger == 1) {
+
+							Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &b" + priceAsInteger + "&b" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+						}
+						else {
+
+							Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &b" + priceAsInteger + "&6.");
+
+						}
 
 					}
 					else {
 
-						Util.sudoSignsMessage(p, "&cERROR: You do not have enough &b" + SudoSigns.econ.currencyNamePlural() + " &cto run this sign! &6The cost is: &b" + price + "&6.");
+						if (priceAsDouble == 1.0) {
+
+							Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &b" + priceAsDouble + "&b" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+						}
+						else {
+
+							Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &b" + priceAsDouble + "&6.");
+
+						}
 
 					}
 
 					return;
 
 				}
-				if (price == 1.0) {
 
-					Util.sudoSignsMessage(p, "&b" + price + "&b" + SudoSigns.econ.currencyNameSingular() + " &6has been withdrawn from your balance.");
+				if(Util.priceIsInteger()) {
+
+					if (priceAsInteger == 1) {
+
+						Util.sudoSignsMessage(p, "&e1" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+
+					}
+					else if (priceAsInteger != 0) {
+
+						Util.sudoSignsMessage(p, "&e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+
+					}
 
 				}
-				else if (price != 0.0) {
+				else {
 
-					Util.sudoSignsMessage(p, "&b" + price + "&b" + SudoSigns.econ.currencyNamePlural() + " &6has been withdrawn from your balance.");
+					if (priceAsDouble == 1.0) {
+
+						Util.sudoSignsMessage(p, "&e1" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+
+					}
+					else if (priceAsDouble != 0.0) {
+
+						Util.sudoSignsMessage(p, "&e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+
+					}
+
 
 				}
 
@@ -391,7 +463,6 @@ public class SudoSign {
 		return null;
 
 	}
-
 
 	public SignCommand getSignCommandByNumber(int number) {
 
