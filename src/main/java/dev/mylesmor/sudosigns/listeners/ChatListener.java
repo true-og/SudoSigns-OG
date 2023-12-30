@@ -252,7 +252,7 @@ public class ChatListener implements Listener {
 						catch (NumberFormatException nfe) {
 
 							e.setCancelled(true);
-							Util.sudoSignsMessage(p, "&eERROR: Please enter a valid integer!");
+							Util.sudoSignsMessage(p, "&cERROR: Please enter a valid integer!");
 
 							return;
 
@@ -281,7 +281,7 @@ public class ChatListener implements Listener {
 						catch (NumberFormatException nfe) {
 
 							e.setCancelled(true);
-							Util.sudoSignsMessage(p, "&eERROR: Please enter a valid number!");
+							Util.sudoSignsMessage(p, "&cERROR: Please enter a valid number!");
 
 							return;
 
