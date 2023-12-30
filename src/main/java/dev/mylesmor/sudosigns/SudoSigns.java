@@ -71,9 +71,9 @@ public class SudoSigns extends JavaPlugin {
 	}
 
 	public static Plugin getPlugin() {
-		
+
 		return sudoSignsPlugin;
-		
+
 	}
 
 	public static void setSudoSignsPlugin(Plugin sudoSignsPlugin) {
@@ -83,7 +83,7 @@ public class SudoSigns extends JavaPlugin {
 	public boolean setupEconomy() {
 		if (getServer().getPluginManager().getPlugin("Vault") == null) {
 
-			Bukkit.getLogger().warning("[SUDOSIGNS] Vault not found, sign prices disabled...");
+			Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Vault not found, sign prices disabled...");
 
 			return false;
 
@@ -92,7 +92,7 @@ public class SudoSigns extends JavaPlugin {
 		RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp == null) {
 
-			Bukkit.getLogger().warning("[SUDOSIGNS] No compatible economy plugin found, sign prices disabled...");
+			Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: No compatible economy plugin found, sign prices disabled...");
 
 			return false;
 

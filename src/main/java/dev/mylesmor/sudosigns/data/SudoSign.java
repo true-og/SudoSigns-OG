@@ -253,7 +253,7 @@ public class SudoSign {
 
 	public int getPriceAsInteger() {
 
-		return priceAsInteger;
+		return (int) priceAsInteger;
 
 	}
 
@@ -291,66 +291,144 @@ public class SudoSign {
 
 				if (! r.transactionSuccess()) {
 
-					if(Util.priceIsInteger()) {
+					if(! SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
 
-						if (priceAsInteger == 1) {
+						if(Util.priceIsInteger()) {
 
-							Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &b" + priceAsInteger + "&b" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+							if (priceAsInteger == 1) {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+							}
+							else {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+							}
 
 						}
 						else {
 
-							Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &b" + priceAsInteger + "&6.");
+							if (priceAsDouble == 1.0) {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+							}
+							else {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+							}
 
 						}
+
+						return;
 
 					}
 					else {
 
-						if (priceAsDouble == 1.0) {
+						if(Util.priceIsInteger()) {
 
-							Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &b" + priceAsDouble + "&b" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+							if (priceAsInteger == 1) {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsInteger + "&6.");
+
+							}
+							else {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsInteger + "&6.");
+
+							}
 
 						}
 						else {
 
-							Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &b" + priceAsDouble + "&6.");
+							if (priceAsDouble == 1.0) {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsDouble + "&6.");
+
+							}
+							else {
+
+								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsDouble + "&6.");
+
+							}
 
 						}
 
-					}
-
-					return;
-
-				}
-
-				if(Util.priceIsInteger()) {
-
-					if (priceAsInteger == 1) {
-
-						Util.sudoSignsMessage(p, "&e1" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
-
-					}
-					else if (priceAsInteger != 0) {
-
-						Util.sudoSignsMessage(p, "&e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+						return;
 
 					}
 
 				}
 				else {
 
-					if (priceAsDouble == 1.0) {
+					if(! SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
 
-						Util.sudoSignsMessage(p, "&e1" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+						if(Util.priceIsInteger()) {
+
+							if (priceAsInteger == 1) {
+
+								Util.sudoSignsMessage(p, "&e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+
+							}
+							else if (priceAsInteger != 0) {
+
+								Util.sudoSignsMessage(p, "&e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+
+							}
+
+						}
+						else {
+
+							if (priceAsDouble == 1.0) {
+
+								Util.sudoSignsMessage(p, "&e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+
+							}
+							else if (priceAsDouble != 0.0) {
+
+								Util.sudoSignsMessage(p, "&e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+
+							}
+
+
+						}
 
 					}
-					else if (priceAsDouble != 0.0) {
+					else {
 
-						Util.sudoSignsMessage(p, "&e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+						if(Util.priceIsInteger()) {
+
+							if (priceAsInteger == 1) {
+
+								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsInteger + " &6has been withdrawn from your balance.");
+
+							}
+							else if (priceAsInteger != 0) {
+
+								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsInteger + "  &6have been withdrawn from your balance.");
+
+							}
+
+						}
+						else {
+
+							if (priceAsDouble == 1.0) {
+
+								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsDouble + " &6has been withdrawn from your balance.");
+
+							}
+							else if (priceAsDouble != 0.0) {
+
+								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsDouble + " &6have been withdrawn from your balance.");
+
+							}
+
+
+						}
 
 					}
-
 
 				}
 

@@ -53,30 +53,66 @@ public class View {
 
 				}
 
-				if(Util.priceIsInteger()) {
+				if(! SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
 
-					if (sign.getPriceAsInteger() == 1) {
+					if(Util.priceIsInteger()) {
 
-						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+						if (sign.getPriceAsInteger() == 1) {
+
+							Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+						}
+						else {
+
+							Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+						}
 
 					}
 					else {
 
-						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+						if (sign.getPriceAsDouble() == 1.0) {
+
+							Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+
+						}
+						else {
+
+							Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
+						}
 
 					}
 
 				}
 				else {
 
-					if (sign.getPriceAsDouble() == 1.0) {
+					if(Util.priceIsInteger()) {
 
-						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+						if (sign.getPriceAsInteger() == 1) {
+
+							Util.sudoSignsMessage(p, "&6Price: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + sign.getPriceAsInteger() + "&6.");
+
+						}
+						else {
+
+							Util.sudoSignsMessage(p, "&6Price: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + sign.getPriceAsInteger() + "&6.");
+
+						}
 
 					}
 					else {
 
-						Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+						if (sign.getPriceAsDouble() == 1.0) {
+
+							Util.sudoSignsMessage(p, "&6Price: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + sign.getPriceAsDouble() + "&6.");
+
+						}
+						else {
+
+							Util.sudoSignsMessage(p, "&6Price: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + sign.getPriceAsDouble() + "&6.");
+
+						}
 
 					}
 

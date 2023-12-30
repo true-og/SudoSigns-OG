@@ -62,12 +62,12 @@ public class Reload {
 
 				}
 
-				Bukkit.getLogger().warning("[SUDOSIGNS] There was an error with the SudoSigns config!");
+				Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "There was an error with the SudoSigns config!");
 				Util.sudoSignsMessage(p, "&cERROR: The latest update to the SudoSigns config was invalid! &6Continuing to use old config...");
 
 			}
 			else {
-				Bukkit.getLogger().warning("[SUDOSIGNS] There was an error with the SudoSigns config!");
+				Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "There was an error with the SudoSigns config!");
 				Util.sudoSignsMessage(p, "&cERROR: The latest update to the SudoSigns config was invalid! &6Please attempt to fix it before the next server restart or plugin reload attempt.");
 			}
 

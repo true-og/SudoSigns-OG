@@ -34,13 +34,17 @@ In your issue report, please include as much information as possible including:
 
 ## Planned Features
 
+- Add cooldowns to sign usage.
+
 - Fix messages being sent to chat that should only be captured by SudoSigns.
 
-- Add a config option to change the console prefix.
-
-- Add a config option to change the location of the currency symbol.
-
 ## Changelog:
+
+**1.2.3:**
+
+- Added a config option to change the console prefix.
+
+- Added a config option to change the location of the currency symbol.
 
 **1.2.2:**
 

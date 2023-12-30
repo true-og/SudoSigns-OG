@@ -149,7 +149,7 @@ public class ConfigManager {
 			}
 			catch (IOException e) {
 
-				Bukkit.getLogger().warning("[SUDOSIGNS] Failed to create config!");
+				Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to create config!");
 				e.printStackTrace();
 
 			}
@@ -183,7 +183,7 @@ public class ConfigManager {
 			if (! signConfig.contains("version")) {
 
 				signConfig.createSection("version");
-				signConfig.set("version", "1.2.2");
+				signConfig.set("version", "1.2.3");
 
 				save();
 				fixConfig();
@@ -193,7 +193,7 @@ public class ConfigManager {
 		}
 		catch (Exception e) {
 
-			Bukkit.getLogger().warning("[SUDOSIGNS] Failed to initialise signs.yml!");
+			Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to initialise signs.yml!");
 			e.printStackTrace();
 
 			return false;
@@ -316,7 +316,7 @@ public class ConfigManager {
 		}
 		catch (IOException e) {
 
-			Bukkit.getLogger().warning("[SUDOSIGNS] Failed to save to signs.yml!");
+			Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to save to signs.yml!");
 			e.printStackTrace();
 
 		}

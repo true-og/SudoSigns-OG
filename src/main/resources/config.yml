@@ -1,5 +1,7 @@
 config:
   prefix: "&8[&2SudoSigns&4-OG&8] "
+  console-prefix: "[SUDOSIGNS-OG] "
   currency-symbol-singular: " &BDiamond"
   currency-symbol-plural: " &BDiamonds"
+  currency-symbol-in-front: false
   use-decimals-in-prices: false

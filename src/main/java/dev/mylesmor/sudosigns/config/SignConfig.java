@@ -89,7 +89,7 @@ public class SignConfig {
 							}
 							catch (Exception e) {
 
-								Bukkit.getLogger().info("[SUDOSIGNS] Invalid price for sign " + name + "! Defaulting to 0...");
+								Bukkit.getLogger().info(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Invalid price for sign " + name + "! Defaulting to 0...");
 
 								ss.setPriceAsInteger(0);
 
@@ -105,7 +105,7 @@ public class SignConfig {
 							}
 							catch (Exception e) {
 
-								Bukkit.getLogger().info("[SUDOSIGNS] Invalid price for sign " + name + "! Defaulting to 0...");
+								Bukkit.getLogger().info(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Invalid price for sign " + name + "! Defaulting to 0...");
 
 								ss.setPriceAsDouble(0.0);
 
@@ -157,7 +157,7 @@ public class SignConfig {
 					else {
 
 						invalidSigns.add(key);
-						Bukkit.getLogger().warning("[SUDOSIGNS] Failed to load Sign " + key + "! The block at the provided location is not a sign. Skipping...");
+						Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to load Sign " + key + "! The block at the provided location is not a sign. Skipping...");
 
 					}
 
@@ -165,7 +165,7 @@ public class SignConfig {
 				else {
 
 					invalidSigns.add(key);
-					Bukkit.getLogger().warning("[SUDOSIGNS] Failed to load Sign " + key + "! The world name for this sign is invalid. Skipping...");
+					Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to load Sign " + key + "! The world name for this sign is invalid. Skipping...");
 
 				}
 
