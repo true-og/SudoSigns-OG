@@ -1,8 +1,15 @@
 package dev.mylesmor.sudosigns.menus;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignMessage;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,143 +21,121 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignMessage;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
-import net.kyori.adventure.text.TextComponent;
-
 public class MessageOptionsMenu {
 
-	private Inventory menu;
-	private SudoUser su;
-	private SudoSign sign;
-	private SignMessage sm;
-	private Player p;
-	private SignEditor editor;
+    private Inventory menu;
+    private SudoUser su;
+    private SudoSign sign;
+    private SignMessage sm;
+    private Player p;
+    private SignEditor editor;
 
-	MessageOptionsMenu(SudoUser su, Player p, SudoSign sign, ItemStack item, SignEditor editor) {
+    MessageOptionsMenu(SudoUser su, Player p, SudoSign sign, ItemStack item, SignEditor editor) {
 
-		this.su = su;
-		this.sign = sign;
-		this.p = p;
-		this.editor = editor;
-		this.sm = findSignMessage(item);
+        this.su = su;
+        this.sign = sign;
+        this.p = p;
+        this.editor = editor;
+        this.sm = findSignMessage(item);
 
-		if (this.sm == null) {
+        if (this.sm == null) {
 
-			editor.goToMessages();
+            editor.goToMessages();
 
-			return;
+            return;
+        }
+    }
 
-		}
+    public void goToMessageOptionsMenu() {
 
-	}
+        createMessageOptionsMenu();
+        p.openInventory(menu);
+    }
 
-	public void goToMessageOptionsMenu() {
+    private SignMessage findSignMessage(ItemStack item) {
 
-		createMessageOptionsMenu();
-		p.openInventory(menu);
+        NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "message-number");
+        ItemMeta itemMeta = item.getItemMeta();
+        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
 
-	}
+        if (container.has(key, PersistentDataType.INTEGER)) {
 
-	private SignMessage findSignMessage(ItemStack item) {
+            int foundValue = container.get(key, PersistentDataType.INTEGER);
 
-		NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "message-number");
-		ItemMeta itemMeta = item.getItemMeta();
-		PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+            return sign.getSignMessageByNumber(foundValue);
+        }
 
-		if (container.has(key, PersistentDataType.INTEGER)) {
+        return null;
+    }
 
-			int foundValue = container.get(key, PersistentDataType.INTEGER);
+    private void createMessageOptionsMenu() {
 
-			return sign.getSignMessageByNumber(foundValue);
+        Inventory playersInventory = p.getInventory();
+        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        TextComponent nameHandler = Util.legacySerializerAnyCase("&6Message options");
 
-		}
+        menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 
-		return null;
+        for (int i = 0; i < menu.getSize(); i++) {
 
-	}
+            menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        }
 
-	private void createMessageOptionsMenu() {
+        List<String> lore = new ArrayList<>();
 
-		Inventory playersInventory = p.getInventory();
-		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = Util.legacySerializerAnyCase("&6Message options");
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = arrow.getItemMeta();
 
-		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
+        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrow.setItemMeta(arrowMeta);
 
-		for (int i = 0; i < menu.getSize(); i++) {
+        ItemStack clock = new ItemStack(Material.CLOCK);
+        ItemMeta clockMeta = clock.getItemMeta();
 
-			menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        lore.add("&eChange the delay after which the message is sent");
+        clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
+        clockMeta.lore(Util.convertToTextComponents(lore));
+        clock.setItemMeta(clockMeta);
 
-		}
+        ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemMeta barrierMeta = barrier.getItemMeta();
 
-		List<String> lore = new ArrayList<>();
+        barrierMeta.displayName(Util.legacySerializerAnyCase("&r&dDelete Message"));
+        barrier.setItemMeta(barrierMeta);
 
-		ItemStack arrow = new ItemStack(Material.ARROW);
-		ItemMeta arrowMeta = arrow.getItemMeta();
+        if (p.hasPermission(Permissions.MESSAGE_OPTIONS) && p.hasPermission(Permissions.DELETE_MESSAGE)) {
 
-		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
-		arrow.setItemMeta(arrowMeta);
+            menu.setItem(20, clock);
+            menu.setItem(24, barrier);
 
-		ItemStack clock = new ItemStack(Material.CLOCK);
-		ItemMeta clockMeta = clock.getItemMeta();
+        } else {
 
-		lore.add("&eChange the delay after which the message is sent");
-		clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
-		clockMeta.lore(Util.convertToTextComponents(lore));
-		clock.setItemMeta(clockMeta);
+            menu.setItem(22, clock);
+        }
 
-		ItemStack barrier = new ItemStack(Material.BARRIER);
-		ItemMeta barrierMeta = barrier.getItemMeta();
+        menu.setItem(36, arrow);
+    }
 
-		barrierMeta.displayName(Util.legacySerializerAnyCase("&r&dDelete Message"));
-		barrier.setItemMeta(barrierMeta);
+    public void addDelay() {
 
-		if (p.hasPermission(Permissions.MESSAGE_OPTIONS) && p.hasPermission(Permissions.DELETE_MESSAGE)) {
+        p.closeInventory();
+        Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL &6.");
+        su.addTextInput(PlayerInput.MESSAGE_DELAY);
+    }
 
-			menu.setItem(20, clock);
-			menu.setItem(24, barrier);
+    public void setDelay(double delay) {
 
-		}
-		else {
+        double oldDelay = sm.getDelay();
+        sm.setDelay(delay * 1000);
 
-			menu.setItem(22, clock);
+        SudoSigns.config.deleteMessage(sign, sm, oldDelay);
+        SudoSigns.config.addMessage(sign, sm);
+    }
 
-		}
+    public void deleteMessage() {
 
-		menu.setItem(36, arrow);
-
-	}
-
-	public void addDelay() {
-
-		p.closeInventory();
-		Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL &6.");
-		su.addTextInput(PlayerInput.MESSAGE_DELAY);
-
-	}
-
-	public void setDelay(double delay) {
-
-		double oldDelay = sm.getDelay();
-		sm.setDelay(delay * 1000);
-
-		SudoSigns.config.deleteMessage(sign, sm, oldDelay);
-		SudoSigns.config.addMessage(sign, sm);
-
-	}
-
-	public void deleteMessage() {
-
-		sign.removeMessage(sm);
-		SudoSigns.config.deleteMessage(sign, sm, sm.getDelay());
-		editor.goToMessages();
-
-	}
-
+        sign.removeMessage(sm);
+        SudoSigns.config.deleteMessage(sign, sm, sm.getDelay());
+        editor.goToMessages();
+    }
 }

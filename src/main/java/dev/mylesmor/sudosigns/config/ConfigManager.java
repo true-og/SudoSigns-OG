@@ -1,23 +1,21 @@
 package dev.mylesmor.sudosigns.config;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SignMessage;
+import dev.mylesmor.sudosigns.data.SudoSign;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SignMessage;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import net.kyori.adventure.text.TextComponent;
 
 /**
  * The class for managing the plugins config.
@@ -26,301 +24,261 @@ import net.kyori.adventure.text.TextComponent;
  */
 public class ConfigManager {
 
-	private FileConfiguration signConfig;
-	private File signConfigFile;
-	private InvalidEntriesManager invalidEntriesManager;
-	private SignConfig signConfigManager;
-	private MessageConfig messageConfig;
-	private CommandConfig commandConfig;
-	private PermissionConfig permissionConfig;
+    private FileConfiguration signConfig;
+    private File signConfigFile;
+    private InvalidEntriesManager invalidEntriesManager;
+    private SignConfig signConfigManager;
+    private MessageConfig messageConfig;
+    private CommandConfig commandConfig;
+    private PermissionConfig permissionConfig;
 
+    public ConfigManager() {
 
-	public ConfigManager() {
+        loadCustomConfig();
+        loadModules();
+    }
 
-		loadCustomConfig();
-		loadModules();
+    public void loadModules() {
 
-	}
+        invalidEntriesManager = new InvalidEntriesManager(this, signConfig);
+        signConfigManager = new SignConfig(this);
+        signConfigManager.loadSigns();
+        messageConfig = new MessageConfig(this);
+        commandConfig = new CommandConfig(this);
+        permissionConfig = new PermissionConfig(this);
+    }
 
-	public void loadModules() {
+    public InvalidEntriesManager getInvalidEntriesManager() {
 
-		invalidEntriesManager = new InvalidEntriesManager(this, signConfig);
-		signConfigManager = new SignConfig(this);
-		signConfigManager.loadSigns();
-		messageConfig = new MessageConfig(this);
-		commandConfig = new CommandConfig(this);
-		permissionConfig = new PermissionConfig(this);
+        return invalidEntriesManager;
+    }
 
-	}
+    public FileConfiguration getSignConfig() {
 
-	public InvalidEntriesManager getInvalidEntriesManager() {
+        return signConfig;
+    }
 
-		return invalidEntriesManager;
+    public ArrayList<String> loadSigns() {
 
-	}
+        return signConfigManager.loadSigns();
+    }
 
-	public FileConfiguration getSignConfig() { 
+    public void saveSign(SudoSign s, boolean singular, Player p) {
 
-		return signConfig;
+        signConfigManager.saveToFile(s, singular, p);
+    }
 
-	}
+    public void deleteSign(String name) {
 
-	public ArrayList<String> loadSigns() {
+        signConfigManager.deleteSign(name);
+    }
 
-		return signConfigManager.loadSigns();
+    public void editSignText(String name, int lineNumber, TextComponent message) {
 
-	}
+        signConfigManager.editText(name, lineNumber, message);
+    }
 
-	public void saveSign(SudoSign s, boolean singular, Player p) {
+    public void addMessage(SudoSign s, SignMessage sm) {
 
-		signConfigManager.saveToFile(s, singular, p);
+        messageConfig.addMessageToConfig(s, sm);
+    }
 
-	}
+    public void deleteMessage(SudoSign s, SignMessage sm, double delay) {
 
-	public void deleteSign(String name) {
+        messageConfig.deleteMessageFromConfig(s, sm, delay);
+    }
 
-		signConfigManager.deleteSign(name);
+    public void addCommand(SudoSign s, SignCommand sm, PlayerInput type) {
 
-	}
+        commandConfig.addCommandToConfig(s, sm, type);
+    }
 
-	public void editSignText(String name, int lineNumber, TextComponent message) {
+    public void deleteCommand(SudoSign s, SignCommand sm, PlayerInput type, double oldDelay) {
 
-		signConfigManager.editText(name, lineNumber, message);
+        commandConfig.deleteCommandFromConfig(s, sm, type, oldDelay);
+    }
 
-	}
+    public void setPrice(String name, double price) {
 
-	public void addMessage(SudoSign s, SignMessage sm) {
+        signConfigManager.setPrice(name, price);
+    }
 
-		messageConfig.addMessageToConfig(s, sm);
+    public void addPermission(SudoSign s, String permission) {
 
-	}
+        permissionConfig.addPermissionToConfig(s, permission);
+    }
 
-	public void deleteMessage(SudoSign s, SignMessage sm, double delay) {
+    public void deletePermission(SudoSign s, String permission) {
 
-		messageConfig.deleteMessageFromConfig(s, sm, delay);
+        permissionConfig.deletePermissionFromConfig(s, permission);
+    }
 
-	}
+    public boolean loadCustomConfig() {
 
-	public void addCommand(SudoSign s, SignCommand sm, PlayerInput type) {
+        if (!SudoSigns.sudoSignsPlugin.getDataFolder().exists()) {
 
-		commandConfig.addCommandToConfig(s, sm, type);
+            SudoSigns.sudoSignsPlugin.getDataFolder().mkdir();
+        }
 
-	}
+        signConfigFile = new File(SudoSigns.sudoSignsPlugin.getDataFolder(), "signs.yml");
+        if (!signConfigFile.exists()) {
 
-	public void deleteCommand(SudoSign s, SignCommand sm, PlayerInput type, double oldDelay) {
+            try {
 
-		commandConfig.deleteCommandFromConfig(s, sm, type, oldDelay);
+                signConfigFile.createNewFile();
 
-	}
+            } catch (IOException e) {
 
-	public void setPrice(String name, double price) {
+                Bukkit.getLogger()
+                        .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                                + "ERROR: Failed to create config!");
+                e.printStackTrace();
+            }
+        }
 
-		signConfigManager.setPrice(name, price);
+        try {
 
-	}
+            signConfig = YamlConfiguration.loadConfiguration(signConfigFile);
 
-	public void addPermission(SudoSign s, String permission) {
+            if (signConfigManager != null) {
 
-		permissionConfig.addPermissionToConfig(s, permission);
+                signConfigManager.setSignConfig(signConfig);
+            }
 
-	}
+            if (!signConfig.isConfigurationSection("signs")) {
 
-	public void deletePermission(SudoSign s, String permission) {
+                signConfig.createSection("signs");
 
-		permissionConfig.deletePermissionFromConfig(s, permission);
+                save();
+            }
 
-	}
+            if (invalidEntriesManager != null) {
 
-	public boolean loadCustomConfig() {
+                invalidEntriesManager.setConfig(signConfig);
+            }
 
-		if (! SudoSigns.sudoSignsPlugin.getDataFolder().exists()) {
+            if (!signConfig.contains("version")) {
 
-			SudoSigns.sudoSignsPlugin.getDataFolder().mkdir();
+                signConfig.createSection("version");
+                signConfig.set("version", "1.2.3");
 
-		}
+                save();
+                fixConfig();
+            }
 
-		signConfigFile = new File(SudoSigns.sudoSignsPlugin.getDataFolder(), "signs.yml");
-		if (! signConfigFile.exists()) {
+        } catch (Exception e) {
 
-			try {
+            Bukkit.getLogger()
+                    .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                            + "ERROR: Failed to initialise signs.yml!");
+            e.printStackTrace();
 
-				signConfigFile.createNewFile();
+            return false;
+        }
 
-			}
-			catch (IOException e) {
+        return true;
+    }
 
-				Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to create config!");
-				e.printStackTrace();
+    public void fixConfig() {
 
-			}
+        Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
+        String name = null;
+        for (String key : signSection) {
 
-		}
+            signConfig.set("signs." + key + ".op-commands", null);
+            signConfig.set("signs." + key + ".price", 0.0);
 
-		try {
+            name = key;
 
-			signConfig = YamlConfiguration.loadConfiguration(signConfigFile);
+            List<String> pCommands = signConfig.getStringList("signs." + key + ".player-commands");
+            List<String> cCommands = signConfig.getStringList("signs." + key + ".console-commands");
+            List<String> messages = signConfig.getStringList("signs." + key + ".messages");
 
-			if (signConfigManager != null) {
+            if (pCommands.size() == 0 && cCommands.size() == 0 && messages.size() == 0) {
 
-				signConfigManager.setSignConfig(signConfig);
+                save();
+                continue;
+            }
+            if (pCommands.size() != 0) {
 
-			}
+                try {
 
-			if (! signConfig.isConfigurationSection("signs")) {
+                    ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
+                    HashMap<String, Double> map = new HashMap<>();
+                    for (String cmd : pCommands) {
 
-				signConfig.createSection("signs");
+                        map.put(cmd, 0.0);
+                        mapList.add(map);
+                        map = new HashMap<>();
+                    }
 
-				save();
+                    signConfig.set("signs." + name + ".player-commands", mapList);
 
-			}
+                } catch (Exception ignored) {
 
-			if (invalidEntriesManager != null) {
+                    ignored.printStackTrace();
+                }
+            }
 
-				invalidEntriesManager.setConfig(signConfig);
+            signConfig.set("signs." + key + ".op-commands", null);
 
-			}
+            if (cCommands.size() != 0) {
+                try {
 
-			if (! signConfig.contains("version")) {
+                    ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
+                    HashMap<String, Double> map = new HashMap<>();
+                    for (String cmd : cCommands) {
 
-				signConfig.createSection("version");
-				signConfig.set("version", "1.2.3");
+                        map.put(cmd, 0.0);
+                        mapList.add(map);
+                        map = new HashMap<>();
+                    }
 
-				save();
-				fixConfig();
+                    signConfig.set("signs." + name + ".console-commands", mapList);
 
-			}
+                } catch (Exception ignored) {
 
-		}
-		catch (Exception e) {
+                    ignored.printStackTrace();
+                }
+            }
 
-			Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to initialise signs.yml!");
-			e.printStackTrace();
+            if (messages.size() != 0) {
 
-			return false;
+                try {
 
-		}
+                    ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
+                    HashMap<String, Double> map = new HashMap<>();
+                    for (String cmd : messages) {
 
-		return true;
+                        map.put(cmd, 0.0);
+                        mapList.add(map);
+                        map = new HashMap<>();
+                    }
 
-	}
+                    signConfig.set("signs." + name + ".messages", mapList);
 
-	public void fixConfig() {
+                } catch (Exception ignored) {
 
-		Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
-		String name = null;
-		for (String key : signSection) {
+                    ignored.printStackTrace();
+                }
+            }
 
-			signConfig.set("signs." + key + ".op-commands", null);
-			signConfig.set("signs." + key + ".price", 0.0);
+            save();
+        }
+    }
 
-			name = key;
+    public void save() {
 
-			List<String> pCommands = signConfig.getStringList("signs." + key + ".player-commands");
-			List<String> cCommands = signConfig.getStringList("signs." + key + ".console-commands");
-			List<String> messages = signConfig.getStringList("signs." + key + ".messages");
+        try {
 
-			if (pCommands.size() == 0 && cCommands.size() == 0 && messages.size() == 0) {
+            signConfig.save(signConfigFile);
 
-				save();
-				continue;
+        } catch (IOException e) {
 
-			}
-			if (pCommands.size() != 0) {
-
-				try {
-
-					ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
-					HashMap<String, Double> map = new HashMap<>();
-					for (String cmd : pCommands) {
-
-						map.put(cmd, 0.0);
-						mapList.add(map);
-						map = new HashMap<>();
-
-					}
-
-					signConfig.set("signs." + name + ".player-commands", mapList);
-
-				}
-				catch (Exception ignored) {
-
-					ignored.printStackTrace();
-
-				}
-
-			}
-
-			signConfig.set("signs." + key + ".op-commands", null);
-
-			if (cCommands.size() != 0) {
-				try {
-
-					ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
-					HashMap<String, Double> map = new HashMap<>();
-					for (String cmd : cCommands) {
-
-						map.put(cmd, 0.0);
-						mapList.add(map);
-						map = new HashMap<>();
-
-					}
-
-					signConfig.set("signs." + name + ".console-commands", mapList);
-
-				}
-				catch (Exception ignored) {
-
-					ignored.printStackTrace();
-
-				}
-
-			}
-
-			if (messages.size() != 0) {
-
-				try {
-
-					ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
-					HashMap<String, Double> map = new HashMap<>();
-					for (String cmd : messages) {
-
-						map.put(cmd, 0.0);
-						mapList.add(map);
-						map = new HashMap<>();
-
-					}
-
-					signConfig.set("signs." + name + ".messages", mapList);
-
-				}
-				catch (Exception ignored) {
-
-					ignored.printStackTrace();
-
-				}
-
-			}
-
-			save();
-
-		}
-
-	}
-
-	public void save() {
-
-		try {
-
-			signConfig.save(signConfigFile);
-
-		}
-		catch (IOException e) {
-
-			Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix") + "ERROR: Failed to save to signs.yml!");
-			e.printStackTrace();
-
-		}
-
-	}
-
+            Bukkit.getLogger()
+                    .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                            + "ERROR: Failed to save to signs.yml!");
+            e.printStackTrace();
+        }
+    }
 }

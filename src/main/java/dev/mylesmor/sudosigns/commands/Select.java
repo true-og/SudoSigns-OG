@@ -1,39 +1,32 @@
 package dev.mylesmor.sudosigns.commands;
 
-import org.bukkit.entity.Player;
-
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
+import org.bukkit.entity.Player;
 
 public class Select {
 
-	/**
-	 * Select a sign (display selection message in chat).
-	 * @param p The player running the command.
-	 * @param args 1 argument: The name of the sign.
-	 */
-	public static void select(Player p, String[] args) {
+    /**
+     * Select a sign (display selection message in chat).
+     * @param p The player running the command.
+     * @param args 1 argument: The name of the sign.
+     */
+    public static void select(Player p, String[] args) {
 
-		if (p.hasPermission(Permissions.SELECT)) {
+        if (p.hasPermission(Permissions.SELECT)) {
 
-			if (args == null || args.length != 1) {
+            if (args == null || args.length != 1) {
 
-				Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! " + "&6Correct syntax: &d/ss select <name> &6.");
+                Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! " + "&6Correct syntax: &d/ss select <name> &6.");
 
-			}
-			else {
+            } else {
 
-				Util.sendSelectMenus(p, args[0]);
+                Util.sendSelectMenus(p, args[0]);
+            }
 
-			}
+        } else {
 
-		}
-		else {
-
-			Util.sudoSignsErrorMessage(p);
-
-		}
-
-	}
-
+            Util.sudoSignsErrorMessage(p);
+        }
+    }
 }

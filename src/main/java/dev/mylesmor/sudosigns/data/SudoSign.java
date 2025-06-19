@@ -1,8 +1,12 @@
 package dev.mylesmor.sudosigns.data;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.BlockState;
@@ -11,12 +15,6 @@ import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.util.Util;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.milkbowl.vault.economy.EconomyResponse;
-
 /**
  * The class assigned to each created sign.
  * @author MylesMor
@@ -24,548 +22,565 @@ import net.milkbowl.vault.economy.EconomyResponse;
  */
 public class SudoSign {
 
-	private ArrayList<SignCommand> playerCommands = new ArrayList<>();
-	private ArrayList<SignCommand> consoleCommands = new ArrayList<>();
-	private ArrayList<String> permissions = new ArrayList<>();
-	private ArrayList<SignMessage> messages = new ArrayList<>();
-	private ArrayList<String> text = new ArrayList<>();
-	private double priceAsDouble = 0;
-	private int priceAsInteger = 0;
-	private String worldName;
-	private double x;
-	private double y;
-	private double z;
-	private String name;
+    private ArrayList<SignCommand> playerCommands = new ArrayList<>();
+    private ArrayList<SignCommand> consoleCommands = new ArrayList<>();
+    private ArrayList<String> permissions = new ArrayList<>();
+    private ArrayList<SignMessage> messages = new ArrayList<>();
+    private ArrayList<String> text = new ArrayList<>();
+    private double priceAsDouble = 0;
+    private int priceAsInteger = 0;
+    private String worldName;
+    private double x;
+    private double y;
+    private double z;
+    private String name;
 
-	public SudoSign(String name) {
+    public SudoSign(String name) {
 
-		this.name = name;
+        this.name = name;
+    }
 
-	}
+    public void setSign(Sign sign) {
 
-	public void setSign(Sign sign) {
+        Location loc = sign.getLocation();
 
-		Location loc = sign.getLocation();
+        this.worldName = loc.getWorld().getName();
+        this.x = loc.getX();
+        this.y = loc.getY();
+        this.z = loc.getZ();
+    }
 
-		this.worldName = loc.getWorld().getName();
-		this.x = loc.getX();
-		this.y = loc.getY();
-		this.z = loc.getZ();
+    public Sign getSign() {
 
-	}
+        if (worldName != null) {
 
-	public Sign getSign() {
+            Location loc = new Location(Bukkit.getWorld(worldName), x, y, z);
 
-		if (worldName != null) {
+            BlockState blockState = loc.getBlock().getState();
+            if (blockState instanceof Sign || blockState instanceof WallSign) {
 
-			Location loc = new Location(Bukkit.getWorld(worldName), x, y, z); 
+                return (Sign) blockState;
+            }
+        }
 
-			BlockState blockState = loc.getBlock().getState();
-			if (blockState instanceof Sign || blockState instanceof WallSign) {
+        Bukkit.getLogger().warning("Failed to locate sign " + name + "!");
 
-				return (Sign) blockState;
+        return null;
+    }
 
-			}
+    public void setName(String name) {
 
-		}
+        this.name = name;
+    }
 
-		Bukkit.getLogger().warning("Failed to locate sign " + name + "!");
+    public void addPlayerCommand(SignCommand sc) {
 
-		return null;
+        playerCommands.add(sc);
+    }
 
-	}
+    public List<String> getText() {
 
-	public void setName(String name) {
+        return text;
+    }
 
-		this.name = name;
+    public void addLines() {
 
-	}
+        Sign sign = getSign();
 
-	public void addPlayerCommand(SignCommand sc) {
+        for (int i = 0; i < 4; i++) {
 
-		playerCommands.add(sc);
+            String line = PlainTextComponentSerializer.plainText().serialize(sign.line(i));
 
-	}
+            text.add(line.replaceAll("§", "&"));
+            sign.line(i, Util.legacySerializerAnyCase(line));
+        }
 
-	public List<String> getText() {
+        sign.update();
+    }
 
-		return text;
+    public void editLine(int lineNumber, TextComponent message) {
 
-	}
+        Sign sign = getSign();
+        String line = PlainTextComponentSerializer.plainText().serialize(sign.line(lineNumber));
 
-	public void addLines() {
+        text.add(line.replaceAll("§", "&"));
 
-		Sign sign = getSign();
+        sign.line(lineNumber, message);
+        sign.update();
+    }
 
-		for (int i = 0; i < 4; i++) {
+    public void addConsoleCommand(SignCommand sc) {
 
-			String line = PlainTextComponentSerializer.plainText().serialize(sign.line(i));
+        consoleCommands.add(sc);
+    }
 
-			text.add(line.replaceAll("§", "&"));
-			sign.line(i, Util.legacySerializerAnyCase(line));
+    public void deleteConsoleCommand(SignCommand sc) {
 
-		}
+        consoleCommands.remove(sc);
+    }
 
-		sign.update();
+    public void deletePlayerCommand(SignCommand sc) {
 
-	}
+        playerCommands.remove(sc);
+    }
 
-	public void editLine(int lineNumber, TextComponent message) {
+    public void addPermission(String s) {
 
-		Sign sign = getSign();
-		String line = PlainTextComponentSerializer.plainText().serialize(sign.line(lineNumber));
+        permissions.add(s);
+    }
 
-		text.add(line.replaceAll("§", "&"));
+    public void removePermission(String s) {
 
-		sign.line(lineNumber, message);
-		sign.update();
+        permissions.remove(s);
+    }
 
-	}
+    public ArrayList<String> getPermissions() {
 
-	public void addConsoleCommand(SignCommand sc) {
+        return permissions;
+    }
 
-		consoleCommands.add(sc);
+    public void addMessage(SignMessage s) {
 
-	}
+        messages.add(s);
+    }
 
-	public void deleteConsoleCommand(SignCommand sc) {
+    public void removeMessage(SignMessage s) {
 
-		consoleCommands.remove(sc);
+        messages.remove(s);
+    }
 
-	}
+    public void copyFrom(SudoSign s) {
 
-	public void deletePlayerCommand(SignCommand sc) {
+        this.permissions = s.getPermissions();
+        this.playerCommands = s.getPlayerCommands();
+        this.consoleCommands = s.getConsoleCommands();
+        this.messages = s.getMessages();
 
-		playerCommands.remove(sc);
+        if (Util.priceIsInteger()) {
 
-	}
+            this.priceAsInteger = s.getPriceAsInteger();
 
-	public void addPermission(String s) {
+        } else {
 
-		permissions.add(s);
+            this.priceAsDouble = s.getPriceAsDouble();
+        }
+    }
 
-	}
+    public ArrayList<SignMessage> getMessages() {
 
-	public void removePermission(String s) {
+        return messages;
+    }
 
-		permissions.remove(s);
+    public void setMessages(ArrayList<SignMessage> messages) {
 
-	}
+        this.messages = messages;
+    }
 
-	public ArrayList<String> getPermissions() {
+    public void setPlayerCommands(ArrayList<SignCommand> playerCommands) {
 
-		return permissions;
+        this.playerCommands = playerCommands;
+    }
 
-	}
+    public void setConsoleCommands(ArrayList<SignCommand> consoleCommands) {
 
-	public void addMessage(SignMessage s) {
+        this.consoleCommands = consoleCommands;
+    }
 
-		messages.add(s);
+    public void setPermissions(ArrayList<String> permissions) {
 
-	}
+        this.permissions = permissions;
+    }
 
-	public void removeMessage(SignMessage s) {
+    public ArrayList<SignCommand> getPlayerCommands() {
 
-		messages.remove(s);
+        return playerCommands;
+    }
 
-	}
+    public ArrayList<SignCommand> getConsoleCommands() {
 
-	public void copyFrom(SudoSign s) {
+        return consoleCommands;
+    }
 
-		this.permissions = s.getPermissions();
-		this.playerCommands = s.getPlayerCommands();
-		this.consoleCommands = s.getConsoleCommands();
-		this.messages = s.getMessages();
+    public void setPriceAsDouble(double price) {
 
-		if(Util.priceIsInteger()) {
+        this.priceAsDouble = price;
+    }
 
-			this.priceAsInteger = s.getPriceAsInteger();
+    public double getPriceAsDouble() {
 
-		}
-		else {
+        return priceAsDouble;
+    }
 
-			this.priceAsDouble = s.getPriceAsDouble();
+    public void setPriceAsInteger(int price) {
 
-		}
+        this.priceAsInteger = price;
+    }
 
-	}
+    public int getPriceAsInteger() {
 
-	public ArrayList<SignMessage> getMessages() {
+        return (int) priceAsInteger;
+    }
 
-		return messages;
+    /**
+     * Executes all of the commands attached to the sign, if the player has the required permissions.
+     * @param p The player who is running the sign.
+     */
+    public void executeCommands(Player p) {
 
-	}
+        boolean hasPermission = true;
+        for (String perm : permissions) {
 
-	public void setMessages(ArrayList<SignMessage> messages) {
+            if (!p.hasPermission(perm)) {
 
-		this.messages = messages;
+                hasPermission = false;
+            }
+        }
+        if (hasPermission) {
 
-	}
+            EconomyResponse r = null;
+            if (SudoSigns.econ != null) {
 
+                if (Util.priceIsInteger()) {
 
-	public void setPlayerCommands(ArrayList<SignCommand> playerCommands) {
+                    r = SudoSigns.econ.withdrawPlayer(p, priceAsInteger);
 
-		this.playerCommands = playerCommands;
+                } else {
 
-	}
+                    r = SudoSigns.econ.withdrawPlayer(p, priceAsDouble);
+                }
 
-	public void setConsoleCommands(ArrayList<SignCommand> consoleCommands) {
+                if (!r.transactionSuccess()) {
 
-		this.consoleCommands = consoleCommands;
+                    if (!SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
 
-	}
+                        if (Util.priceIsInteger()) {
 
-	public void setPermissions(ArrayList<String> permissions) {
+                            if (priceAsInteger == 1) {
 
-		this.permissions = permissions;
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have a"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + " &cto run this sign! &6The cost is: &e" + priceAsInteger
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + "&6.");
 
-	}
+                            } else {
 
-	public ArrayList<SignCommand> getPlayerCommands() {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have enough"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + " &cto run this sign! &6The cost is: &e" + priceAsInteger
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + "&6.");
+                            }
 
-		return playerCommands;
+                        } else {
 
-	}
+                            if (priceAsDouble == 1.0) {
 
-	public ArrayList<SignCommand> getConsoleCommands() {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have a"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + " &cto run this sign! &6The cost is: &e" + priceAsDouble
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + "&6.");
 
-		return consoleCommands;
+                            } else {
 
-	}
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have enough"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + " &cto run this sign! &6The cost is: &e" + priceAsDouble
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + "&6.");
+                            }
+                        }
 
-	public void setPriceAsDouble(double price) {
+                        return;
 
-		this.priceAsDouble = price;
+                    } else {
 
-	}
+                        if (Util.priceIsInteger()) {
 
-	public double getPriceAsDouble() {
+                            if (priceAsInteger == 1) {
 
-		return priceAsDouble;
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have a"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + " &cto run this sign! &6The cost is: "
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + "&e" + priceAsInteger + "&6.");
 
-	}
+                            } else {
 
-	public void setPriceAsInteger(int price) {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have enough"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + " &cto run this sign! &6The cost is: "
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + "&e" + priceAsInteger + "&6.");
+                            }
 
-		this.priceAsInteger = price;
+                        } else {
 
-	}
+                            if (priceAsDouble == 1.0) {
 
-	public int getPriceAsInteger() {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have a"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + " &cto run this sign! &6The cost is: "
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + "&e" + priceAsDouble + "&6.");
 
-		return (int) priceAsInteger;
+                            } else {
 
-	}
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&cERROR: You do not have enough"
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + " &cto run this sign! &6The cost is: "
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + "&e" + priceAsDouble + "&6.");
+                            }
+                        }
 
-	/**
-	 * Executes all of the commands attached to the sign, if the player has the required permissions.
-	 * @param p The player who is running the sign.
-	 */
-	public void executeCommands(Player p) {
+                        return;
+                    }
 
-		boolean hasPermission = true;
-		for (String perm : permissions) {
+                } else {
 
-			if (! p.hasPermission(perm)) {
+                    if (!SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
 
-				hasPermission = false;
+                        if (Util.priceIsInteger()) {
 
-			}
+                            if (priceAsInteger == 1) {
 
-		}
-		if (hasPermission) {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&e" + priceAsInteger
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + " &6has been withdrawn from your balance.");
 
-			EconomyResponse r = null;
-			if (SudoSigns.econ != null) {
+                            } else if (priceAsInteger != 0) {
 
-				if(Util.priceIsInteger()) {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&e" + priceAsInteger
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + "  &6have been withdrawn from your balance.");
+                            }
 
-					r = SudoSigns.econ.withdrawPlayer(p, priceAsInteger);
+                        } else {
 
-				}
-				else {
+                            if (priceAsDouble == 1.0) {
 
-					r = SudoSigns.econ.withdrawPlayer(p, priceAsDouble);
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&e" + priceAsDouble
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-singular")
+                                                + " &6has been withdrawn from your balance.");
 
-				}
+                            } else if (priceAsDouble != 0.0) {
 
-				if (! r.transactionSuccess()) {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        "&e" + priceAsDouble
+                                                + SudoSigns.getPlugin()
+                                                        .getConfig()
+                                                        .getString("config.currency-symbol-plural")
+                                                + "  &6have been withdrawn from your balance.");
+                            }
+                        }
 
-					if(! SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
+                    } else {
 
-						if(Util.priceIsInteger()) {
+                        if (Util.priceIsInteger()) {
 
-							if (priceAsInteger == 1) {
+                            if (priceAsInteger == 1) {
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+                                Util.sudoSignsMessage(
+                                        p,
+                                        SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
+                                                + "&e" + priceAsInteger + " &6has been withdrawn from your balance.");
 
-							}
-							else {
+                            } else if (priceAsInteger != 0) {
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+                                Util.sudoSignsMessage(
+                                        p,
+                                        SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
+                                                + "&e" + priceAsInteger + "  &6have been withdrawn from your balance.");
+                            }
 
-							}
+                        } else {
 
-						}
-						else {
+                            if (priceAsDouble == 1.0) {
 
-							if (priceAsDouble == 1.0) {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
+                                                + "&e" + priceAsDouble + " &6has been withdrawn from your balance.");
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: &e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
+                            } else if (priceAsDouble != 0.0) {
 
-							}
-							else {
+                                Util.sudoSignsMessage(
+                                        p,
+                                        SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
+                                                + "&e" + priceAsDouble + " &6have been withdrawn from your balance.");
+                            }
+                        }
+                    }
+                }
+            }
+            for (SignMessage sm : messages) {
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: &e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+                new BukkitRunnable() {
 
-							}
+                    @Override
+                    public void run() {
 
-						}
+                        Util.sudoSignsMessage(p, (sm.getMessage().replaceAll("(?i)%PLAYER%", p.getName())));
+                    }
+                }.runTaskLater(SudoSigns.sudoSignsPlugin, (long) (sm.getDelay() / 50));
+            }
+            for (SignCommand sc : playerCommands) {
 
-						return;
+                new BukkitRunnable() {
 
-					}
-					else {
+                    @Override
+                    public void run() {
 
-						if(Util.priceIsInteger()) {
+                        p.performCommand(sc.getCommand());
+                    }
+                }.runTaskLater(SudoSigns.sudoSignsPlugin, (long) (sc.getDelay() / 50));
+            }
+            for (SignCommand sc : consoleCommands) {
 
-							if (priceAsInteger == 1) {
+                String cmd = sc.getCommand().replaceAll("(?i)%PLAYER%", p.getName());
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsInteger + "&6.");
+                new BukkitRunnable() {
 
-							}
-							else {
+                    @Override
+                    public void run() {
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsInteger + "&6.");
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+                    }
+                }.runTaskLater(SudoSigns.sudoSignsPlugin, (long) (sc.getDelay() / 50));
+            }
 
-							}
+        } else {
 
-						}
-						else {
+            Util.sudoSignsErrorMessage(p);
+        }
+    }
 
-							if (priceAsDouble == 1.0) {
+    public String getName() {
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have a" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsDouble + "&6.");
+        return name;
+    }
 
-							}
-							else {
+    public int getNextCommandNumber() {
 
-								Util.sudoSignsMessage(p, "&cERROR: You do not have enough" + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + " &cto run this sign! &6The cost is: " + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsDouble + "&6.");
+        int number = 0;
+        for (SignCommand c : consoleCommands) {
 
-							}
+            number = Math.max(c.getNumber(), number);
+        }
 
-						}
+        for (SignCommand sc : playerCommands) {
 
-						return;
+            number = Math.max(sc.getNumber(), number);
+        }
 
-					}
+        return number + 1;
+    }
 
-				}
-				else {
+    public int getNextMessageNumber() {
 
-					if(! SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
+        int number = 0;
+        for (SignMessage m : messages) {
 
-						if(Util.priceIsInteger()) {
+            number = Math.max(m.getNumber(), number);
+        }
 
-							if (priceAsInteger == 1) {
+        return number + 1;
+    }
 
-								Util.sudoSignsMessage(p, "&e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+    public SignMessage getSignMessageByNumber(int number) {
 
-							}
-							else if (priceAsInteger != 0) {
+        for (SignMessage sm : messages) {
 
-								Util.sudoSignsMessage(p, "&e" + priceAsInteger + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+            if (sm.getNumber() == number) {
 
-							}
+                return sm;
+            }
+        }
 
-						}
-						else {
+        return null;
+    }
 
-							if (priceAsDouble == 1.0) {
+    public SignCommand getSignCommandByNumber(int number) {
 
-								Util.sudoSignsMessage(p, "&e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + " &6has been withdrawn from your balance.");
+        for (SignCommand c : consoleCommands) {
 
-							}
-							else if (priceAsDouble != 0.0) {
+            if (c.getNumber() == number) {
 
-								Util.sudoSignsMessage(p, "&e" + priceAsDouble + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "  &6have been withdrawn from your balance.");
+                return c;
+            }
+        }
 
-							}
+        for (SignCommand sc : playerCommands) {
 
+            if (sc.getNumber() == number) {
 
-						}
+                return sc;
+            }
+        }
 
-					}
-					else {
-
-						if(Util.priceIsInteger()) {
-
-							if (priceAsInteger == 1) {
-
-								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsInteger + " &6has been withdrawn from your balance.");
-
-							}
-							else if (priceAsInteger != 0) {
-
-								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsInteger + "  &6have been withdrawn from your balance.");
-
-							}
-
-						}
-						else {
-
-							if (priceAsDouble == 1.0) {
-
-								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e" + priceAsDouble + " &6has been withdrawn from your balance.");
-
-							}
-							else if (priceAsDouble != 0.0) {
-
-								Util.sudoSignsMessage(p, SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e" + priceAsDouble + " &6have been withdrawn from your balance.");
-
-							}
-
-
-						}
-
-					}
-
-				}
-
-			}
-			for (SignMessage sm : messages) {
-
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-
-						Util.sudoSignsMessage(p, (sm.getMessage().replaceAll("(?i)%PLAYER%", p.getName())));
-
-					}
-
-				}.runTaskLater(SudoSigns.sudoSignsPlugin, (long) (sm.getDelay() / 50));
-
-			}
-			for (SignCommand sc : playerCommands) {
-
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-
-						p.performCommand(sc.getCommand());
-
-					}
-
-				}.runTaskLater(SudoSigns.sudoSignsPlugin, (long) (sc.getDelay() / 50));
-
-			}
-			for (SignCommand sc : consoleCommands) {
-
-				String cmd = sc.getCommand().replaceAll("(?i)%PLAYER%", p.getName());
-
-				new BukkitRunnable() {
-
-					@Override
-					public void run() {
-
-						Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
-
-					}
-
-				}.runTaskLater(SudoSigns.sudoSignsPlugin, (long) (sc.getDelay() / 50));
-
-			}
-
-		}
-		else {
-
-			Util.sudoSignsErrorMessage(p);
-
-		}
-
-	}
-
-	public String getName() {
-
-		return name;
-
-	}
-
-
-	public int getNextCommandNumber() {
-
-		int number = 0;
-		for (SignCommand c: consoleCommands) {
-
-			number = Math.max(c.getNumber(), number);
-
-		}
-
-		for(SignCommand sc: playerCommands) {
-
-			number = Math.max(sc.getNumber(), number);
-
-		}
-
-		return number + 1;
-
-	}
-
-	public int getNextMessageNumber() {
-
-		int number = 0;
-		for (SignMessage m : messages) {
-
-			number = Math.max(m.getNumber(), number);
-
-		}
-
-		return number + 1;
-
-	}
-
-	public SignMessage getSignMessageByNumber(int number) {
-
-		for (SignMessage sm: messages) {
-
-			if (sm.getNumber() == number) {
-
-				return sm;
-
-			}
-
-		}
-
-		return null;
-
-	}
-
-	public SignCommand getSignCommandByNumber(int number) {
-
-		for (SignCommand c: consoleCommands) {
-
-			if (c.getNumber() == number) {
-
-				return c;
-
-			}
-
-		}
-
-		for(SignCommand sc: playerCommands) {
-
-			if (sc.getNumber() == number) {
-
-				return sc;
-
-			}
-
-		}
-
-		return null;
-
-	}
-
+        return null;
+    }
 }

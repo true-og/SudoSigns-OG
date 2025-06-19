@@ -7,34 +7,35 @@ package dev.mylesmor.sudosigns.data;
  */
 public class SignCommand {
 
-	private String command;
-	private PlayerInput type;
-	private int number;
-	private double delay;
+    private String command;
+    private PlayerInput type;
+    private int number;
+    private double delay;
 
-	public SignCommand(int number, String cmd, double delay, PlayerInput type) {
-		this.number = number;
-		command = cmd;
-		this.type = type;
-		this.delay = delay;
-	}
+    public SignCommand(int number, String cmd, double delay, PlayerInput type) {
+        this.number = number;
+        command = cmd;
+        this.type = type;
+        this.delay = delay;
+    }
 
-	public String getCommand() {
-		return command;
-	}
+    public String getCommand() {
+        return command;
+    }
 
-	public PlayerInput getType() {
-		return type;
-	}
+    public PlayerInput getType() {
+        return type;
+    }
 
-	public int getNumber() { return number; }
+    public int getNumber() {
+        return number;
+    }
 
-	public double getDelay() {
-		return delay;
-	}
+    public double getDelay() {
+        return delay;
+    }
 
-	public void setDelay(double delay) {
-		this.delay = delay;
-	}
-
+    public void setDelay(double delay) {
+        this.delay = delay;
+    }
 }

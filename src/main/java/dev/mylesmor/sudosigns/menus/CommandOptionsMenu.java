@@ -1,8 +1,15 @@
 package dev.mylesmor.sudosigns.menus;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,154 +21,130 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
-import net.kyori.adventure.text.TextComponent;
-
 public class CommandOptionsMenu {
 
-	private Inventory menu;
-	private SudoUser su;
-	private SudoSign sign;
-	private SignCommand sc;
-	private Player p;
-	private SignEditor editor;
+    private Inventory menu;
+    private SudoUser su;
+    private SudoSign sign;
+    private SignCommand sc;
+    private Player p;
+    private SignEditor editor;
 
-	CommandOptionsMenu(SudoUser su, Player p, SudoSign sign, ItemStack item, SignEditor editor) {
+    CommandOptionsMenu(SudoUser su, Player p, SudoSign sign, ItemStack item, SignEditor editor) {
 
-		this.su = su;
-		this.sign = sign;
-		this.p = p;
-		this.editor = editor;
-		this.sc = findSignCommand(item);
+        this.su = su;
+        this.sign = sign;
+        this.p = p;
+        this.editor = editor;
+        this.sc = findSignCommand(item);
 
-		if (this.sc == null) {
+        if (this.sc == null) {
 
-			editor.goToCommands();
+            editor.goToCommands();
 
-			return;
+            return;
+        }
+    }
 
-		}
+    public void goToCommandOptionsMenu() {
 
-	}
+        createCommandOptionsMenu();
+        p.openInventory(menu);
+    }
 
-	public void goToCommandOptionsMenu() {
+    private SignCommand findSignCommand(ItemStack item) {
 
-		createCommandOptionsMenu();
-		p.openInventory(menu);
+        NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "command-number");
+        ItemMeta itemMeta = item.getItemMeta();
+        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
 
-	}
+        if (container.has(key, PersistentDataType.INTEGER)) {
 
-	private SignCommand findSignCommand(ItemStack item) {
+            int foundValue = container.get(key, PersistentDataType.INTEGER);
 
-		NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "command-number");
-		ItemMeta itemMeta = item.getItemMeta();
-		PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+            return sign.getSignCommandByNumber(foundValue);
+        }
 
-		if (container.has(key, PersistentDataType.INTEGER)) {
+        return null;
+    }
 
-			int foundValue = container.get(key, PersistentDataType.INTEGER);
+    private void createCommandOptionsMenu() {
 
-			return sign.getSignCommandByNumber(foundValue);
+        Inventory playersInventory = p.getInventory();
+        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        TextComponent nameHandler = Util.legacySerializerAnyCase("Command options: /" + sc.getCommand());
 
-		}
+        menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
+        for (int i = 0; i < menu.getSize(); i++) {
 
-		return null;
+            menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        }
 
-	}
+        List<String> lore = new ArrayList<>();
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = arrow.getItemMeta();
 
-	private void createCommandOptionsMenu() {
+        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrow.setItemMeta(arrowMeta);
 
-		Inventory playersInventory = p.getInventory();
-		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = Util.legacySerializerAnyCase("Command options: /" + sc.getCommand());
+        ItemStack clock = new ItemStack(Material.CLOCK);
+        ItemMeta clockMeta = clock.getItemMeta();
 
-		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
-		for (int i = 0; i < menu.getSize(); i++) {
+        lore.add("&eChange the delay after which the command executes");
+        clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
+        clockMeta.lore(Util.convertToTextComponents(lore));
+        clock.setItemMeta(clockMeta);
 
-			menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        ItemStack barrier = new ItemStack(Material.BARRIER);
+        ItemMeta barrierMeta = barrier.getItemMeta();
 
-		}
+        barrierMeta.displayName(Util.legacySerializerAnyCase("&r&cDelete Command"));
+        barrier.setItemMeta(barrierMeta);
 
-		List<String> lore = new ArrayList<>();
-		ItemStack arrow = new ItemStack(Material.ARROW);
-		ItemMeta arrowMeta = arrow.getItemMeta();
+        if (p.hasPermission(Permissions.COMMAND_OPTIONS) && p.hasPermission(Permissions.DELETE_COMMAND)) {
 
-		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
-		arrow.setItemMeta(arrowMeta);
+            menu.setItem(20, clock);
+            menu.setItem(24, barrier);
 
-		ItemStack clock = new ItemStack(Material.CLOCK);
-		ItemMeta clockMeta = clock.getItemMeta();
+        } else {
 
-		lore.add("&eChange the delay after which the command executes");
-		clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
-		clockMeta.lore(Util.convertToTextComponents(lore));
-		clock.setItemMeta(clockMeta);
+            menu.setItem(22, clock);
+        }
 
-		ItemStack barrier = new ItemStack(Material.BARRIER);
-		ItemMeta barrierMeta = barrier.getItemMeta();
+        menu.setItem(36, arrow);
+    }
 
-		barrierMeta.displayName(Util.legacySerializerAnyCase("&r&cDelete Command"));
-		barrier.setItemMeta(barrierMeta);
+    public void addDelay() {
 
-		if (p.hasPermission(Permissions.COMMAND_OPTIONS) && p.hasPermission(Permissions.DELETE_COMMAND)) {
+        p.closeInventory();
 
-			menu.setItem(20, clock);
-			menu.setItem(24, barrier);
+        Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL&6.");
 
-		}
-		else {
+        su.addTextInput(PlayerInput.COMMAND_DELAY);
+    }
 
-			menu.setItem(22, clock);
+    public void setDelay(double delay) {
 
-		}
+        double oldDelay = sc.getDelay();
+        sc.setDelay(delay * 1000);
 
-		menu.setItem(36, arrow);
+        SudoSigns.config.deleteCommand(sign, sc, sc.getType(), oldDelay);
+        SudoSigns.config.addCommand(sign, sc, sc.getType());
+    }
 
-	}
+    public void deleteCommand() {
 
-	public void addDelay() {
+        if (sc.getType() == PlayerInput.CONSOLE_COMMAND) {
 
-		p.closeInventory();
+            SudoSigns.config.deleteCommand(sign, sc, PlayerInput.CONSOLE_COMMAND, sc.getDelay());
+            sign.deleteConsoleCommand(sc);
 
-		Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL&6.");
+        } else if (sc.getType() == PlayerInput.PLAYER_COMMAND) {
 
-		su.addTextInput(PlayerInput.COMMAND_DELAY);
+            SudoSigns.config.deleteCommand(sign, sc, PlayerInput.PLAYER_COMMAND, sc.getDelay());
+            sign.deletePlayerCommand(sc);
+        }
 
-	}
-
-	public void setDelay(double delay) {
-
-		double oldDelay = sc.getDelay();
-		sc.setDelay(delay * 1000);
-
-		SudoSigns.config.deleteCommand(sign, sc, sc.getType(), oldDelay);
-		SudoSigns.config.addCommand(sign, sc, sc.getType());
-
-	}
-
-	public void deleteCommand() {
-
-		if (sc.getType() == PlayerInput.CONSOLE_COMMAND) {
-
-			SudoSigns.config.deleteCommand(sign, sc, PlayerInput.CONSOLE_COMMAND, sc.getDelay());
-			sign.deleteConsoleCommand(sc);
-
-		}
-		else if (sc.getType() == PlayerInput.PLAYER_COMMAND) {
-
-			SudoSigns.config.deleteCommand(sign, sc, PlayerInput.PLAYER_COMMAND, sc.getDelay());
-			sign.deletePlayerCommand(sc);
-
-		}
-
-		editor.goToCommands();
-
-	}
-
+        editor.goToCommands();
+    }
 }

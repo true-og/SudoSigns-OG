@@ -1,9 +1,16 @@
 package dev.mylesmor.sudosigns.menus;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,248 +21,224 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
-import net.kyori.adventure.text.TextComponent;
-
 public class CommandsMenu {
 
-	private Inventory menu;
-	private Player p;
-	private SudoSign sign;
-	private SignEditor editor;
-	private SudoUser su;
+    private Inventory menu;
+    private Player p;
+    private SudoSign sign;
+    private SignEditor editor;
+    private SudoUser su;
 
-	public CommandsMenu(SudoUser su, Player p, SudoSign sign, SignEditor editor) {
+    public CommandsMenu(SudoUser su, Player p, SudoSign sign, SignEditor editor) {
 
-		this.su = su;
-		this.sign = sign;
-		this.editor = editor;
-		this.p = p;
+        this.su = su;
+        this.sign = sign;
+        this.editor = editor;
+        this.p = p;
+    }
 
-	}
+    public void goToCommandsMenu() {
 
-	public void goToCommandsMenu() {
+        createCommandsMenu();
 
-		createCommandsMenu();
+        p.openInventory(menu);
+    }
 
-		p.openInventory(menu);
+    private void createCommandsMenu() {
 
-	}
+        Inventory playersInventory = p.getInventory();
+        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        TextComponent nameHandler = Util.legacySerializerAnyCase("Commands: " + sign.getName());
 
-	private void createCommandsMenu() {
+        menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
+        for (int i = 0; i < menu.getSize(); i++) {
 
-		Inventory playersInventory = p.getInventory();
-		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = Util.legacySerializerAnyCase("Commands: " + sign.getName());
+            menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        }
 
-		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
-		for (int i = 0; i < menu.getSize(); i++) {
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = arrow.getItemMeta();
 
-			menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrow.setItemMeta(arrowMeta);
 
-		}
+        if (p.hasPermission(Permissions.ADD_COMMAND)) {
 
-		ItemStack arrow = new ItemStack(Material.ARROW);
-		ItemMeta arrowMeta = arrow.getItemMeta();
+            ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
+            ItemMeta bqMeta = bookQuill.getItemMeta();
 
-		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
-		arrow.setItemMeta(arrowMeta);
+            bqMeta.displayName(Util.legacySerializerAnyCase("&r&2Add new command"));
+            bookQuill.setItemMeta(bqMeta);
 
-		if (p.hasPermission(Permissions.ADD_COMMAND)) {
+            menu.setItem(40, bookQuill);
+        }
 
-			ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
-			ItemMeta bqMeta = bookQuill.getItemMeta();
+        ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
+        ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
 
-			bqMeta.displayName(Util.legacySerializerAnyCase("&r&2Add new command"));
-			bookQuill.setItemMeta(bqMeta);
+        cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Console Commands"));
+        cmdBlock.setItemMeta(cmdBlockMeta);
 
-			menu.setItem(40, bookQuill);
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta headMeta = head.getItemMeta();
 
-		}
+        headMeta.displayName(Util.legacySerializerAnyCase("&r&d Player Commands"));
+        head.setItemMeta(headMeta);
 
-		ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
-		ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "command-number");
 
-		cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Console Commands"));
-		cmdBlock.setItemMeta(cmdBlockMeta);
+        ArrayList<SignCommand> orderedSignCommands = sign.getPlayerCommands();
+        orderedSignCommands.sort(Comparator.comparing(SignCommand::getDelay));
 
-		ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-		ItemMeta headMeta = head.getItemMeta();
+        // Populates spaces with commands.
+        int i = 1;
+        for (SignCommand sc : orderedSignCommands) {
 
-		headMeta.displayName(Util.legacySerializerAnyCase("&r&d Player Commands"));
-		head.setItemMeta(headMeta);
+            if (i > 26) break;
 
-		List<String> lore = new ArrayList<>();
-		NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "command-number");
+            ItemStack book = new ItemStack(Material.BOOK);
+            ItemMeta bookMeta = book.getItemMeta();
 
-		ArrayList<SignCommand> orderedSignCommands = sign.getPlayerCommands();
-		orderedSignCommands.sort(Comparator.comparing(SignCommand::getDelay));
+            lore.add("&6Player Command");
+            bookMeta.displayName(Util.legacySerializerAnyCase("&r&6/" + sc.getCommand()));
+            lore.add("&6Delay: &e" + (sc.getDelay() / 1000) + "s");
 
-		// Populates spaces with commands.
-		int i = 1;
-		for (SignCommand sc : orderedSignCommands) {
+            if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
 
-			if (i > 26) break;
+                lore.add("");
+                lore.add("&2Click for options!");
+            }
 
-			ItemStack book = new ItemStack(Material.BOOK);
-			ItemMeta bookMeta = book.getItemMeta();
+            bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sc.getNumber());
+            bookMeta.lore(Util.convertToTextComponents(lore));
 
-			lore.add("&6Player Command");
-			bookMeta.displayName(Util.legacySerializerAnyCase("&r&6/" + sc.getCommand()));
-			lore.add("&6Delay: &e" + (sc.getDelay() / 1000) + "s");
+            lore.clear();
+            book.setItemMeta(bookMeta);
 
-			if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
+            if (i == 9) i++;
 
-				lore.add("");
-				lore.add("&2Click for options!");
+            menu.setItem(i, book);
 
-			}
+            i++;
+        }
 
-			bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sc.getNumber());
-			bookMeta.lore(Util.convertToTextComponents(lore));
+        orderedSignCommands = sign.getConsoleCommands();
+        orderedSignCommands.sort(Comparator.comparing(SignCommand::getDelay));
 
-			lore.clear();
-			book.setItemMeta(bookMeta);
+        i = 19;
+        for (SignCommand sc : orderedSignCommands) {
 
-			if (i == 9) i++;
+            if (i > 35) break;
 
-			menu.setItem(i, book);
+            ItemStack book = new ItemStack(Material.BOOK);
+            ItemMeta bookMeta = book.getItemMeta();
 
-			i++;
+            lore.add("&6Console Command");
+            bookMeta.displayName(Util.legacySerializerAnyCase("&r&6/" + sc.getCommand()));
+            lore.add("&6Delay: &e" + (sc.getDelay() / 1000) + "s");
 
-		}
+            if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
 
-		orderedSignCommands = sign.getConsoleCommands();
-		orderedSignCommands.sort(Comparator.comparing(SignCommand::getDelay));
+                lore.add("");
+                lore.add("&2Click for options!");
+            }
 
-		i = 19;
-		for (SignCommand sc : orderedSignCommands) {
+            bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sc.getNumber());
+            bookMeta.lore(Util.convertToTextComponents(lore));
 
-			if (i > 35) break;
+            lore.clear();
+            book.setItemMeta(bookMeta);
 
-			ItemStack book = new ItemStack(Material.BOOK);
-			ItemMeta bookMeta = book.getItemMeta();
+            if (i == 27) i++;
 
-			lore.add("&6Console Command");
-			bookMeta.displayName(Util.legacySerializerAnyCase("&r&6/" + sc.getCommand()));
-			lore.add("&6Delay: &e" + (sc.getDelay() / 1000) + "s");
+            menu.setItem(i, book);
 
-			if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
+            i++;
+        }
 
-				lore.add("");
-				lore.add("&2Click for options!");
+        menu.setItem(0, head);
+        menu.setItem(9, head);
+        menu.setItem(18, cmdBlock);
+        menu.setItem(27, cmdBlock);
+        menu.setItem(36, arrow);
+    }
 
-			}
+    public void prepareCommand() {
 
-			bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sc.getNumber());
-			bookMeta.lore(Util.convertToTextComponents(lore));
+        Inventory playersInventory = p.getInventory();
+        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        TextComponent nameHandler = Util.legacySerializerAnyCase("Player or Console command?");
 
-			lore.clear();
-			book.setItemMeta(bookMeta);
+        Inventory choiceInv = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
+        for (int i = 0; i < choiceInv.getSize(); i++) {
 
-			if (i == 27) i++;
+            choiceInv.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        }
 
-			menu.setItem(i, book);
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = arrow.getItemMeta();
 
-			i++;
+        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrow.setItemMeta(arrowMeta);
 
-		}
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        ItemMeta headMeta = head.getItemMeta();
+        List<String> lore = new ArrayList<>();
 
-		menu.setItem(0, head);
-		menu.setItem(9, head);
-		menu.setItem(18, cmdBlock);
-		menu.setItem(27, cmdBlock);
-		menu.setItem(36, arrow);
+        lore.add("&cThe player must have permission to run the command!");
+        headMeta.displayName(Util.legacySerializerAnyCase("&r&dPlayer Command"));
+        headMeta.lore(Util.convertToTextComponents(lore));
+        head.setItemMeta(headMeta);
 
-	}
+        ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
+        ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
+        cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&dConsole Command"));
+        cmdBlock.setItemMeta(cmdBlockMeta);
 
-	public void prepareCommand() {
+        if (p.hasPermission(Permissions.CONSOLE_COMMAND)) {
 
-		Inventory playersInventory = p.getInventory();
-		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = Util.legacySerializerAnyCase("Player or Console command?");
+            choiceInv.setItem(21, head);
+            choiceInv.setItem(23, cmdBlock);
 
-		Inventory choiceInv = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
-		for (int i = 0; i < choiceInv.getSize(); i++) {
+        } else {
 
-			choiceInv.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+            choiceInv.setItem(22, head);
+        }
 
-		}
+        choiceInv.setItem(36, arrow);
 
-		ItemStack arrow = new ItemStack(Material.ARROW);
-		ItemMeta arrowMeta = arrow.getItemMeta();
+        editor.setCurrentPage(GUIPage.CHOOSE_COMMAND);
+        p.openInventory(choiceInv);
+    }
 
-		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
-		arrow.setItemMeta(arrowMeta);
+    public void chooseCommandType(PlayerInput type) {
 
-		ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-		ItemMeta headMeta = head.getItemMeta();
-		List<String> lore = new ArrayList<>();
+        p.closeInventory();
 
-		lore.add("&cThe player must have permission to run the command!");
-		headMeta.displayName(Util.legacySerializerAnyCase("&r&dPlayer Command"));
-		headMeta.lore(Util.convertToTextComponents(lore));
-		head.setItemMeta(headMeta);
+        Util.sudoSignsMessage(
+                p,
+                "&6Please enter the full command in chat with the beginning &e/&6. The placeholder &e%PLAYER% &6will be replaced with the player who clicked the sign. To cancel, type &cCANCEL&6.");
+        su.addTextInput(type);
+    }
 
-		ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
-		ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
-		cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&dConsole Command"));
-		cmdBlock.setItemMeta(cmdBlockMeta);
+    public void addCommand(String cmd, PlayerInput type) {
 
-		if (p.hasPermission(Permissions.CONSOLE_COMMAND)) {
+        SignCommand command = new SignCommand(sign.getNextCommandNumber(), cmd, 0, type);
+        switch (type) {
+            case CONSOLE_COMMAND:
+                sign.addConsoleCommand(command);
+                break;
+            case PLAYER_COMMAND:
+                sign.addPlayerCommand(command);
+                break;
+            default:
+                break;
+        }
 
-			choiceInv.setItem(21, head);
-			choiceInv.setItem(23, cmdBlock);
+        SudoSigns.config.addCommand(sign, command, type);
 
-		}
-		else {
-
-			choiceInv.setItem(22, head);
-
-		}
-
-		choiceInv.setItem(36, arrow);
-
-		editor.setCurrentPage(GUIPage.CHOOSE_COMMAND);
-		p.openInventory(choiceInv);
-
-	}
-
-
-	public void chooseCommandType(PlayerInput type) {
-
-		p.closeInventory();
-
-		Util.sudoSignsMessage(p, "&6Please enter the full command in chat with the beginning &e/&6. The placeholder &e%PLAYER% &6will be replaced with the player who clicked the sign. To cancel, type &cCANCEL&6.");
-		su.addTextInput(type);
-
-	}
-
-	public void addCommand(String cmd, PlayerInput type) {
-
-		SignCommand command = new SignCommand(sign.getNextCommandNumber(), cmd, 0, type);
-		switch (type) {
-		case CONSOLE_COMMAND:
-			sign.addConsoleCommand(command);
-			break;
-		case PLAYER_COMMAND:
-			sign.addPlayerCommand(command);
-			break;
-		default:
-			break;
-		}
-
-		SudoSigns.config.addCommand(sign, command, type);
-
-		Util.sudoSignsMessage(p, "&aCommand added successfully!");
-		editor.goToCommands();
-
-	}
-
+        Util.sudoSignsMessage(p, "&aCommand added successfully!");
+        editor.goToCommands();
+    }
 }

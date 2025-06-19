@@ -1,9 +1,16 @@
 package dev.mylesmor.sudosigns.menus;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignMessage;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,148 +21,129 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignMessage;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
-import net.kyori.adventure.text.TextComponent;
-
 public class MessagesMenu {
 
-	private Inventory menu;
-	private Player p;
-	private SudoSign sign;
-	private SudoUser su;
+    private Inventory menu;
+    private Player p;
+    private SudoSign sign;
+    private SudoUser su;
 
-	public MessagesMenu(SudoUser su, Player p, SudoSign sign, SignEditor editor) {
+    public MessagesMenu(SudoUser su, Player p, SudoSign sign, SignEditor editor) {
 
-		this.su = su;
-		this.sign = sign;
-		this.p = p;
+        this.su = su;
+        this.sign = sign;
+        this.p = p;
+    }
 
-	}
+    public void goToMessagesMenu() {
 
-	public void goToMessagesMenu() {
+        createMessagesMenu();
+        p.openInventory(menu);
+    }
 
-		createMessagesMenu();
-		p.openInventory(menu);
+    private void createMessagesMenu() {
 
-	}
+        Inventory playersInventory = p.getInventory();
+        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        TextComponent nameHandler = Util.legacySerializerAnyCase("&6Messages: " + sign.getName());
 
-	private void createMessagesMenu() {
+        menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 
-		Inventory playersInventory = p.getInventory();
-		InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-		TextComponent nameHandler = Util.legacySerializerAnyCase("&6Messages: " + sign.getName());
+        for (int i = 0; i < menu.getSize(); i++) {
 
-		menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
+            menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        }
 
-		for (int i = 0; i < menu.getSize(); i++) {
+        ItemStack arrow = new ItemStack(Material.ARROW);
+        ItemMeta arrowMeta = arrow.getItemMeta();
 
-			menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrow.setItemMeta(arrowMeta);
 
-		}
+        if (p.hasPermission(Permissions.ADD_MESSAGE)) {
 
-		ItemStack arrow = new ItemStack(Material.ARROW);
-		ItemMeta arrowMeta = arrow.getItemMeta();
+            ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
+            ItemMeta bqMeta = bookQuill.getItemMeta();
 
-		arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
-		arrow.setItemMeta(arrowMeta);
+            bqMeta.displayName(Util.legacySerializerAnyCase("&r&2Add new message"));
+            bookQuill.setItemMeta(bqMeta);
 
-		if (p.hasPermission(Permissions.ADD_MESSAGE)) {
+            menu.setItem(40, bookQuill);
+        }
 
-			ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
-			ItemMeta bqMeta = bookQuill.getItemMeta();
+        ItemStack signItem = null;
+        if (SudoSigns.version.contains("1.13")) {
 
-			bqMeta.displayName(Util.legacySerializerAnyCase("&r&2Add new message"));
-			bookQuill.setItemMeta(bqMeta);
+            signItem = new ItemStack(Material.valueOf("SIGN"));
 
-			menu.setItem(40, bookQuill);
+        } else {
 
-		}
+            signItem = new ItemStack(Material.BIRCH_SIGN);
+        }
 
-		ItemStack signItem = null;
-		if (SudoSigns.version.contains("1.13")) {
+        ItemMeta signMeta = signItem.getItemMeta();
 
-			signItem = new ItemStack(Material.valueOf("SIGN"));
+        signMeta.displayName(Util.legacySerializerAnyCase("&r&dMessages"));
+        signItem.setItemMeta(signMeta);
 
-		}
-		else {
+        List<String> lore = new ArrayList<>();
+        NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "message-number");
 
-			signItem = new ItemStack(Material.BIRCH_SIGN);
+        ArrayList<SignMessage> orderedSignMessages = sign.getMessages();
+        orderedSignMessages.sort(Comparator.comparing(SignMessage::getDelay));
 
-		}
+        int i = 1;
+        for (SignMessage sm : orderedSignMessages) {
 
-		ItemMeta signMeta = signItem.getItemMeta();
+            if (i > 35) break;
 
-		signMeta.displayName(Util.legacySerializerAnyCase("&r&dMessages"));
-		signItem.setItemMeta(signMeta);
+            ItemStack book = new ItemStack(Material.BOOK);
+            ItemMeta bookMeta = book.getItemMeta();
 
-		List<String> lore = new ArrayList<>();
-		NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "message-number");
+            lore.clear();
+            bookMeta.displayName(Util.legacySerializerAnyCase("&dMessage:"));
+            lore.add("&r&f" + sm.getMessage());
+            lore.add("");
+            lore.add("");
+            lore.add("&6Delay: &e" + (sm.getDelay() / 1000) + "s");
 
-		ArrayList<SignMessage> orderedSignMessages = sign.getMessages();
-		orderedSignMessages.sort(Comparator.comparing(SignMessage::getDelay));
+            if (p.hasPermission(Permissions.MESSAGE_OPTIONS)) {
 
-		int i = 1;
-		for (SignMessage sm : orderedSignMessages) {
+                lore.add("");
+                lore.add("&2Click for options!");
+            }
 
-			if (i > 35) break;
+            bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sm.getNumber());
+            bookMeta.lore(Util.convertToTextComponents(lore));
+            book.setItemMeta(bookMeta);
 
-			ItemStack book = new ItemStack(Material.BOOK);
-			ItemMeta bookMeta = book.getItemMeta();
+            if (i == 9 || i == 18 || i == 27) i++;
+            menu.setItem(i, book);
 
-			lore.clear();
-			bookMeta.displayName(Util.legacySerializerAnyCase("&dMessage:"));
-			lore.add("&r&f" + sm.getMessage());
-			lore.add("");
-			lore.add("");
-			lore.add("&6Delay: &e" + (sm.getDelay() / 1000) + "s");
+            i++;
+        }
 
-			if (p.hasPermission(Permissions.MESSAGE_OPTIONS)) {
+        menu.setItem(0, signItem);
+        menu.setItem(9, signItem);
+        menu.setItem(18, signItem);
+        menu.setItem(27, signItem);
+        menu.setItem(36, arrow);
+    }
 
-				lore.add("");
-				lore.add("&2Click for options!");
+    public void addMessage(String message) {
 
-			}
+        SignMessage signMessage = new SignMessage(sign.getNextMessageNumber(), message, 0, PlayerInput.MESSAGE);
+        SudoSigns.config.addMessage(sign, signMessage);
+        sign.addMessage(signMessage);
+    }
 
-			bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sm.getNumber());
-			bookMeta.lore(Util.convertToTextComponents(lore));
-			book.setItemMeta(bookMeta);
+    public void prepareMessage() {
 
-			if (i == 9 || i == 18 || i == 27) i++;
-			menu.setItem(i, book);
+        p.closeInventory();
 
-			i++;
-
-		}
-
-		menu.setItem(0, signItem);
-		menu.setItem(9, signItem);
-		menu.setItem(18, signItem);
-		menu.setItem(27, signItem);
-		menu.setItem(36, arrow);
-
-	}
-
-	public void addMessage(String message) {
-
-		SignMessage signMessage = new SignMessage(sign.getNextMessageNumber(), message, 0, PlayerInput.MESSAGE);
-		SudoSigns.config.addMessage(sign, signMessage);
-		sign.addMessage(signMessage);
-
-	}
-
-	public void prepareMessage() {
-
-		p.closeInventory();
-
-		Util.sudoSignsMessage(p, "&6Please enter in chat the message which will be shown when the sign is clicked. Use the & symbol for chat color codes and the placeholder &e%PLAYER% &6for the player who clicked the sign. To cancel the operation, type &cCANCEL&6.");
-		su.addTextInput(PlayerInput.MESSAGE);
-
-	}
-
+        Util.sudoSignsMessage(
+                p,
+                "&6Please enter in chat the message which will be shown when the sign is clicked. Use the & symbol for chat color codes and the placeholder &e%PLAYER% &6for the player who clicked the sign. To cancel the operation, type &cCANCEL&6.");
+        su.addTextInput(PlayerInput.MESSAGE);
+    }
 }
