@@ -10,8 +10,10 @@ public class Create {
 
     /**
      * Creates a sign.
-     * @param p The player running the command.
-     * @param args 0 or 1 arguments: The name of the sign (or null for click selection).
+     * 
+     * @param p    The player running the command.
+     * @param args 0 or 1 arguments: The name of the sign (or null for click
+     *             selection).
      */
     public static void create(Player p, String[] args) {
 
@@ -38,17 +40,23 @@ public class Create {
                     } else {
 
                         Util.sudoSignsMessage(p, "&cERROR: A sign with name &e%NAME% &calready exists!", name);
+
                     }
 
                 } else {
 
                     Util.sudoSignsMessage(p, "&cERROR: The name of a SudoSign must only contain numbers and letters!");
+
                 }
+
             }
 
         } else {
 
             Util.sudoSignsErrorMessage(p);
+
         }
+
     }
+
 }

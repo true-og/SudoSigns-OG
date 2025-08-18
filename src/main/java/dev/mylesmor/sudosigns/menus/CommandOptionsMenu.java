@@ -43,13 +43,16 @@ public class CommandOptionsMenu {
             editor.goToCommands();
 
             return;
+
         }
+
     }
 
     public void goToCommandOptionsMenu() {
 
         createCommandOptionsMenu();
         p.openInventory(menu);
+
     }
 
     private SignCommand findSignCommand(ItemStack item) {
@@ -63,9 +66,11 @@ public class CommandOptionsMenu {
             int foundValue = container.get(key, PersistentDataType.INTEGER);
 
             return sign.getSignCommandByNumber(foundValue);
+
         }
 
         return null;
+
     }
 
     private void createCommandOptionsMenu() {
@@ -78,6 +83,7 @@ public class CommandOptionsMenu {
         for (int i = 0; i < menu.getSize(); i++) {
 
             menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+
         }
 
         List<String> lore = new ArrayList<>();
@@ -109,9 +115,11 @@ public class CommandOptionsMenu {
         } else {
 
             menu.setItem(22, clock);
+
         }
 
         menu.setItem(36, arrow);
+
     }
 
     public void addDelay() {
@@ -121,6 +129,7 @@ public class CommandOptionsMenu {
         Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL&6.");
 
         su.addTextInput(PlayerInput.COMMAND_DELAY);
+
     }
 
     public void setDelay(double delay) {
@@ -130,6 +139,7 @@ public class CommandOptionsMenu {
 
         SudoSigns.config.deleteCommand(sign, sc, sc.getType(), oldDelay);
         SudoSigns.config.addCommand(sign, sc, sc.getType());
+
     }
 
     public void deleteCommand() {
@@ -143,8 +153,11 @@ public class CommandOptionsMenu {
 
             SudoSigns.config.deleteCommand(sign, sc, PlayerInput.PLAYER_COMMAND, sc.getDelay());
             sign.deletePlayerCommand(sc);
+
         }
 
         editor.goToCommands();
+
     }
+
 }

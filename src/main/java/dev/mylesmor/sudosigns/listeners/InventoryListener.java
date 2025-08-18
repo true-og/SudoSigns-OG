@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * InventoryListener class to listen for GUI actions.
+ * 
  * @author MylesMor
  * @author https://mylesmor.dev
  */
@@ -26,17 +27,23 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
+
         Player p = (Player) e.getWhoClicked();
         SudoUser user = SudoSigns.users.get(p.getUniqueId());
         if (user != null) {
+
             if (user.isEditing()) {
+
                 if (Objects.equals(e.getClickedInventory(), e.getView().getTopInventory())) {
+
                     SignEditor editor = user.getEditor();
                     if (e.getCurrentItem() != null) {
+
                         e.setCancelled(true);
                         Material m = e.getCurrentItem().getType();
                         String itemName = e.getCurrentItem().getDisplayName();
                         switch (editor.getCurrentPage()) {
+
                             case MAIN:
                                 checkForMainMenuClicks(editor, m);
                                 break;
@@ -61,49 +68,66 @@ public class InventoryListener implements Listener {
                             case MESSAGE_OPTIONS:
                                 checkForMessageOptionClicks(p, editor, m, itemName);
                                 break;
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
     }
 
     @EventHandler
     public void closeInventory(InventoryCloseEvent e) {
+
         Player p = (Player) e.getPlayer();
         SudoUser user = SudoSigns.users.get(p.getUniqueId());
         if (user != null) {
+
             // Checks whether the user has closed the GUI.
             if (user.isEditing()) {
-                Bukkit.getScheduler()
-                        .scheduleSyncDelayedTask(
-                                SudoSigns.sudoSignsPlugin,
-                                () -> {
-                                    InventoryView currentInv = p.getOpenInventory();
-                                    if (PlainTextComponentSerializer.plainText()
-                                                    .serialize(currentInv.title())
-                                                    .equalsIgnoreCase("CRAFTING")
-                                            && !user.isTextInput()) {
-                                        user.getEditor().endEditor();
-                                        user.removeEditor();
-                                    }
-                                },
-                                5L);
+
+                Bukkit.getScheduler().scheduleSyncDelayedTask(SudoSigns.sudoSignsPlugin, () -> {
+
+                    InventoryView currentInv = p.getOpenInventory();
+                    if (PlainTextComponentSerializer.plainText().serialize(currentInv.title())
+                            .equalsIgnoreCase("CRAFTING") && !user.isTextInput())
+                    {
+
+                        user.getEditor().endEditor();
+                        user.removeEditor();
+
+                    }
+
+                }, 5L);
+
             }
+
         }
+
     }
 
     /**
      * Checks for GUI clicks in the main menu.
+     * 
      * @param editor The SignEditor class of the particular user.
-     * @param m The material clicked on in the menu.
+     * @param m      The material clicked on in the menu.
      */
     public void checkForMainMenuClicks(SignEditor editor, Material m) {
+
         if (m.equals(Material.OAK_SIGN)) {
+
             editor.goToMessages();
             return;
+
         }
+
         switch (m) {
+
             case NAME_TAG:
                 editor.prepareRename();
                 break;
@@ -124,23 +148,30 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     /**
      * Checks for GUI clicks in the Command Options menu.
+     * 
      * @param editor The SignEditor class of the particular user.
-     * @param m The material clicked on in the menu.
-     * @param item The ItemStack of the clicked item.
+     * @param m      The material clicked on in the menu.
+     * @param item   The ItemStack of the clicked item.
      */
     public void checkForCommandsClicks(Player p, SignEditor editor, Material m, ItemStack item) {
+
         switch (m) {
+
             case WRITABLE_BOOK:
                 editor.getCommandsMenu().prepareCommand();
                 break;
             case BOOK:
                 if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
+
                     editor.goToCommandOptionsMenu(item);
+
                 }
                 break;
             case ARROW:
@@ -148,23 +179,30 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     /**
      * Checks for GUI clicks in the Command Options menu.
-     * @param editor The SignEditor class of the particular user.
-     * @param m The material clicked on in the menu.
+     * 
+     * @param editor   The SignEditor class of the particular user.
+     * @param m        The material clicked on in the menu.
      * @param itemName The name of the item clicked.
      */
     public void checkForCommandOptionClicks(Player p, SignEditor editor, Material m, String itemName) {
+
         switch (m) {
+
             case CLOCK:
                 editor.getCommandOptionsMenu().addDelay();
                 break;
             case BARRIER:
                 if (p.hasPermission(Permissions.DELETE_COMMAND)) {
+
                     editor.getCommandOptionsMenu().deleteCommand();
+
                 }
                 break;
             case ARROW:
@@ -172,23 +210,30 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     /**
      * Checks for GUI clicks in the Commands menu.
-     * @param editor The SignEditor class of the particular user.
-     * @param m The material clicked on in the menu.
+     * 
+     * @param editor   The SignEditor class of the particular user.
+     * @param m        The material clicked on in the menu.
      * @param itemName The name of the item clicked.
      */
     public void checkForMessageOptionClicks(Player p, SignEditor editor, Material m, String itemName) {
+
         switch (m) {
+
             case CLOCK:
                 editor.getMessageOptionsMenu().addDelay();
                 break;
             case BARRIER:
                 if (p.hasPermission(Permissions.DELETE_MESSAGE)) {
+
                     editor.getMessageOptionsMenu().deleteMessage();
+
                 }
                 break;
             case ARROW:
@@ -196,23 +241,30 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     /**
      * Checks for GUI clicks in the Commands menu.
+     * 
      * @param editor The SignEditor class of the particular user.
-     * @param m The material clicked on in the menu.
-     * @param item The ItemStack of the clicked item.
+     * @param m      The material clicked on in the menu.
+     * @param item   The ItemStack of the clicked item.
      */
     public void checkForMessagesClicks(Player p, SignEditor editor, Material m, ItemStack item) {
+
         switch (m) {
+
             case WRITABLE_BOOK:
                 editor.getMessagesMenu().prepareMessage();
                 break;
             case BOOK:
                 if (p.hasPermission(Permissions.MESSAGE_OPTIONS)) {
+
                     editor.goToMessageOptionsMenu(item);
+
                 }
                 break;
             case ARROW:
@@ -220,11 +272,15 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     public void choosePermissionType(SignEditor editor, Material m) {
+
         switch (m) {
+
             case PLAYER_HEAD:
                 editor.getPermMenu().addPermission(true, null);
                 break;
@@ -236,11 +292,15 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     public void chooseCommandType(SignEditor editor, Material m, String itemName) {
+
         switch (m) {
+
             case PLAYER_HEAD:
                 editor.getCommandsMenu().chooseCommandType(PlayerInput.PLAYER_COMMAND);
                 break;
@@ -252,20 +312,27 @@ public class InventoryListener implements Listener {
                 break;
             default:
                 break;
+
         }
+
     }
 
     /**
      * Checks for GUI clicks in the Permissions menu.
-     * @param editor The SignEditor class of the particular user.
-     * @param m The material clicked on in the menu.
+     * 
+     * @param editor   The SignEditor class of the particular user.
+     * @param m        The material clicked on in the menu.
      * @param itemName The name of the item clicked.
      */
     public void checkForPermissionsClicks(Player p, SignEditor editor, Material m, String itemName) {
+
         switch (m) {
+
             case BOOK:
                 if (p.hasPermission(Permissions.DELETE_PERMISSION)) {
+
                     editor.getPermMenu().deletePermission(itemName);
+
                 }
                 break;
             case WRITABLE_BOOK:
@@ -275,6 +342,9 @@ public class InventoryListener implements Listener {
                 editor.goToMain();
             default:
                 break;
+
         }
+
     }
+
 }

@@ -10,7 +10,8 @@ public class Teleport {
 
     /**
      * Teleports a player to the sign.
-     * @param p The player running the command.
+     * 
+     * @param p    The player running the command.
      * @param args 1 argument: The name of the sign.
      */
     public static void tp(Player p, String[] args) {
@@ -21,6 +22,7 @@ public class Teleport {
 
                 Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss tp <name>&6.");
                 return;
+
             }
 
             String name = args[0];
@@ -35,11 +37,15 @@ public class Teleport {
             } else {
 
                 Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!", name);
+
             }
 
         } else {
 
             Util.sudoSignsErrorMessage(p);
+
         }
+
     }
+
 }

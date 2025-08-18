@@ -8,7 +8,8 @@ public class Select {
 
     /**
      * Select a sign (display selection message in chat).
-     * @param p The player running the command.
+     * 
+     * @param p    The player running the command.
      * @param args 1 argument: The name of the sign.
      */
     public static void select(Player p, String[] args) {
@@ -22,11 +23,15 @@ public class Select {
             } else {
 
                 Util.sendSelectMenus(p, args[0]);
+
             }
 
         } else {
 
             Util.sudoSignsErrorMessage(p);
+
         }
+
     }
+
 }

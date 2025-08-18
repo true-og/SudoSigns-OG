@@ -29,16 +29,19 @@ public class SignEditor {
         this.sign = s;
 
         goToMain();
+
     }
 
     public GUIPage getCurrentPage() {
 
         return currentPage;
+
     }
 
     public void setCurrentPage(GUIPage page) {
 
         currentPage = page;
+
     }
 
     public void goToMain() {
@@ -46,10 +49,12 @@ public class SignEditor {
         if (mainMenu == null) {
 
             mainMenu = new MainMenu(p, sign, this);
+
         }
 
         setCurrentPage(GUIPage.MAIN);
         mainMenu.goToMainMenu();
+
     }
 
     public void goToPermissions() {
@@ -57,10 +62,12 @@ public class SignEditor {
         if (permMenu == null) {
 
             permMenu = new PermissionsMenu(su, p, sign, this);
+
         }
 
         setCurrentPage(GUIPage.PERMISSIONS);
         permMenu.goToPermissionsMenu();
+
     }
 
     public void goToCommands() {
@@ -68,10 +75,12 @@ public class SignEditor {
         if (commandsMenu == null) {
 
             commandsMenu = new CommandsMenu(su, p, sign, this);
+
         }
 
         setCurrentPage(GUIPage.COMMANDS);
         commandsMenu.goToCommandsMenu();
+
     }
 
     public void goToMessages() {
@@ -79,10 +88,12 @@ public class SignEditor {
         if (messagesMenu == null) {
 
             messagesMenu = new MessagesMenu(su, p, sign, this);
+
         }
 
         setCurrentPage(GUIPage.MESSAGES);
         messagesMenu.goToMessagesMenu();
+
     }
 
     public void goToCommandOptionsMenu(ItemStack item) {
@@ -91,6 +102,7 @@ public class SignEditor {
 
         setCurrentPage(GUIPage.COMMAND_OPTIONS);
         commandOptionsMenu.goToCommandOptionsMenu();
+
     }
 
     public void goToMessageOptionsMenu(ItemStack item) {
@@ -99,41 +111,49 @@ public class SignEditor {
 
         setCurrentPage(GUIPage.MESSAGE_OPTIONS);
         messageOptionsMenu.goToMessageOptionsMenu();
+
     }
 
     public MainMenu getMainMenu() {
 
         return mainMenu;
+
     }
 
     public PermissionsMenu getPermMenu() {
 
         return permMenu;
+
     }
 
     public CommandsMenu getCommandsMenu() {
 
         return commandsMenu;
+
     }
 
     public CommandOptionsMenu getCommandOptionsMenu() {
 
         return commandOptionsMenu;
+
     }
 
     public MessagesMenu getMessagesMenu() {
 
         return messagesMenu;
+
     }
 
     public MessageOptionsMenu getMessageOptionsMenu() {
 
         return messageOptionsMenu;
+
     }
 
     public void endEditor() {
 
         Util.sudoSignsMessage(p, "&aChanges saved to sign &e%NAME%&a.", sign.getName());
+
     }
 
     public void editSignNumber() {
@@ -141,6 +161,7 @@ public class SignEditor {
         Util.sudoSignsMessage(p, "&6Please enter the line you would like to edit (1-4) or type &cCANCEL&6!");
         su.addTextInput(PlayerInput.EDIT_TEXT_NUMBER);
         p.closeInventory();
+
     }
 
     public void prepareRename() {
@@ -148,6 +169,7 @@ public class SignEditor {
         Util.sudoSignsMessage(p, "&6Please enter the new name for the sign in chat or type &cCANCEL&6!");
         su.addTextInput(PlayerInput.RENAME);
         p.closeInventory();
+
     }
 
     public void renameSign(String s) {
@@ -166,7 +188,9 @@ public class SignEditor {
                 if (entry.getValue().equals(sign)) {
 
                     found = entry;
+
                 }
+
             }
 
             if (found != null) {
@@ -178,7 +202,11 @@ public class SignEditor {
 
                 SudoSigns.config.saveSign(found.getValue(), true, p);
                 SudoSigns.config.deleteSign(found.getKey());
+
             }
+
         }
+
     }
+
 }

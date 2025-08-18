@@ -27,12 +27,14 @@ public class MainMenu {
 
         this.sign = sign;
         this.p = p;
+
     }
 
     public void goToMainMenu() {
 
         createMainMenu();
         p.openInventory(menu);
+
     }
 
     private void createMainMenu() {
@@ -51,6 +53,7 @@ public class MainMenu {
             List<String> lore = new ArrayList<>();
             lore.add(" ");
             menu.getItem(i).lore(Util.convertToTextComponents(lore));
+
         }
 
         if (p.hasPermission(Permissions.RENAME)) {
@@ -69,6 +72,7 @@ public class MainMenu {
             nametag.setItemMeta(ntMeta);
 
             items.add(nametag);
+
         }
 
         if (p.hasPermission(Permissions.EDIT_TEXT)) {
@@ -87,6 +91,7 @@ public class MainMenu {
             book.setItemMeta(bookMeta);
 
             items.add(book);
+
         }
 
         if (p.hasPermission(Permissions.VIEW_PERMISSION)) {
@@ -105,6 +110,7 @@ public class MainMenu {
             barrier.setItemMeta(barrierMeta);
 
             items.add(barrier);
+
         }
 
         if (p.hasPermission(Permissions.VIEW_COMMAND)) {
@@ -121,6 +127,7 @@ public class MainMenu {
             cmdBlock.setItemMeta(cmdBlockMeta);
 
             items.add(cmdBlock);
+
         }
 
         if (p.hasPermission(Permissions.VIEW_MESSAGE)) {
@@ -138,6 +145,7 @@ public class MainMenu {
             signBlock.setItemMeta(signMeta);
 
             items.add(signBlock);
+
         }
 
         if (SudoSigns.econ != null) {
@@ -159,31 +167,30 @@ public class MainMenu {
 
                             if (sign.getPriceAsInteger() == 1) {
 
-                                lore.add("&e" + sign.getPriceAsInteger()
-                                        + SudoSigns.getPlugin()
-                                                .getConfig()
-                                                .getString("config.currency-symbol-singular"));
+                                lore.add("&e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig()
+                                        .getString("config.currency-symbol-singular"));
 
                             } else {
 
                                 lore.add("&e" + sign.getPriceAsInteger()
                                         + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
+
                             }
 
                         } else {
 
                             if (sign.getPriceAsDouble() == 1.0) {
 
-                                lore.add("&e" + sign.getPriceAsDouble()
-                                        + SudoSigns.getPlugin()
-                                                .getConfig()
-                                                .getString("config.currency-symbol-singular"));
+                                lore.add("&e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig()
+                                        .getString("config.currency-symbol-singular"));
 
                             } else {
 
                                 lore.add("&e" + sign.getPriceAsDouble()
                                         + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
+
                             }
+
                         }
 
                     } else {
@@ -199,6 +206,7 @@ public class MainMenu {
 
                                 lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
                                         + "&e" + sign.getPriceAsInteger());
+
                             }
 
                         } else {
@@ -212,14 +220,18 @@ public class MainMenu {
 
                                 lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
                                         + "&e" + sign.getPriceAsDouble());
+
                             }
+
                         }
+
                     }
 
                     if (p.hasPermission(Permissions.SET_PRICE)) {
 
                         lore.add("&e");
                         lore.add("&aClick to edit!");
+
                     }
 
                     goldNuggetItemMeta.lore(Util.convertToTextComponents(lore));
@@ -227,11 +239,15 @@ public class MainMenu {
                     goldNugget.setItemMeta(goldNuggetItemMeta);
 
                     items.add(goldNugget);
+
                 }
+
             }
+
         }
 
         switch (items.size()) {
+
             case 6:
                 menu.setItem(11, items.get(0));
                 menu.setItem(13, items.get(1));
@@ -263,7 +279,9 @@ public class MainMenu {
             case 1:
                 menu.setItem(22, items.get(0));
                 break;
+
         }
+
     }
 
     public void prepareSetPrice() {
@@ -272,6 +290,7 @@ public class MainMenu {
 
         Util.sudoSignsMessage(p, "&6Please enter the price to use the sign! Type &cCANCEL &6to cancel the operation.");
         SudoSigns.users.get(p.getUniqueId()).addTextInput(PlayerInput.SET_PRICE);
+
     }
 
     public void setPriceAsDouble(double price) {
@@ -283,39 +302,36 @@ public class MainMenu {
 
             if (sign.getPriceAsDouble() == 1.0) {
 
-                Util.sudoSignsMessage(
-                        p,
-                        "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
-                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
-                                + "&6.");
+                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                        + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(
-                        p,
-                        "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
-                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                        + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
             }
 
         } else {
 
             if (sign.getPriceAsInteger() == 1) {
 
-                Util.sudoSignsMessage(
-                        p,
+                Util.sudoSignsMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e"
                                 + price + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(
-                        p,
+                Util.sudoSignsMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e"
                                 + price + "&6.");
+
             }
+
         }
+
     }
 
     public void setPriceAsInteger(int price) {
@@ -327,48 +343,45 @@ public class MainMenu {
 
             if (sign.getPriceAsInteger() == 1) {
 
-                Util.sudoSignsMessage(
-                        p,
-                        "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
-                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
-                                + "&6.");
+                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                        + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(
-                        p,
-                        "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
-                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                        + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
+
             }
 
         } else {
 
             if (sign.getPriceAsInteger() == 1) {
 
-                Util.sudoSignsMessage(
-                        p,
+                Util.sudoSignsMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e"
                                 + price + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(
-                        p,
+                Util.sudoSignsMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e"
                                 + price + "&6.");
+
             }
+
         }
+
     }
 
     public void setLineNumber(int lineNumber) {
 
         this.lineNumber = lineNumber;
-        Util.sudoSignsMessage(
-                p,
+        Util.sudoSignsMessage(p,
                 "&6Please enter the new text (maximum 15 characters), using the &e& &6symbol for color codes. Type &cCANCEL &6to cancel the operation.");
         SudoSigns.users.get(p.getUniqueId()).addTextInput(PlayerInput.EDIT_TEXT);
+
     }
 
     public void setText(TextComponent message) {
@@ -376,5 +389,7 @@ public class MainMenu {
         Util.sudoSignsMessage(p, "&aLine &e" + lineNumber + " &ahas been set to: " + message.content());
         sign.editLine(lineNumber - 1, message);
         SudoSigns.config.editSignText(sign.getName(), lineNumber, message);
+
     }
+
 }

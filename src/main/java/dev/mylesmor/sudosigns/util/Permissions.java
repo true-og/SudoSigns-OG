@@ -2,10 +2,12 @@ package dev.mylesmor.sudosigns.util;
 
 /**
  * Permissions class for SudoSigns.
+ * 
  * @author MylesMor
  * @author https://mylesmor.dev
  */
 public final class Permissions {
+
     public static final String CREATE = "sudosigns.create";
     public static final String EDIT = "sudosigns.edit";
     public static final String DELETE = "sudosigns.delete";
@@ -36,4 +38,5 @@ public final class Permissions {
     public static final String EDIT_TEXT = "sudosigns.text.edit";
     public static final String VIEW_PRICE = "sudosigns.price.view";
     public static final String SET_PRICE = "sudosigns.price.set";
+
 }

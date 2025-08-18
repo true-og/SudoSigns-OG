@@ -11,7 +11,8 @@ public class List {
 
     /**
      * Lists all signs.
-     * @param p The player running the command.
+     * 
+     * @param p    The player running the command.
      * @param args Not required
      */
     public static void list(Player p, String[] args) {
@@ -22,17 +23,22 @@ public class List {
 
                 Util.sudoSignsMessage(p, "&cERROR: No SudoSigns were found!");
                 return;
+
             }
 
             Util.sudoSignsMessage(p, "&6Listing all SudoSigns...");
             for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
                 Util.sendSelectMenus(p, entry.getKey());
+
             }
 
         } else {
 
             Util.sudoSignsErrorMessage(p);
+
         }
+
     }
+
 }

@@ -7,10 +7,13 @@ import dev.mylesmor.sudosigns.util.Util;
 import org.bukkit.entity.Player;
 
 public class Copy {
+
     /**
      * Copies one sign's data to another.
-     * @param p The player running the command.
-     * @param args 1 or 2 arguments: If 1, the name of the new sign. If 2, the name of the old sign in index 0 and name of new one in index 1.
+     * 
+     * @param p    The player running the command.
+     * @param args 1 or 2 arguments: If 1, the name of the new sign. If 2, the name
+     *             of the old sign in index 0 and name of new one in index 1.
      */
     public static void copy(Player p, String[] args) {
 
@@ -20,10 +23,12 @@ public class Copy {
             String newName = null;
             if (args == null || args.length < 1 || args.length > 2) {
 
-                Util.sudoSignsMessage(
-                        p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss copy [old-sign-name] <new-sign-name>&6.");
+                Util.sudoSignsMessage(p,
+                        "&cERROR: Invalid syntax! &6Correct syntax: &d/ss copy [old-sign-name] <new-sign-name>&6.");
                 return;
+
             }
+
             if (args.length == 1) {
 
                 newName = args[0];
@@ -32,6 +37,7 @@ public class Copy {
 
                 newName = args[1];
                 oldName = args[0];
+
             }
 
             if (Util.checkName(newName)) {
@@ -60,22 +66,29 @@ public class Copy {
                         } else {
 
                             Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &calready exists!");
+
                         }
 
                     } else {
 
                         Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!");
+
                     }
+
                 }
 
             } else {
 
                 Util.sudoSignsMessage(p, "&cERROR: The name of a SudoSign must only contain numbers and letters!");
+
             }
 
         } else {
 
             Util.sudoSignsErrorMessage(p);
+
         }
+
     }
+
 }

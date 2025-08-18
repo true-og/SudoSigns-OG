@@ -35,6 +35,7 @@ public class CommandsMenu {
         this.sign = sign;
         this.editor = editor;
         this.p = p;
+
     }
 
     public void goToCommandsMenu() {
@@ -42,6 +43,7 @@ public class CommandsMenu {
         createCommandsMenu();
 
         p.openInventory(menu);
+
     }
 
     private void createCommandsMenu() {
@@ -54,6 +56,7 @@ public class CommandsMenu {
         for (int i = 0; i < menu.getSize(); i++) {
 
             menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+
         }
 
         ItemStack arrow = new ItemStack(Material.ARROW);
@@ -71,6 +74,7 @@ public class CommandsMenu {
             bookQuill.setItemMeta(bqMeta);
 
             menu.setItem(40, bookQuill);
+
         }
 
         ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
@@ -95,7 +99,8 @@ public class CommandsMenu {
         int i = 1;
         for (SignCommand sc : orderedSignCommands) {
 
-            if (i > 26) break;
+            if (i > 26)
+                break;
 
             ItemStack book = new ItemStack(Material.BOOK);
             ItemMeta bookMeta = book.getItemMeta();
@@ -108,6 +113,7 @@ public class CommandsMenu {
 
                 lore.add("");
                 lore.add("&2Click for options!");
+
             }
 
             bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sc.getNumber());
@@ -116,11 +122,13 @@ public class CommandsMenu {
             lore.clear();
             book.setItemMeta(bookMeta);
 
-            if (i == 9) i++;
+            if (i == 9)
+                i++;
 
             menu.setItem(i, book);
 
             i++;
+
         }
 
         orderedSignCommands = sign.getConsoleCommands();
@@ -129,7 +137,8 @@ public class CommandsMenu {
         i = 19;
         for (SignCommand sc : orderedSignCommands) {
 
-            if (i > 35) break;
+            if (i > 35)
+                break;
 
             ItemStack book = new ItemStack(Material.BOOK);
             ItemMeta bookMeta = book.getItemMeta();
@@ -142,6 +151,7 @@ public class CommandsMenu {
 
                 lore.add("");
                 lore.add("&2Click for options!");
+
             }
 
             bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sc.getNumber());
@@ -150,11 +160,13 @@ public class CommandsMenu {
             lore.clear();
             book.setItemMeta(bookMeta);
 
-            if (i == 27) i++;
+            if (i == 27)
+                i++;
 
             menu.setItem(i, book);
 
             i++;
+
         }
 
         menu.setItem(0, head);
@@ -162,6 +174,7 @@ public class CommandsMenu {
         menu.setItem(18, cmdBlock);
         menu.setItem(27, cmdBlock);
         menu.setItem(36, arrow);
+
     }
 
     public void prepareCommand() {
@@ -174,6 +187,7 @@ public class CommandsMenu {
         for (int i = 0; i < choiceInv.getSize(); i++) {
 
             choiceInv.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+
         }
 
         ItemStack arrow = new ItemStack(Material.ARROW);
@@ -204,28 +218,31 @@ public class CommandsMenu {
         } else {
 
             choiceInv.setItem(22, head);
+
         }
 
         choiceInv.setItem(36, arrow);
 
         editor.setCurrentPage(GUIPage.CHOOSE_COMMAND);
         p.openInventory(choiceInv);
+
     }
 
     public void chooseCommandType(PlayerInput type) {
 
         p.closeInventory();
 
-        Util.sudoSignsMessage(
-                p,
+        Util.sudoSignsMessage(p,
                 "&6Please enter the full command in chat with the beginning &e/&6. The placeholder &e%PLAYER% &6will be replaced with the player who clicked the sign. To cancel, type &cCANCEL&6.");
         su.addTextInput(type);
+
     }
 
     public void addCommand(String cmd, PlayerInput type) {
 
         SignCommand command = new SignCommand(sign.getNextCommandNumber(), cmd, 0, type);
         switch (type) {
+
             case CONSOLE_COMMAND:
                 sign.addConsoleCommand(command);
                 break;
@@ -234,11 +251,14 @@ public class CommandsMenu {
                 break;
             default:
                 break;
+
         }
 
         SudoSigns.config.addCommand(sign, command, type);
 
         Util.sudoSignsMessage(p, "&aCommand added successfully!");
         editor.goToCommands();
+
     }
+
 }

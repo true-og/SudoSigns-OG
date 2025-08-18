@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 
 /**
  * The class for managing the plugins config.
+ * 
  * @author MylesMor
  * @author https://mylesmor.dev
  */
@@ -36,6 +37,7 @@ public class ConfigManager {
 
         loadCustomConfig();
         loadModules();
+
     }
 
     public void loadModules() {
@@ -46,71 +48,85 @@ public class ConfigManager {
         messageConfig = new MessageConfig(this);
         commandConfig = new CommandConfig(this);
         permissionConfig = new PermissionConfig(this);
+
     }
 
     public InvalidEntriesManager getInvalidEntriesManager() {
 
         return invalidEntriesManager;
+
     }
 
     public FileConfiguration getSignConfig() {
 
         return signConfig;
+
     }
 
     public ArrayList<String> loadSigns() {
 
         return signConfigManager.loadSigns();
+
     }
 
     public void saveSign(SudoSign s, boolean singular, Player p) {
 
         signConfigManager.saveToFile(s, singular, p);
+
     }
 
     public void deleteSign(String name) {
 
         signConfigManager.deleteSign(name);
+
     }
 
     public void editSignText(String name, int lineNumber, TextComponent message) {
 
         signConfigManager.editText(name, lineNumber, message);
+
     }
 
     public void addMessage(SudoSign s, SignMessage sm) {
 
         messageConfig.addMessageToConfig(s, sm);
+
     }
 
     public void deleteMessage(SudoSign s, SignMessage sm, double delay) {
 
         messageConfig.deleteMessageFromConfig(s, sm, delay);
+
     }
 
     public void addCommand(SudoSign s, SignCommand sm, PlayerInput type) {
 
         commandConfig.addCommandToConfig(s, sm, type);
+
     }
 
     public void deleteCommand(SudoSign s, SignCommand sm, PlayerInput type, double oldDelay) {
 
         commandConfig.deleteCommandFromConfig(s, sm, type, oldDelay);
+
     }
 
     public void setPrice(String name, double price) {
 
         signConfigManager.setPrice(name, price);
+
     }
 
     public void addPermission(SudoSign s, String permission) {
 
         permissionConfig.addPermissionToConfig(s, permission);
+
     }
 
     public void deletePermission(SudoSign s, String permission) {
 
         permissionConfig.deletePermissionFromConfig(s, permission);
+
     }
 
     public boolean loadCustomConfig() {
@@ -118,6 +134,7 @@ public class ConfigManager {
         if (!SudoSigns.sudoSignsPlugin.getDataFolder().exists()) {
 
             SudoSigns.sudoSignsPlugin.getDataFolder().mkdir();
+
         }
 
         signConfigFile = new File(SudoSigns.sudoSignsPlugin.getDataFolder(), "signs.yml");
@@ -129,11 +146,12 @@ public class ConfigManager {
 
             } catch (IOException e) {
 
-                Bukkit.getLogger()
-                        .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                + "ERROR: Failed to create config!");
+                Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                        + "ERROR: Failed to create config!");
                 e.printStackTrace();
+
             }
+
         }
 
         try {
@@ -143,6 +161,7 @@ public class ConfigManager {
             if (signConfigManager != null) {
 
                 signConfigManager.setSignConfig(signConfig);
+
             }
 
             if (!signConfig.isConfigurationSection("signs")) {
@@ -150,11 +169,13 @@ public class ConfigManager {
                 signConfig.createSection("signs");
 
                 save();
+
             }
 
             if (invalidEntriesManager != null) {
 
                 invalidEntriesManager.setConfig(signConfig);
+
             }
 
             if (!signConfig.contains("version")) {
@@ -164,19 +185,21 @@ public class ConfigManager {
 
                 save();
                 fixConfig();
+
             }
 
         } catch (Exception e) {
 
-            Bukkit.getLogger()
-                    .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                            + "ERROR: Failed to initialise signs.yml!");
+            Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                    + "ERROR: Failed to initialise signs.yml!");
             e.printStackTrace();
 
             return false;
+
         }
 
         return true;
+
     }
 
     public void fixConfig() {
@@ -198,7 +221,9 @@ public class ConfigManager {
 
                 save();
                 continue;
+
             }
+
             if (pCommands.size() != 0) {
 
                 try {
@@ -210,6 +235,7 @@ public class ConfigManager {
                         map.put(cmd, 0.0);
                         mapList.add(map);
                         map = new HashMap<>();
+
                     }
 
                     signConfig.set("signs." + name + ".player-commands", mapList);
@@ -217,12 +243,15 @@ public class ConfigManager {
                 } catch (Exception ignored) {
 
                     ignored.printStackTrace();
+
                 }
+
             }
 
             signConfig.set("signs." + key + ".op-commands", null);
 
             if (cCommands.size() != 0) {
+
                 try {
 
                     ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
@@ -232,6 +261,7 @@ public class ConfigManager {
                         map.put(cmd, 0.0);
                         mapList.add(map);
                         map = new HashMap<>();
+
                     }
 
                     signConfig.set("signs." + name + ".console-commands", mapList);
@@ -239,7 +269,9 @@ public class ConfigManager {
                 } catch (Exception ignored) {
 
                     ignored.printStackTrace();
+
                 }
+
             }
 
             if (messages.size() != 0) {
@@ -253,6 +285,7 @@ public class ConfigManager {
                         map.put(cmd, 0.0);
                         mapList.add(map);
                         map = new HashMap<>();
+
                     }
 
                     signConfig.set("signs." + name + ".messages", mapList);
@@ -260,11 +293,15 @@ public class ConfigManager {
                 } catch (Exception ignored) {
 
                     ignored.printStackTrace();
+
                 }
+
             }
 
             save();
+
         }
+
     }
 
     public void save() {
@@ -275,10 +312,12 @@ public class ConfigManager {
 
         } catch (IOException e) {
 
-            Bukkit.getLogger()
-                    .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                            + "ERROR: Failed to save to signs.yml!");
+            Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                    + "ERROR: Failed to save to signs.yml!");
             e.printStackTrace();
+
         }
+
     }
+
 }

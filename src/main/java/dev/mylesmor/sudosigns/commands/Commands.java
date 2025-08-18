@@ -35,6 +35,7 @@ public class Commands implements CommandExecutor {
         commands.put("purge", Purge::purge);
         commands.put("confirmpurge", Purge::confirmPurge);
         commands.put("fix", Fix::fix);
+
     }
 
     @Override
@@ -65,25 +66,33 @@ public class Commands implements CommandExecutor {
                         } catch (CommandException error) {
 
                             invalidCommandError(p);
+
                         }
+
                     }
 
                 } else {
 
                     invalidCommandError(p);
+
                 }
 
             } catch (ArrayIndexOutOfBoundsException e) {
 
                 invalidCommandError(p);
+
             }
+
         }
 
         return true;
+
     }
 
     private void invalidCommandError(Player p) {
 
         Util.sudoSignsMessage(p, "&cERROR: Invalid command! &6Type &d/ss help &6for a list of valid commands.");
+
     }
+
 }

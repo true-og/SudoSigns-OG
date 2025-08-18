@@ -43,13 +43,16 @@ public class MessageOptionsMenu {
             editor.goToMessages();
 
             return;
+
         }
+
     }
 
     public void goToMessageOptionsMenu() {
 
         createMessageOptionsMenu();
         p.openInventory(menu);
+
     }
 
     private SignMessage findSignMessage(ItemStack item) {
@@ -63,9 +66,11 @@ public class MessageOptionsMenu {
             int foundValue = container.get(key, PersistentDataType.INTEGER);
 
             return sign.getSignMessageByNumber(foundValue);
+
         }
 
         return null;
+
     }
 
     private void createMessageOptionsMenu() {
@@ -79,6 +84,7 @@ public class MessageOptionsMenu {
         for (int i = 0; i < menu.getSize(); i++) {
 
             menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+
         }
 
         List<String> lore = new ArrayList<>();
@@ -111,9 +117,11 @@ public class MessageOptionsMenu {
         } else {
 
             menu.setItem(22, clock);
+
         }
 
         menu.setItem(36, arrow);
+
     }
 
     public void addDelay() {
@@ -121,6 +129,7 @@ public class MessageOptionsMenu {
         p.closeInventory();
         Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL &6.");
         su.addTextInput(PlayerInput.MESSAGE_DELAY);
+
     }
 
     public void setDelay(double delay) {
@@ -130,6 +139,7 @@ public class MessageOptionsMenu {
 
         SudoSigns.config.deleteMessage(sign, sm, oldDelay);
         SudoSigns.config.addMessage(sign, sm);
+
     }
 
     public void deleteMessage() {
@@ -137,5 +147,7 @@ public class MessageOptionsMenu {
         sign.removeMessage(sm);
         SudoSigns.config.deleteMessage(sign, sm, sm.getDelay());
         editor.goToMessages();
+
     }
+
 }

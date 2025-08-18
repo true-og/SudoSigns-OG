@@ -9,6 +9,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
+
         SudoSigns.users.remove(e.getPlayer().getUniqueId());
+
     }
+
 }

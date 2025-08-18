@@ -33,12 +33,14 @@ public class MessagesMenu {
         this.su = su;
         this.sign = sign;
         this.p = p;
+
     }
 
     public void goToMessagesMenu() {
 
         createMessagesMenu();
         p.openInventory(menu);
+
     }
 
     private void createMessagesMenu() {
@@ -52,6 +54,7 @@ public class MessagesMenu {
         for (int i = 0; i < menu.getSize(); i++) {
 
             menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+
         }
 
         ItemStack arrow = new ItemStack(Material.ARROW);
@@ -69,6 +72,7 @@ public class MessagesMenu {
             bookQuill.setItemMeta(bqMeta);
 
             menu.setItem(40, bookQuill);
+
         }
 
         ItemStack signItem = null;
@@ -79,6 +83,7 @@ public class MessagesMenu {
         } else {
 
             signItem = new ItemStack(Material.BIRCH_SIGN);
+
         }
 
         ItemMeta signMeta = signItem.getItemMeta();
@@ -95,7 +100,8 @@ public class MessagesMenu {
         int i = 1;
         for (SignMessage sm : orderedSignMessages) {
 
-            if (i > 35) break;
+            if (i > 35)
+                break;
 
             ItemStack book = new ItemStack(Material.BOOK);
             ItemMeta bookMeta = book.getItemMeta();
@@ -111,16 +117,19 @@ public class MessagesMenu {
 
                 lore.add("");
                 lore.add("&2Click for options!");
+
             }
 
             bookMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, sm.getNumber());
             bookMeta.lore(Util.convertToTextComponents(lore));
             book.setItemMeta(bookMeta);
 
-            if (i == 9 || i == 18 || i == 27) i++;
+            if (i == 9 || i == 18 || i == 27)
+                i++;
             menu.setItem(i, book);
 
             i++;
+
         }
 
         menu.setItem(0, signItem);
@@ -128,6 +137,7 @@ public class MessagesMenu {
         menu.setItem(18, signItem);
         menu.setItem(27, signItem);
         menu.setItem(36, arrow);
+
     }
 
     public void addMessage(String message) {
@@ -135,15 +145,17 @@ public class MessagesMenu {
         SignMessage signMessage = new SignMessage(sign.getNextMessageNumber(), message, 0, PlayerInput.MESSAGE);
         SudoSigns.config.addMessage(sign, signMessage);
         sign.addMessage(signMessage);
+
     }
 
     public void prepareMessage() {
 
         p.closeInventory();
 
-        Util.sudoSignsMessage(
-                p,
+        Util.sudoSignsMessage(p,
                 "&6Please enter in chat the message which will be shown when the sign is clicked. Use the & symbol for chat color codes and the placeholder &e%PLAYER% &6for the player who clicked the sign. To cancel the operation, type &cCANCEL&6.");
         su.addTextInput(PlayerInput.MESSAGE);
+
     }
+
 }

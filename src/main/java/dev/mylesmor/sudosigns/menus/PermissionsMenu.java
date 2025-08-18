@@ -33,6 +33,7 @@ public class PermissionsMenu {
         this.sign = sign;
         this.editor = editor;
         this.p = p;
+
     }
 
     public void goToPermissionsMenu() {
@@ -41,6 +42,7 @@ public class PermissionsMenu {
 
         p.openInventory(menu);
         editor.setCurrentPage(PAGE);
+
     }
 
     private void createPermissionsMenu() {
@@ -53,6 +55,7 @@ public class PermissionsMenu {
         for (int i = 0; i < menu.getSize(); i++) {
 
             menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
+
         }
 
         ItemStack arrow = new ItemStack(Material.ARROW);
@@ -75,6 +78,7 @@ public class PermissionsMenu {
             bqMeta.displayName(Util.legacySerializerAnyCase("&aAdd new permission"));
             bookQuill.setItemMeta(bqMeta);
             menu.setItem(40, bookQuill);
+
         }
 
         List<String> lore = new ArrayList<>();
@@ -84,7 +88,8 @@ public class PermissionsMenu {
         int i = 1;
         for (String perm : sign.getPermissions()) {
 
-            if (i > 35) break;
+            if (i > 35)
+                break;
 
             ItemStack book = new ItemStack(Material.BOOK);
             ItemMeta bookMeta = book.getItemMeta();
@@ -93,15 +98,18 @@ public class PermissionsMenu {
 
                 lore.add("");
                 bookMeta.lore(Util.convertToTextComponents(lore));
+
             }
 
             book.setItemMeta(bookMeta);
 
-            if (i == 9 || i == 18 || i == 27) i++;
+            if (i == 9 || i == 18 || i == 27)
+                i++;
 
             menu.setItem(i, book);
 
             i++;
+
         }
 
         menu.setItem(0, barrier);
@@ -109,6 +117,7 @@ public class PermissionsMenu {
         menu.setItem(18, barrier);
         menu.setItem(27, barrier);
         menu.setItem(36, arrow);
+
     }
 
     public void preparePermission() {
@@ -126,6 +135,7 @@ public class PermissionsMenu {
 
             choiceInv.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
             choiceInv.getItem(i).lore(Util.convertToTextComponents(lore));
+
         }
 
         ItemStack arrow = new ItemStack(Material.ARROW);
@@ -156,6 +166,7 @@ public class PermissionsMenu {
         editor.setCurrentPage(GUIPage.CHOOSE_PERMISSION);
 
         p.openInventory(choiceInv);
+
     }
 
     public void addPermission(boolean provided, String perm) {
@@ -173,17 +184,19 @@ public class PermissionsMenu {
 
                 SudoSigns.config.addPermission(sign, perm);
                 sign.addPermission(perm);
+
             }
 
         } else {
 
             p.closeInventory();
 
-            Util.sudoSignsMessage(
-                    p,
+            Util.sudoSignsMessage(p,
                     "&6Please enter in chat the permission which the player must have to run this sign, or type &cCANCEL &6to cancel the operation.");
             su.addTextInput(PlayerInput.PERMISSION);
+
         }
+
     }
 
     public void deletePermission(String perm) {
@@ -192,5 +205,7 @@ public class PermissionsMenu {
         SudoSigns.config.deletePermission(sign, perm);
 
         goToPermissionsMenu();
+
     }
+
 }

@@ -21,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Main class for SudoSigns.
+ * 
  * @author MylesMor
  * @author https://mylesmor.dev
  */
@@ -65,43 +66,51 @@ public class SudoSigns extends JavaPlugin {
 
         this.getCommand("sudosigns").setExecutor(new Commands());
         this.getCommand("sudosigns").setTabCompleter(new SudoSignsTabCompleter());
+
     }
 
     public static Plugin getPlugin() {
 
         return sudoSignsPlugin;
+
     }
 
     public static void setSudoSignsPlugin(Plugin sudoSignsPlugin) {
+
         SudoSigns.sudoSignsPlugin = sudoSignsPlugin;
+
     }
 
     public boolean setupEconomy() {
+
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
 
-            Bukkit.getLogger()
-                    .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                            + "ERROR: Vault not found, sign prices disabled...");
+            Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                    + "ERROR: Vault not found, sign prices disabled...");
 
             return false;
+
         }
 
-        RegisteredServiceProvider<Economy> rsp =
-                getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
 
-            Bukkit.getLogger()
-                    .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                            + "ERROR: No compatible economy plugin found, sign prices disabled...");
+            Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                    + "ERROR: No compatible economy plugin found, sign prices disabled...");
 
             return false;
+
         }
 
         econ = rsp.getProvider();
 
         return true;
+
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+
+    }
+
 }

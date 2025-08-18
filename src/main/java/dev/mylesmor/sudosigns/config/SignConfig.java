@@ -32,11 +32,13 @@ public class SignConfig {
 
         this.configManager = configManager;
         this.signConfig = configManager.getSignConfig();
+
     }
 
     public void setSignConfig(FileConfiguration signConfig) {
 
         this.signConfig = signConfig;
+
     }
 
     // Loads the signs from the config.
@@ -53,6 +55,7 @@ public class SignConfig {
             name = key;
 
             try {
+
                 ConfigurationSection locSec = signConfig.getConfigurationSection("signs." + key + ".location");
 
                 String world = locSec.getString("world");
@@ -64,8 +67,7 @@ public class SignConfig {
                 if (w != null) {
 
                     Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
-                    if (loc.getBlock().getState() instanceof Sign
-                            || loc.getBlock().getState() instanceof WallSign) {
+                    if (loc.getBlock().getState() instanceof Sign || loc.getBlock().getState() instanceof WallSign) {
 
                         Sign sign = (Sign) loc.getBlock().getState();
 
@@ -90,6 +92,7 @@ public class SignConfig {
                                                 + "ERROR: Invalid price for sign " + name + "! Defaulting to 0...");
 
                                 ss.setPriceAsInteger(0);
+
                             }
 
                         } else {
@@ -105,7 +108,9 @@ public class SignConfig {
                                                 + "ERROR: Invalid price for sign " + name + "! Defaulting to 0...");
 
                                 ss.setPriceAsDouble(0.0);
+
                             }
+
                         }
 
                         int number = 0;
@@ -113,29 +118,28 @@ public class SignConfig {
 
                             for (Map.Entry<?, ?> cmd : sc.entrySet()) {
 
-                                ss.addPlayerCommand(new SignCommand(
-                                        number++,
-                                        (String) cmd.getKey(),
-                                        (Double) cmd.getValue(),
-                                        PlayerInput.PLAYER_COMMAND));
+                                ss.addPlayerCommand(new SignCommand(number++, (String) cmd.getKey(),
+                                        (Double) cmd.getValue(), PlayerInput.PLAYER_COMMAND));
+
                             }
+
                         }
 
                         for (Map<?, ?> sc : cCommands) {
 
                             for (Map.Entry<?, ?> cmd : sc.entrySet()) {
 
-                                ss.addConsoleCommand(new SignCommand(
-                                        number++,
-                                        (String) cmd.getKey(),
-                                        (Double) cmd.getValue(),
-                                        PlayerInput.CONSOLE_COMMAND));
+                                ss.addConsoleCommand(new SignCommand(number++, (String) cmd.getKey(),
+                                        (Double) cmd.getValue(), PlayerInput.CONSOLE_COMMAND));
+
                             }
+
                         }
 
                         for (String perm : permissions) {
 
                             ss.addPermission(perm);
+
                         }
 
                         number = 0;
@@ -143,12 +147,11 @@ public class SignConfig {
 
                             for (Map.Entry<?, ?> message : sc.entrySet()) {
 
-                                ss.addMessage(new SignMessage(
-                                        number++,
-                                        (String) message.getKey(),
-                                        (Double) message.getValue(),
-                                        PlayerInput.MESSAGE));
+                                ss.addMessage(new SignMessage(number++, (String) message.getKey(),
+                                        (Double) message.getValue(), PlayerInput.MESSAGE));
+
                             }
+
                         }
 
                         tempSigns.put(name, ss);
@@ -160,6 +163,7 @@ public class SignConfig {
                                 .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
                                         + "ERROR: Failed to load Sign " + key
                                         + "! The block at the provided location is not a sign. Skipping...");
+
                     }
 
                 } else {
@@ -169,24 +173,30 @@ public class SignConfig {
                             .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
                                     + "ERROR: Failed to load Sign " + key
                                     + "! The world name for this sign is invalid. Skipping...");
+
                 }
 
             } catch (Exception e) {
 
                 e.printStackTrace();
                 return null;
+
             }
+
         }
+
         configManager.getInvalidEntriesManager().setInvalidEntries(invalidSigns);
 
         SudoSigns.signs = tempSigns;
         SudoSigns.invalidSigns = invalidSigns;
 
         return invalidSigns;
+
     }
 
     /**
      * Deletes a sign from the config.
+     * 
      * @param name The name of the sign.
      */
     public void deleteSign(String name) {
@@ -194,16 +204,19 @@ public class SignConfig {
         if (signConfig.isSet("signs." + name)) {
 
             signConfig.set("signs." + name, null);
+
         }
 
         configManager.save();
+
     }
 
     /**
      * Saves the SudoSigns to config.
-     * @param s The SudoSign object.
+     * 
+     * @param s        The SudoSign object.
      * @param singular True to save a singular sign, False to save all.
-     * @param p The player who has edited the sign.
+     * @param p        The player who has edited the sign.
      */
     public void saveToFile(SudoSign s, boolean singular, Player p) {
 
@@ -216,14 +229,18 @@ public class SignConfig {
             for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
                 saveSign(entry.getValue(), p);
+
             }
+
         }
 
         configManager.save();
+
     }
 
     /**
      * Saves a SudoSign in the config.
+     * 
      * @param s The SudoSign object.
      * @param p The player who has edited the sign.
      */
@@ -251,8 +268,7 @@ public class SignConfig {
                 double y = s.getSign().getLocation().getY();
                 double z = s.getSign().getLocation().getZ();
 
-                signConfig.set(
-                        "signs." + name + ".blocktype", s.getSign().getType().toString());
+                signConfig.set("signs." + name + ".blocktype", s.getSign().getType().toString());
 
                 locSec.set("world", world);
                 locSec.set("x", x);
@@ -261,28 +277,22 @@ public class SignConfig {
 
                 if (s.getSign().getWorld().getBlockAt(s.getSign().getLocation()).getBlockData() instanceof Sign) {
 
-                    Sign facing = (Sign) s.getSign()
-                            .getWorld()
-                            .getBlockAt(s.getSign().getLocation())
-                            .getBlockData();
+                    Sign facing = (Sign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation()).getBlockData();
 
                     Rotatable data = (Rotatable) facing.getBlockData();
                     BlockFace rotation = data.getRotation();
 
                     locSec.set("rotation", rotation);
 
-                } else if (s.getSign()
-                                .getWorld()
-                                .getBlockAt(s.getSign().getLocation())
-                                .getBlockData()
-                        instanceof WallSign) {
+                } else if (s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
+                        .getBlockData() instanceof WallSign)
+                {
 
-                    WallSign facing = (WallSign) s.getSign()
-                            .getWorld()
-                            .getBlockAt(s.getSign().getLocation())
+                    WallSign facing = (WallSign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
                             .getBlockData();
 
                     locSec.set("rotation", facing.getFacing().toString());
+
                 }
 
                 signConfig.createSection("signs." + name + ".permissions");
@@ -291,6 +301,7 @@ public class SignConfig {
                 signConfig.createSection("signs." + name + ".console-commands");
 
                 configManager.save();
+
             }
 
         } catch (Exception e) {
@@ -298,8 +309,11 @@ public class SignConfig {
             if (p != null) {
 
                 Util.sudoSignsMessage(p, "&cERROR: Failed to save sign %NAME% to the config!", name);
+
             }
+
         }
+
     }
 
     public void editText(String name, int lineNumber, TextComponent newText) {
@@ -310,9 +324,11 @@ public class SignConfig {
             text.set(lineNumber - 1, newText.content());
 
             signConfig.set("signs." + name + ".text", text);
+
         }
 
         configManager.save();
+
     }
 
     public void setPrice(String name, double price) {
@@ -320,8 +336,11 @@ public class SignConfig {
         if (signConfig.isConfigurationSection("signs." + name + "")) {
 
             signConfig.set("signs." + name + ".price", price);
+
         }
 
         configManager.save();
+
     }
+
 }
