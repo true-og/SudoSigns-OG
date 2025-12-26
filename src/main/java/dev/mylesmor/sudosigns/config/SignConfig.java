@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 public class SignConfig {
 
     private FileConfiguration signConfig;
-    private ConfigManager configManager;
+    private final ConfigManager configManager;
 
     SignConfig(ConfigManager configManager) {
 
@@ -44,12 +44,11 @@ public class SignConfig {
     // Loads the signs from the config.
     public ArrayList<String> loadSigns() {
 
-        Map<String, SudoSign> tempSigns = new HashMap<>();
+        final Map<String, SudoSign> tempSigns = new HashMap<>();
         Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
 
         String name;
         ArrayList<String> invalidSigns = new ArrayList<>();
-
         for (String key : signSection) {
 
             name = key;
@@ -277,10 +276,11 @@ public class SignConfig {
 
                 if (s.getSign().getWorld().getBlockAt(s.getSign().getLocation()).getBlockData() instanceof Sign) {
 
-                    Sign facing = (Sign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation()).getBlockData();
+                    final Sign facing = (Sign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
+                            .getBlockData();
 
-                    Rotatable data = (Rotatable) facing.getBlockData();
-                    BlockFace rotation = data.getRotation();
+                    final Rotatable data = (Rotatable) facing.getBlockData();
+                    final BlockFace rotation = data.getRotation();
 
                     locSec.set("rotation", rotation);
 
@@ -288,7 +288,7 @@ public class SignConfig {
                         .getBlockData() instanceof WallSign)
                 {
 
-                    WallSign facing = (WallSign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
+                    final WallSign facing = (WallSign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
                             .getBlockData();
 
                     locSec.set("rotation", facing.getFacing().toString());
@@ -304,11 +304,12 @@ public class SignConfig {
 
             }
 
-        } catch (Exception e) {
+        } catch (Exception error) {
 
             if (p != null) {
 
                 Util.sudoSignsMessage(p, "&cERROR: Failed to save sign %NAME% to the config!", name);
+                error.printStackTrace();
 
             }
 
@@ -320,7 +321,7 @@ public class SignConfig {
 
         if (signConfig.isConfigurationSection("signs." + name + "")) {
 
-            List<String> text = signConfig.getStringList("signs." + name + ".text");
+            final List<String> text = signConfig.getStringList("signs." + name + ".text");
             text.set(lineNumber - 1, newText.content());
 
             signConfig.set("signs." + name + ".text", text);

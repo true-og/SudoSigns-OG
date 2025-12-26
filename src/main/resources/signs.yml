@@ -1,0 +1,248 @@
+signs:
+  1Withdraw:
+    text:
+    - §l[Teller]
+    - §BWithdraw
+    - §B1 Diamond
+    - §BFrom Bank
+    price: 0.0
+    location:
+      world: world
+      x: -121.0
+      y: 44.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - withdraw 1: 0.0
+    console-commands: {}
+  Deposit:
+    text:
+    - §l[Teller]
+    - §BDeposit
+    - §BDiamonds
+    - §BTo Bank
+    price: 0.0
+    location:
+      world: world
+      x: -123.0
+      y: 44.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - deposit all: 0.0
+    console-commands: {}
+  Balance:
+    text:
+    - §l[Teller]
+    - §BCheck
+    - §BYour
+    - §BBalance
+    price: 0.0
+    location:
+      world: world
+      x: -125.0
+      y: 44.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - balance: 0.0
+    console-commands: {}
+  SpleggDuel:
+    text:
+    - §8[§31v1 Duel§8]
+    - §60 of 10
+    - §6Players Waiting
+    - §8[§lJOIN§8]
+    price: 0.0
+    location:
+      world: world
+      x: -1.0
+      y: 64.0
+      z: -249.0
+      rotation: SOUTH
+    blocktype: OAK_WALL_SIGN
+    permissions: {}
+    messages:
+    - Splegg is not out yet!: 0.0
+    player-commands: {}
+    console-commands: {}
+  SpleggFFA:
+    text:
+    - §8[§aFFA§8]
+    - §60 of 10
+    - §6Players Waiting
+    - §8[§B§lJOIN§8]
+    price: 0.0
+    location:
+      world: world
+      x: 1.0
+      y: 64.0
+      z: -249.0
+      rotation: SOUTH
+    blocktype: OAK_WALL_SIGN
+    permissions: {}
+    messages:
+    - Splegg is not out yet!: 0.0
+    player-commands: {}
+    console-commands: {}
+  communitychest:
+    text:
+    - ''
+    - §5Community
+    - §BChest
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -21.0
+      y: 63.0
+      z: -200.0
+      rotation: NORTH
+    blocktype: OAK_WALL_SIGN
+    permissions: {}
+    messages:
+    - Use this chest to share items with the community.: 0.0
+    player-commands: {}
+    console-commands: {}
+  balance:
+    text:
+    - ''
+    - §BCHECK
+    - §BBALANCE
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -125.0
+      y: 43.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - balance: 0.0
+    console-commands: {}
+  deposit:
+    text:
+    - ''
+    - §BDEPOSIT
+    - §BDIAMONDS
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -123.0
+      y: 43.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - deposit all: 0.0
+    console-commands: {}
+  withdraw1:
+    text:
+    - ''
+    - §BWITHDRAW
+    - §B1 DIAMOND
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -120.0
+      y: 41.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - withdraw 1: 0.0
+    console-commands: {}
+  withdraw4:
+    text:
+    - ''
+    - §BWITHDRAW
+    - §B4 DIAMONDS
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -120.0
+      y: 42.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands: {}
+    console-commands: {}
+  withdraw16:
+    text:
+    - ''
+    - §BWITHDRAW
+    - §B16 DIAMONDS
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -120.0
+      y: 43.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - withdraw 16: 0.0
+    console-commands: {}
+  withdraw64:
+    text:
+    - ''
+    - §BWITHDRAW
+    - §B64 DIAMONDS
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -121.0
+      y: 43.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - withdraw 64: 0.0
+    console-commands: {}
+  store:
+    text:
+    - §2True§4OG Shop
+    - §BClick here to
+    - §bpurchase a
+    - §brank!
+    price: 0.0
+    location:
+      world: world
+      x: -128.0
+      y: 42.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: OAK_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - buy: 0.0
+    console-commands: {}
+version: 1.2.3

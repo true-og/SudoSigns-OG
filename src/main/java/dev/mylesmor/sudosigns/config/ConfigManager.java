@@ -1,21 +1,23 @@
 package dev.mylesmor.sudosigns.config;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SignMessage;
-import dev.mylesmor.sudosigns.data.SudoSign;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SignMessage;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import net.kyori.adventure.text.TextComponent;
 
 /**
  * The class for managing the plugins config.
@@ -131,30 +133,25 @@ public class ConfigManager {
 
     public boolean loadCustomConfig() {
 
-        if (!SudoSigns.sudoSignsPlugin.getDataFolder().exists()) {
+        try {
 
-            SudoSigns.sudoSignsPlugin.getDataFolder().mkdir();
+            final File dataFolder = SudoSigns.sudoSignsPlugin.getDataFolder();
+            if (!dataFolder.exists() && !dataFolder.mkdirs()) {
 
-        }
+                Bukkit.getLogger().warning("ERROR: Failed to create plugin data folder!");
 
-        signConfigFile = new File(SudoSigns.sudoSignsPlugin.getDataFolder(), "signs.yml");
-        if (!signConfigFile.exists()) {
-
-            try {
-
-                signConfigFile.createNewFile();
-
-            } catch (IOException e) {
-
-                Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                        + "ERROR: Failed to create config!");
-                e.printStackTrace();
+                return false;
 
             }
 
-        }
+            signConfigFile = new File(dataFolder, "signs.yml");
 
-        try {
+            // Copy default from jar if missing
+            if (!signConfigFile.exists()) {
+
+                SudoSigns.sudoSignsPlugin.saveResource("signs.yml", false);
+
+            }
 
             signConfig = YamlConfiguration.loadConfiguration(signConfigFile);
 
@@ -180,7 +177,6 @@ public class ConfigManager {
 
             if (!signConfig.contains("version")) {
 
-                signConfig.createSection("version");
                 signConfig.set("version", "1.2.3");
 
                 save();
@@ -188,23 +184,24 @@ public class ConfigManager {
 
             }
 
-        } catch (Exception e) {
+            return true;
+
+        } catch (Exception error) {
 
             Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
                     + "ERROR: Failed to initialise signs.yml!");
-            e.printStackTrace();
+
+            error.printStackTrace();
 
             return false;
 
         }
 
-        return true;
-
     }
 
     public void fixConfig() {
 
-        Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
+        final Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
         String name = null;
         for (String key : signSection) {
 
@@ -213,9 +210,9 @@ public class ConfigManager {
 
             name = key;
 
-            List<String> pCommands = signConfig.getStringList("signs." + key + ".player-commands");
-            List<String> cCommands = signConfig.getStringList("signs." + key + ".console-commands");
-            List<String> messages = signConfig.getStringList("signs." + key + ".messages");
+            final List<String> pCommands = signConfig.getStringList("signs." + key + ".player-commands");
+            final List<String> cCommands = signConfig.getStringList("signs." + key + ".console-commands");
+            final List<String> messages = signConfig.getStringList("signs." + key + ".messages");
 
             if (pCommands.size() == 0 && cCommands.size() == 0 && messages.size() == 0) {
 
@@ -228,7 +225,7 @@ public class ConfigManager {
 
                 try {
 
-                    ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
+                    final ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
                     HashMap<String, Double> map = new HashMap<>();
                     for (String cmd : pCommands) {
 
