@@ -26,7 +26,7 @@ configurations.creating {
 
 configure<EclipseModel> {
     project {
-        name = "SudoSigns-OG-Plugin"
+        name = "SudoSigns-OG"
     }
     classpath {
         plusConfigurations.add(ideLibs)

@@ -1,10 +1,10 @@
 name: SudoSigns-OG
 version: '${version}' 
-author: MylesMor
+authors: [ MylesMor, NotAlexNoyle ]
 main: dev.mylesmor.sudosigns.SudoSigns
 softdepend: [Multiverse-Core, Vault]
 api-version: '${apiVersion}'
 commands:
   sudosigns:
-    description: Opens the SudoSigns help menu.
+    description: Opens the SudoSigns-OG help menu.
     aliases: [sudosign, ss]
