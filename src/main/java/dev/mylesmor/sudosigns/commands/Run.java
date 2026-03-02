@@ -1,10 +1,12 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.data.SudoSign;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Run {
 
@@ -19,10 +21,10 @@ public class Run {
 
         if (p.hasPermission(Permissions.RUN)) {
 
-            String name;
+            final String name;
             if (args == null) {
 
-                Util.sudoSignsMessage(p, "&6Please click on the sign you would like to run.");
+                UtilitiesOG.trueogMessage(p, "&6Please click on the sign you would like to run.");
                 SudoSigns.users.get(p.getUniqueId()).setRun(true);
                 return;
 
@@ -30,7 +32,7 @@ public class Run {
 
             if (args.length > 1) {
 
-                Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss run [name]&6.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss run [name]&6.");
                 return;
 
             }
@@ -38,21 +40,22 @@ public class Run {
             name = args[0];
             if (SudoSigns.signs.containsKey(name)) {
 
-                SudoSign sign = SudoSigns.signs.get(name);
+                final SudoSign sign = SudoSigns.signs.get(name);
 
-                Util.sudoSignsMessage(p, "&6Executing &e" + sign.getMessages().size() + "&6 message(s) and &e"
+                UtilitiesOG.trueogMessage(p, "&6Executing &e" + sign.getMessages().size() + "&6 message(s) and &e"
                         + (sign.getPlayerCommands().size() + sign.getConsoleCommands().size()) + "&6 command(s)...");
+
                 SudoSigns.signs.get(name).executeCommands(p);
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!", name);
+                UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + name + " &cdoes not exist!");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

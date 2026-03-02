@@ -1,7 +1,8 @@
 package dev.mylesmor.sudosigns.data;
 
-import dev.mylesmor.sudosigns.menus.SignEditor;
 import org.bukkit.entity.Player;
+
+import dev.mylesmor.sudosigns.menus.SignEditor;
 
 /**
  * SudoUser class to store all user variables.

@@ -1,10 +1,13 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.data.SudoSign;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.entity.Player;
+import net.trueog.diamondbankog.api.DiamondBankAPIJava;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Copy {
 
@@ -15,7 +18,7 @@ public class Copy {
      * @param args 1 or 2 arguments: If 1, the name of the new sign. If 2, the name
      *             of the old sign in index 0 and name of new one in index 1.
      */
-    public static void copy(Player p, String[] args) {
+    public static void copy(Player p, String[] args, DiamondBankAPIJava diamondBankAPI) {
 
         if (p.hasPermission(Permissions.COPY)) {
 
@@ -23,7 +26,7 @@ public class Copy {
             String newName = null;
             if (args == null || args.length < 1 || args.length > 2) {
 
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&cERROR: Invalid syntax! &6Correct syntax: &d/ss copy [old-sign-name] <new-sign-name>&6.");
                 return;
 
@@ -45,18 +48,18 @@ public class Copy {
                 SudoSigns.users.get(p.getUniqueId()).setPassThru(newName);
                 if (oldName == null) {
 
-                    Util.sudoSignsMessage(p, "&6Please click the sign you'd like to copy from.");
+                    UtilitiesOG.trueogMessage(p, "&6Please click the sign you'd like to copy from.");
                     SudoSigns.users.get(p.getUniqueId()).setSelectToCopy(true);
 
                 } else {
 
-                    SudoSign oldSign = SudoSigns.signs.get(oldName);
+                    final SudoSign oldSign = SudoSigns.signs.get(oldName);
                     if (oldSign != null) {
 
                         if (!SudoSigns.signs.containsKey(newName)) {
 
-                            Util.sudoSignsMessage(p, "&6Please click the sign you'd like to copy to.");
-                            SudoSign newSign = new SudoSign(newName);
+                            UtilitiesOG.trueogMessage(p, "&6Please click the sign you'd like to copy to.");
+                            final SudoSign newSign = new SudoSign(newName, diamondBankAPI);
 
                             newSign.copyFrom(oldSign);
 
@@ -65,13 +68,13 @@ public class Copy {
 
                         } else {
 
-                            Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &calready exists!");
+                            UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e%NAME% &calready exists!");
 
                         }
 
                     } else {
 
-                        Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!");
+                        UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!");
 
                     }
 
@@ -79,13 +82,13 @@ public class Copy {
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: The name of a SudoSign must only contain numbers and letters!");
+                UtilitiesOG.trueogMessage(p, "&cERROR: The name of a SudoSign must only contain numbers and letters!");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

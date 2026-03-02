@@ -1,9 +1,11 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Fix {
 
@@ -17,26 +19,26 @@ public class Fix {
 
         if (p.hasPermission(Permissions.FIX)) {
 
-            String name;
+            final String name;
             if (args == null) {
 
-                int size = SudoSigns.config.getInvalidEntriesManager().getInvalidEntries().size();
+                final int size = SudoSigns.config.getInvalidEntriesManager().getInvalidEntries().size();
                 if (SudoSigns.config.getInvalidEntriesManager().fixInvalidEntry(null, true)) {
 
                     SudoSigns.config.loadSigns();
                     if (SudoSigns.config.getInvalidEntriesManager().getInvalidEntries().size() == 0) {
 
-                        Util.sudoSignsMessage(p,
+                        UtilitiesOG.trueogMessage(p,
                                 "&aAll invalid entries have been successfully purged from the config.");
 
                     } else if (SudoSigns.config.getInvalidEntriesManager().getInvalidEntries().size() == size) {
 
-                        Util.sudoSignsMessage(p,
+                        UtilitiesOG.trueogMessage(p,
                                 "&cERROR: No invalid entries were able to be automatically purged from the config!");
 
                     } else if (SudoSigns.config.getInvalidEntriesManager().getInvalidEntries().size() < size) {
 
-                        Util.sudoSignsMessage(p,
+                        UtilitiesOG.trueogMessage(p,
                                 "&e" + (SudoSigns.config.getInvalidEntriesManager().getInvalidEntries().size() - size)
                                         + "&a invalid entries were able to be automatically purged from the config. &e"
                                         + Integer.toString(
@@ -53,7 +55,8 @@ public class Fix {
 
             if (args.length > 2) {
 
-                Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss fix [name]&6.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss fix [name]&6.");
+
                 return;
 
             }
@@ -64,23 +67,23 @@ public class Fix {
                 SudoSigns.config.loadSigns();
                 if (SudoSigns.signs.containsKey(name)) {
 
-                    Util.sudoSignsMessage(p, "&aSign &e" + name + "&asuccessfully fixed!");
+                    UtilitiesOG.trueogMessage(p, "&aSign &e" + name + "&asuccessfully fixed!");
 
                 } else {
 
-                    Util.sudoSignsMessage(p, "&cERROR: Sign &e" + name + "&c was unable to be fixed!");
+                    UtilitiesOG.trueogMessage(p, "&cERROR: Sign &e" + name + "&c was unable to be fixed!");
 
                 }
 
             } else {
 
-                Util.sudoSignsMessage(p, "&6WARNING: Nothing fixed! That entry is not invalid.");
+                UtilitiesOG.trueogMessage(p, "&6WARNING: Nothing fixed! That entry is not invalid.");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

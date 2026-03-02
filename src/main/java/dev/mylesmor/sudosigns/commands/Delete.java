@@ -1,9 +1,11 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Delete {
 
@@ -18,20 +20,23 @@ public class Delete {
 
         if (p.hasPermission(Permissions.DELETE)) {
 
-            String name;
+            final String name;
             if (args != null) {
 
                 if (args.length > 1) {
 
-                    Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! &7Correct syntax: &d/ss delete [name]&7.");
+                    UtilitiesOG.trueogMessage(p, "&cERROR: Invalid syntax! &7Correct syntax: &d/ss delete [name]&7.");
+
                     return;
 
                 }
 
             } else {
 
-                Util.sudoSignsMessage(p, "&6Please click the sign you'd like to delete.");
+                UtilitiesOG.trueogMessage(p, "&6Please click the sign you'd like to delete.");
+
                 SudoSigns.users.get(p.getUniqueId()).setDelete(true);
+
                 return;
 
             }
@@ -42,17 +47,17 @@ public class Delete {
                 SudoSigns.signs.remove(name);
                 SudoSigns.config.deleteSign(name);
 
-                Util.sudoSignsMessage(p, "&6Sign &e%NAME% &6successfully deleted.", name);
+                UtilitiesOG.trueogMessage(p, "&6Sign &e" + name + " &6successfully deleted.");
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: A sign with the name &eNAME% &cdoes not exist!", name);
+                UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + " &cdoes not exist!");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 
@@ -68,28 +73,29 @@ public class Delete {
     public static void confirmDelete(Player p, String[] args) {
 
         // If the player has permission to delete signs, do this...
-        if (p.hasPermission(Permissions.DELETE)) {
+        if (!p.hasPermission(Permissions.DELETE)) {
 
-            // If the sign that was selected does not exist, do this...
-            if (args.length != 1) {
+            return;
 
-                // Cancel the deletion confirmation.
-                return;
+        }
 
-            }
+        // If the sign that was selected does not exist, do this...
+        if (args.length != 1) {
 
-            if (SudoSigns.signs.containsKey(args[0])) {
+            return;
 
-                // Send a deletion confirmation menu with a clickable button.
-                Util.selectMenuParser(p, "&c&l[CONFIRM DELETION]",
-                        ("&6Are you sure you want to delete sign &e" + args[0] + "&6?"), p.getName(),
-                        ("/ss delete " + args[0]), ("&cYes, delete the sign: &6" + args[0] + "&c!"));
+        }
 
-            } else {
+        if (SudoSigns.signs.containsKey(args[0])) {
 
-                Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!", args[0]);
+            // Send a deletion confirmation menu with a clickable button.
+            Util.selectMenuParser(p, "&c&l[CONFIRM DELETION]",
+                    ("&6Are you sure you want to delete sign &e" + args[0] + "&6?"), p.getName(),
+                    ("/ss delete " + args[0]), ("&cYes, delete the sign: &6" + args[0] + "&c!"));
 
-            }
+        } else {
+
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + args[0] + " &cdoes not exist!");
 
         }
 

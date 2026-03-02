@@ -1,8 +1,9 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.entity.Player;
 
 public class Help {
 
@@ -103,7 +104,7 @@ public class Help {
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

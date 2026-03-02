@@ -1,13 +1,8 @@
 package dev.mylesmor.sudosigns.menus;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,17 +11,28 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
+import net.kyori.adventure.text.TextComponent;
+import net.trueog.diamondbankog.api.DiamondBankAPIJava;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 public class MainMenu {
 
     private Inventory menu;
-    private SudoSign sign;
-    private Player p;
+    private final SudoSign sign;
+    private final Player p;
     private int lineNumber = 0;
+    private final DiamondBankAPIJava diamondBankAPI;
 
-    public MainMenu(Player p, SudoSign sign, SignEditor editor) {
+    public MainMenu(Player p, SudoSign sign, SignEditor editor, DiamondBankAPIJava diamondBankAPI) {
 
         this.sign = sign;
         this.p = p;
+        this.diamondBankAPI = diamondBankAPI;
 
     }
 
@@ -39,36 +45,36 @@ public class MainMenu {
 
     private void createMainMenu() {
 
-        ArrayList<ItemStack> items = new ArrayList<>();
+        final ArrayList<ItemStack> items = new ArrayList<>();
 
-        Inventory playersInventory = p.getInventory();
-        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-        TextComponent nameHandler = Util.legacySerializerAnyCase("&r&2Editing: &e" + sign.getName());
+        final Inventory playersInventory = p.getInventory();
+        final InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        final TextComponent nameHandler = UtilitiesOG.trueogColorize("&r&2Editing: &e" + sign.getName());
 
         menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
         for (int i = 0; i < menu.getSize(); i++) {
 
             menu.setItem(i, new ItemStack(Material.GRAY_STAINED_GLASS_PANE));
 
-            List<String> lore = new ArrayList<>();
+            final List<String> lore = new ArrayList<>();
             lore.add(" ");
-            menu.getItem(i).lore(Util.convertToTextComponents(lore));
+            menu.getItem(i).lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
 
         }
 
         if (p.hasPermission(Permissions.RENAME)) {
 
-            ItemStack nametag = new ItemStack(Material.NAME_TAG);
-            ItemMeta ntMeta = nametag.getItemMeta();
+            final ItemStack nametag = new ItemStack(Material.NAME_TAG);
+            final ItemMeta ntMeta = nametag.getItemMeta();
 
-            ntMeta.displayName(Util.legacySerializerAnyCase("&r&5Rename Sign"));
+            ntMeta.displayName(UtilitiesOG.trueogColorize("&r&5Rename Sign"));
 
-            List<String> lore = new ArrayList<>();
+            final List<String> lore = new ArrayList<>();
             lore.add("&eChange the text that refers");
             lore.add("&eto this sign in the config");
             lore.add("&efile and in commands.");
 
-            ntMeta.lore(Util.convertToTextComponents(lore));
+            ntMeta.lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
             nametag.setItemMeta(ntMeta);
 
             items.add(nametag);
@@ -77,17 +83,17 @@ public class MainMenu {
 
         if (p.hasPermission(Permissions.EDIT_TEXT)) {
 
-            ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
-            ItemMeta bookMeta = book.getItemMeta();
+            final ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
+            final ItemMeta bookMeta = book.getItemMeta();
 
-            bookMeta.displayName(Util.legacySerializerAnyCase("&r&5Edit Sign Text"));
+            bookMeta.displayName(UtilitiesOG.trueogColorize("&r&5Edit Sign Text"));
 
-            List<String> lore = new ArrayList<>();
+            final List<String> lore = new ArrayList<>();
             lore.add("&eChange the text that displays");
             lore.add("&eon the sign itself. Colored");
             lore.add("&esigns require another plugin.");
 
-            bookMeta.lore(Util.convertToTextComponents(lore));
+            bookMeta.lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
             book.setItemMeta(bookMeta);
 
             items.add(book);
@@ -96,17 +102,17 @@ public class MainMenu {
 
         if (p.hasPermission(Permissions.VIEW_PERMISSION)) {
 
-            ItemStack barrier = new ItemStack(Material.BARRIER);
-            ItemMeta barrierMeta = barrier.getItemMeta();
+            final ItemStack barrier = new ItemStack(Material.BARRIER);
+            final ItemMeta barrierMeta = barrier.getItemMeta();
 
-            barrierMeta.displayName(Util.legacySerializerAnyCase("&r&dPermissions"));
+            barrierMeta.displayName(UtilitiesOG.trueogColorize("&r&dPermissions"));
 
-            List<String> lore = new ArrayList<>();
+            final List<String> lore = new ArrayList<>();
             lore.add("&ePlayers must have all permissions");
             lore.add("&elisted in this section to be able");
             lore.add("&eto use the sign.");
 
-            barrierMeta.lore(Util.convertToTextComponents(lore));
+            barrierMeta.lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
             barrier.setItemMeta(barrierMeta);
 
             items.add(barrier);
@@ -115,15 +121,15 @@ public class MainMenu {
 
         if (p.hasPermission(Permissions.VIEW_COMMAND)) {
 
-            ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
-            ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
+            final ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
+            final ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
 
-            List<String> lore = new ArrayList<>();
+            final List<String> lore = new ArrayList<>();
             lore.add("&eCommands listed here will be executed");
             lore.add("&ewhen a player uses the sign.");
 
-            cmdBlockMeta.lore(Util.convertToTextComponents(lore));
-            cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Commands"));
+            cmdBlockMeta.lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
+            cmdBlockMeta.displayName(UtilitiesOG.trueogColorize("&r&5Commands"));
             cmdBlock.setItemMeta(cmdBlockMeta);
 
             items.add(cmdBlock);
@@ -132,117 +138,110 @@ public class MainMenu {
 
         if (p.hasPermission(Permissions.VIEW_MESSAGE)) {
 
-            ItemStack signBlock = new ItemStack(Material.OAK_SIGN);
-            ItemMeta signMeta = signBlock.getItemMeta();
+            final ItemStack signBlock = new ItemStack(Material.OAK_SIGN);
+            final ItemMeta signMeta = signBlock.getItemMeta();
 
-            signMeta.displayName(Util.legacySerializerAnyCase("&r&5Messages"));
+            signMeta.displayName(UtilitiesOG.trueogColorize("&r&5Messages"));
 
-            List<String> lore = new ArrayList<>();
+            final List<String> lore = new ArrayList<>();
             lore.add("&eMessages listed here will be shown");
             lore.add("&eto the player when they use the sign.");
 
-            signMeta.lore(Util.convertToTextComponents(lore));
+            signMeta.lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
             signBlock.setItemMeta(signMeta);
 
             items.add(signBlock);
 
         }
 
-        if (SudoSigns.econ != null) {
+        final boolean condition = diamondBankAPI != null && p.hasPermission(Permissions.VIEW_PRICE);
+        if (condition) {
 
-            if (p.hasPermission(Permissions.VIEW_PRICE)) {
+            final ItemStack goldNugget = new ItemStack(Material.GOLD_NUGGET);
+            final ItemMeta goldNuggetItemMeta = goldNugget.getItemMeta();
 
-                if (SudoSigns.econ != null) {
+            final List<String> lore = new ArrayList<>();
+            lore.add("&eThe cost to use this sign.");
+            lore.add("&e");
 
-                    ItemStack goldNugget = new ItemStack(Material.GOLD_NUGGET);
-                    ItemMeta goldNuggetItemMeta = goldNugget.getItemMeta();
+            if (!SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
 
-                    List<String> lore = new ArrayList<>();
-                    lore.add("&eThe cost to use this sign.");
-                    lore.add("&e");
+                if (Util.priceIsInteger()) {
 
-                    if (!SudoSigns.getPlugin().getConfig().getBoolean("config.currency-symbol-in-front")) {
+                    if (sign.getPriceAsInteger() == 1) {
 
-                        if (Util.priceIsInteger()) {
-
-                            if (sign.getPriceAsInteger() == 1) {
-
-                                lore.add("&e" + sign.getPriceAsInteger() + SudoSigns.getPlugin().getConfig()
-                                        .getString("config.currency-symbol-singular"));
-
-                            } else {
-
-                                lore.add("&e" + sign.getPriceAsInteger()
-                                        + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
-
-                            }
-
-                        } else {
-
-                            if (sign.getPriceAsDouble() == 1.0) {
-
-                                lore.add("&e" + sign.getPriceAsDouble() + SudoSigns.getPlugin().getConfig()
-                                        .getString("config.currency-symbol-singular"));
-
-                            } else {
-
-                                lore.add("&e" + sign.getPriceAsDouble()
-                                        + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
-
-                            }
-
-                        }
+                        lore.add("&e" + sign.getPriceAsInteger()
+                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular"));
 
                     } else {
 
-                        if (Util.priceIsInteger()) {
-
-                            if (sign.getPriceAsInteger() == 1) {
-
-                                lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
-                                        + "&e" + sign.getPriceAsInteger());
-
-                            } else {
-
-                                lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
-                                        + "&e" + sign.getPriceAsInteger());
-
-                            }
-
-                        } else {
-
-                            if (sign.getPriceAsDouble() == 1.0) {
-
-                                lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
-                                        + "&e" + sign.getPriceAsDouble());
-
-                            } else {
-
-                                lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
-                                        + "&e" + sign.getPriceAsDouble());
-
-                            }
-
-                        }
+                        lore.add("&e" + sign.getPriceAsInteger()
+                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
 
                     }
 
-                    if (p.hasPermission(Permissions.SET_PRICE)) {
+                } else {
 
-                        lore.add("&e");
-                        lore.add("&aClick to edit!");
+                    if (sign.getPriceAsDouble() == 1.0) {
+
+                        lore.add("&e" + sign.getPriceAsDouble()
+                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular"));
+
+                    } else {
+
+                        lore.add("&e" + sign.getPriceAsDouble()
+                                + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural"));
 
                     }
 
-                    goldNuggetItemMeta.lore(Util.convertToTextComponents(lore));
-                    goldNuggetItemMeta.displayName(Util.legacySerializerAnyCase("&r&dPrice"));
-                    goldNugget.setItemMeta(goldNuggetItemMeta);
+                }
 
-                    items.add(goldNugget);
+            } else {
+
+                if (Util.priceIsInteger()) {
+
+                    if (sign.getPriceAsInteger() == 1) {
+
+                        lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e"
+                                + sign.getPriceAsInteger());
+
+                    } else {
+
+                        lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e"
+                                + sign.getPriceAsInteger());
+
+                    }
+
+                } else {
+
+                    if (sign.getPriceAsDouble() == 1.0) {
+
+                        lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e"
+                                + sign.getPriceAsDouble());
+
+                    } else {
+
+                        lore.add(SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e"
+                                + sign.getPriceAsDouble());
+
+                    }
 
                 }
 
             }
+
+            if (p.hasPermission(Permissions.SET_PRICE)) {
+
+                lore.add("&e");
+                lore.add("&aClick to edit!");
+
+            }
+
+            goldNuggetItemMeta.lore(lore.stream().map(UtilitiesOG::trueogColorize).toList());
+            goldNuggetItemMeta.displayName(UtilitiesOG.trueogColorize("&r&dPrice"));
+            goldNugget.setItemMeta(goldNuggetItemMeta);
+
+            items.add(goldNugget);
 
         }
 
@@ -288,7 +287,8 @@ public class MainMenu {
 
         p.closeInventory();
 
-        Util.sudoSignsMessage(p, "&6Please enter the price to use the sign! Type &cCANCEL &6to cancel the operation.");
+        UtilitiesOG.trueogMessage(p,
+                "&6Please enter the price to use the sign! Type &cCANCEL &6to cancel the operation.");
         SudoSigns.users.get(p.getUniqueId()).addTextInput(PlayerInput.SET_PRICE);
 
     }
@@ -302,12 +302,12 @@ public class MainMenu {
 
             if (sign.getPriceAsDouble() == 1.0) {
 
-                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                UtilitiesOG.trueogMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
                         + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                UtilitiesOG.trueogMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
                         + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
 
             }
@@ -316,14 +316,14 @@ public class MainMenu {
 
             if (sign.getPriceAsInteger() == 1) {
 
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e"
                                 + price + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e"
                                 + price + "&6.");
@@ -343,12 +343,12 @@ public class MainMenu {
 
             if (sign.getPriceAsInteger() == 1) {
 
-                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                UtilitiesOG.trueogMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
                         + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
+                UtilitiesOG.trueogMessage(p, "&6The price of &e" + sign.getName() + " &6has been set to: &e" + price
                         + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&6.");
 
             }
@@ -357,14 +357,14 @@ public class MainMenu {
 
             if (sign.getPriceAsInteger() == 1) {
 
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular") + "&e"
                                 + price + "&6.");
 
             } else {
 
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&6The price of &e" + sign.getName() + " &6has been set to: "
                                 + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural") + "&e"
                                 + price + "&6.");
@@ -378,7 +378,7 @@ public class MainMenu {
     public void setLineNumber(int lineNumber) {
 
         this.lineNumber = lineNumber;
-        Util.sudoSignsMessage(p,
+        UtilitiesOG.trueogMessage(p,
                 "&6Please enter the new text (maximum 15 characters), using the &e& &6symbol for color codes. Type &cCANCEL &6to cancel the operation.");
         SudoSigns.users.get(p.getUniqueId()).addTextInput(PlayerInput.EDIT_TEXT);
 
@@ -386,7 +386,7 @@ public class MainMenu {
 
     public void setText(TextComponent message) {
 
-        Util.sudoSignsMessage(p, "&aLine &e" + lineNumber + " &ahas been set to: " + message.content());
+        UtilitiesOG.trueogMessage(p, "&aLine &e" + lineNumber + " &ahas been set to: " + message.content());
         sign.editLine(lineNumber - 1, message);
         SudoSigns.config.editSignText(sign.getName(), lineNumber, message);
 

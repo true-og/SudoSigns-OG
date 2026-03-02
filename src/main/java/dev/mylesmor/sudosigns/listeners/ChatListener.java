@@ -1,12 +1,5 @@
 package dev.mylesmor.sudosigns.listeners;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.menus.SignEditor;
-import dev.mylesmor.sudosigns.util.Util;
-import io.papermc.paper.event.player.AsyncChatEvent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,333 +7,348 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.util.Consumer;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.menus.SignEditor;
+import dev.mylesmor.sudosigns.util.Util;
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 /**
  * The ChatListener class for taking user input in chat.
  * 
  * @author MylesMor
  * @author https://mylesmor.dev
+ * @Maintainer NotAlexNoyle
+ * @Maintainer https://true-og.net
  */
 public class ChatListener implements Listener {
 
     @EventHandler
-    public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent e) {
+    public void onPlayerCommandPreprocessEvent(PlayerCommandPreprocessEvent playerCommandPreprocessEvent) {
 
-        Player p = e.getPlayer();
-        SudoUser user = SudoSigns.users.get(p.getUniqueId());
-        if (user != null) {
+        final Player p = playerCommandPreprocessEvent.getPlayer();
+        final SudoUser user = SudoSigns.users.get(p.getUniqueId());
+        final boolean condition = user != null && user.isTextInput() && user.isEditing();
+        if (!condition) {
 
-            if (user.isTextInput() && user.isEditing()) {
-
-                if (user.getInputType() == PlayerInput.CONSOLE_COMMAND
-                        || user.getInputType() == PlayerInput.PLAYER_COMMAND)
-                {
-
-                    user.getEditor().getCommandsMenu().addCommand(e.getMessage().substring(1), user.getInputType());
-                    user.removeTextInput();
-
-                } else {
-
-                    Util.sudoSignsMessage(p, "&eWARNING: &6Operation Cancelled!");
-                    user.removeTextInput();
-
-                }
-
-                e.setCancelled(true);
-
-            }
+            return;
 
         }
+
+        if (user.getInputType() == PlayerInput.CONSOLE_COMMAND || user.getInputType() == PlayerInput.PLAYER_COMMAND) {
+
+            user.getEditor().getCommandsMenu().addCommand(playerCommandPreprocessEvent.getMessage().substring(1),
+                    user.getInputType());
+            user.removeTextInput();
+
+        } else {
+
+            UtilitiesOG.trueogMessage(p, "&eWARNING: &6Operation Cancelled!");
+
+            user.removeTextInput();
+
+        }
+
+        playerCommandPreprocessEvent.setCancelled(true);
 
     }
 
     @EventHandler
-    public void onAsyncPlayerChat(AsyncChatEvent e) {
+    public void onAsyncPlayerChat(AsyncChatEvent asyncChatEvent) {
 
-        Player p = e.getPlayer();
-        SudoUser user = SudoSigns.users.get(p.getUniqueId());
-        if (user != null) {
+        final Player p = asyncChatEvent.getPlayer();
+        final SudoUser user = SudoSigns.users.get(p.getUniqueId());
+        final boolean condition = user != null && user.isTextInput() && user.isEditing();
+        if (!condition) {
 
-            if (user.isTextInput() && user.isEditing()) {
+            return;
 
-                SignEditor editor = user.getEditor();
+        }
 
-                switch (user.getInputType()) {
+        final SignEditor editor = user.getEditor();
+        switch (user.getInputType()) {
 
-                    case PLAYER_COMMAND:
-                    case CONSOLE_COMMAND:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+            case PLAYER_COMMAND, CONSOLE_COMMAND -> {
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToCommands);
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            return;
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToCommands);
 
-                        }
+                    return;
 
-                        user.removeTextInput();
+                }
 
-                        handle(e, true, "No command found! Cancelling...", editor, user, null, editor::goToCommands);
+                user.removeTextInput();
+                handle(asyncChatEvent, true, "No command found! Cancelling...", editor, user, null,
+                        editor::goToCommands);
 
-                        break;
-                    case RENAME:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+            }
+            case RENAME -> {
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToMain);
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            return;
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToMain);
 
-                        }
+                    return;
 
-                        handle(e, true, null, editor, user,
-                                edit -> editor
-                                        .renameSign(PlainTextComponentSerializer.plainText().serialize(e.message())),
-                                editor::goToMain);
+                }
 
-                        break;
-                    case PERMISSION:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.renameSign(
+                                PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())),
+                        editor::goToMain);
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToPermissions);
+            }
+            case PERMISSION -> {
 
-                            return;
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                        }
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToPermissions);
 
-                        handle(e, true, null, editor, user,
-                                edit -> editor.getPermMenu().addPermission(true,
-                                        PlainTextComponentSerializer.plainText().serialize(e.message())),
-                                editor::goToPermissions);
+                    return;
 
-                        break;
-                    case MESSAGE:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                }
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToMessages);
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.getPermMenu().addPermission(true,
+                                PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())),
+                        editor::goToPermissions);
 
-                            return;
+            }
+            case MESSAGE -> {
 
-                        }
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                        handle(e, true, null, editor, user,
-                                edit -> editor.getMessagesMenu()
-                                        .addMessage(PlainTextComponentSerializer.plainText().serialize(e.message())),
-                                editor::goToMessages);
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToMessages);
 
-                        break;
-                    case COMMAND_DELAY:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                    return;
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToCommands);
+                }
 
-                            return;
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.getMessagesMenu().addMessage(
+                                PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())),
+                        editor::goToMessages);
 
-                        }
+            }
+            case COMMAND_DELAY -> {
 
-                        double delay = 0;
-                        try {
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            delay = Double.parseDouble(PlainTextComponentSerializer.plainText().serialize(e.message()));
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToCommands);
 
-                        } catch (NumberFormatException nfe) {
+                    return;
 
-                            e.setCancelled(true);
-                            Util.sudoSignsMessage(p, "&cERROR: Please enter a valid number.");
+                }
 
-                            return;
+                double delay = 0;
+                try {
 
-                        }
+                    delay = Double
+                            .parseDouble(PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message()));
 
-                        double finalDelay = delay;
+                } catch (NumberFormatException numberFormatException) {
 
-                        handle(e, true, null, editor, user, edit -> editor.getCommandOptionsMenu().setDelay(finalDelay),
-                                editor::goToCommands);
+                    asyncChatEvent.setCancelled(true);
+                    UtilitiesOG.trueogMessage(p, "&cERROR: Please enter a valid number.");
 
-                        break;
-                    case MESSAGE_DELAY:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                    return;
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToMessages);
+                }
 
-                            return;
+                final double finalDelay = delay;
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.getCommandOptionsMenu().setDelay(finalDelay), editor::goToCommands);
 
-                        }
+            }
+            case MESSAGE_DELAY -> {
 
-                        double messageDelay = 0;
-                        try {
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            messageDelay = Double
-                                    .parseDouble(PlainTextComponentSerializer.plainText().serialize(e.message()));
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToMessages);
 
-                        } catch (NumberFormatException nfe) {
+                    return;
 
-                            e.setCancelled(true);
-                            Util.sudoSignsMessage(p, "&cERROR: Please enter a valid number!");
+                }
 
-                            return;
+                double messageDelay = 0;
+                try {
 
-                        }
+                    messageDelay = Double
+                            .parseDouble(PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message()));
 
-                        double finalMessageDelay = messageDelay;
+                } catch (NumberFormatException nfe) {
 
-                        handle(e, true, null, editor, user,
-                                edit -> editor.getMessageOptionsMenu().setDelay(finalMessageDelay),
-                                editor::goToMessages);
+                    asyncChatEvent.setCancelled(true);
+                    UtilitiesOG.trueogMessage(p, "&cERROR: Please enter a valid number!");
 
-                        break;
-                    case EDIT_TEXT_NUMBER:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                    return;
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToMessages);
+                }
 
-                            return;
+                final double finalMessageDelay = messageDelay;
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.getMessageOptionsMenu().setDelay(finalMessageDelay), editor::goToMessages);
 
-                        }
+            }
+            case EDIT_TEXT_NUMBER -> {
 
-                        int lineNumber = 0;
-                        try {
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            lineNumber = Integer
-                                    .parseInt(PlainTextComponentSerializer.plainText().serialize(e.message()));
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToMessages);
 
-                        } catch (NumberFormatException nfe) {
+                    return;
 
-                            e.setCancelled(true);
-                            Util.sudoSignsMessage(p, "&cERROR: Please enter a valid number between 1-4!");
+                }
 
-                            return;
+                int lineNumber = 0;
+                try {
 
-                        }
-                        if (lineNumber < 1 || lineNumber > 4) {
+                    lineNumber = Integer
+                            .parseInt(PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message()));
 
-                            e.setCancelled(true);
-                            Util.sudoSignsMessage(p, "&cERROR: Please enter a valid number between 1-4!");
+                } catch (NumberFormatException nfe) {
 
-                            return;
+                    asyncChatEvent.setCancelled(true);
+                    UtilitiesOG.trueogMessage(p, "&cERROR: Please enter a valid number between 1-4!");
 
-                        }
+                    return;
 
-                        final int finalLineNumber = lineNumber;
+                }
 
-                        handle(e, true, null, editor, user, edit -> editor.getMainMenu().setLineNumber(finalLineNumber),
-                                null);
+                if (lineNumber < 1 || lineNumber > 4) {
 
-                        break;
-                    case EDIT_TEXT:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                    asyncChatEvent.setCancelled(true);
+                    UtilitiesOG.trueogMessage(p, "&cERROR: Please enter a valid number between 1-4!");
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToMessages);
+                    return;
 
-                            return;
+                }
 
-                        }
+                final int finalLineNumber = lineNumber;
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.getMainMenu().setLineNumber(finalLineNumber), null);
 
-                        // Regular expression contributed by lazerl0rd (MIT) at
-                        // https://github.com/MylesMor/SudoSigns/pull/4
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .replaceAll("&([0-9]|[a-g]|[k-o]|r)", "").length() > 15)
-                        {
+            }
+            case EDIT_TEXT -> {
 
-                            e.setCancelled(true);
-                            Util.sudoSignsMessage(p, "&cERROR: The message can't be greater than 15 characters!");
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            return;
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToMessages);
 
-                        }
+                    return;
 
-                        handle(e, true, null, editor, user,
-                                edit -> editor.getMainMenu()
-                                        .setText(Util.legacySerializerAnyCase(
-                                                PlainTextComponentSerializer.plainText().serialize(e.message()))),
-                                editor::goToMain);
+                }
 
-                        break;
-                    case SET_PRICE:
-                        if (PlainTextComponentSerializer.plainText().serialize(e.message())
-                                .equalsIgnoreCase("cancel"))
-                        {
+                // Regular expression contributed by lazerl0rd (MIT) at
+                // https://github.com/MylesMor/SudoSigns/pull/4
+                // https://web.archive.org/web/20260302082938/https://github.com/MylesMor/SudoSigns/pull/4
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .replaceAll("&([0-9]|[a-g]|[k-o]|r)", "").length() > 15)
+                {
 
-                            handle(e, true, "Cancelled!", editor, user, null, editor::goToMessages);
+                    asyncChatEvent.setCancelled(true);
+                    UtilitiesOG.trueogMessage(p, "&cERROR: The message can't be greater than 15 characters!");
 
-                            return;
+                    return;
 
-                        }
+                }
 
-                        if (Util.priceIsInteger()) {
+                handle(asyncChatEvent, true, null, editor, user,
+                        edit -> editor.getMainMenu()
+                                .setText(UtilitiesOG.trueogColorize(
+                                        PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message()))),
+                        editor::goToMain);
 
-                            int price;
-                            try {
+            }
+            case SET_PRICE -> {
 
-                                price = Integer
-                                        .parseInt(PlainTextComponentSerializer.plainText().serialize(e.message()));
+                if (PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message())
+                        .equalsIgnoreCase("cancel"))
+                {
 
-                            } catch (NumberFormatException nfe) {
+                    handle(asyncChatEvent, true, "Cancelled!", editor, user, null, editor::goToMessages);
 
-                                e.setCancelled(true);
-                                Util.sudoSignsMessage(p, "&cERROR: Please enter a valid integer!");
+                    return;
 
-                                return;
+                }
 
-                            }
+                if (Util.priceIsInteger()) {
 
-                            if (price < 0) {
+                    final int price;
+                    try {
 
-                                e.setCancelled(true);
-                                Util.sudoSignsMessage(p, "&cERROR: Please enter &e0&c, or a positive integer!");
+                        price = Integer
+                                .parseInt(PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message()));
 
-                                return;
+                    } catch (NumberFormatException nfe) {
 
-                            }
+                        asyncChatEvent.setCancelled(true);
+                        UtilitiesOG.trueogMessage(p, "&cERROR: Please enter a valid integer!");
 
-                            handle(e, true, null, editor, user, edit -> editor.getMainMenu().setPriceAsInteger(price),
-                                    editor::goToMain);
+                        return;
 
-                        } else {
+                    }
 
-                            double price;
-                            try {
+                    if (price < 0) {
 
-                                price = Double
-                                        .parseDouble(PlainTextComponentSerializer.plainText().serialize(e.message()));
+                        asyncChatEvent.setCancelled(true);
+                        UtilitiesOG.trueogMessage(p, "&cERROR: Please enter &e0&c, or a positive integer!");
 
-                            } catch (NumberFormatException nfe) {
+                        return;
 
-                                e.setCancelled(true);
-                                Util.sudoSignsMessage(p, "&cERROR: Please enter a valid number!");
+                    }
 
-                                return;
+                    handle(asyncChatEvent, true, null, editor, user,
+                            edit -> editor.getMainMenu().setPriceAsInteger(price), editor::goToMain);
 
-                            }
+                } else {
 
-                            if (price < 0) {
+                    final double price;
+                    try {
 
-                                e.setCancelled(true);
-                                Util.sudoSignsMessage(p, "&cERROR: Please enter &e0&c, or a positive number!");
+                        price = Double.parseDouble(
+                                PlainTextComponentSerializer.plainText().serialize(asyncChatEvent.message()));
 
-                                return;
+                    } catch (NumberFormatException nfe) {
 
-                            }
+                        asyncChatEvent.setCancelled(true);
+                        UtilitiesOG.trueogMessage(p, "&cERROR: Please enter a valid number!");
 
-                            handle(e, true, null, editor, user, edit -> editor.getMainMenu().setPriceAsDouble(price),
-                                    editor::goToMain);
+                        return;
 
-                        }
+                    }
 
-                        break;
+                    if (price < 0) {
+
+                        asyncChatEvent.setCancelled(true);
+                        UtilitiesOG.trueogMessage(p, "&cERROR: Please enter &e0&c, or a positive number!");
+
+                        return;
+
+                    }
+
+                    handle(asyncChatEvent, true, null, editor, user,
+                            edit -> editor.getMainMenu().setPriceAsDouble(price), editor::goToMain);
 
                 }
 
@@ -362,7 +370,7 @@ public class ChatListener implements Listener {
 
         if (message != null) {
 
-            Util.sudoSignsMessage(e.getPlayer(), "&c" + message);
+            UtilitiesOG.trueogMessage(e.getPlayer(), "&c" + message);
 
         }
 

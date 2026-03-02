@@ -1,17 +1,11 @@
 package dev.mylesmor.sudosigns.config;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SignMessage;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -23,15 +17,27 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SignMessage;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.util.Util;
+import net.kyori.adventure.text.TextComponent;
+import net.trueog.diamondbankog.api.DiamondBankAPIJava;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 public class SignConfig {
 
     private FileConfiguration signConfig;
     private final ConfigManager configManager;
+    private final DiamondBankAPIJava diamondBankAPI;
 
-    SignConfig(ConfigManager configManager) {
+    SignConfig(ConfigManager configManager, DiamondBankAPIJava diamondBankAPI) {
 
         this.configManager = configManager;
         this.signConfig = configManager.getSignConfig();
+        this.diamondBankAPI = diamondBankAPI;
 
     }
 
@@ -45,38 +51,38 @@ public class SignConfig {
     public ArrayList<String> loadSigns() {
 
         final Map<String, SudoSign> tempSigns = new HashMap<>();
-        Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
+        final Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
 
         String name;
-        ArrayList<String> invalidSigns = new ArrayList<>();
+        final ArrayList<String> invalidSigns = new ArrayList<>();
         for (String key : signSection) {
 
             name = key;
 
             try {
 
-                ConfigurationSection locSec = signConfig.getConfigurationSection("signs." + key + ".location");
+                final ConfigurationSection locSec = signConfig.getConfigurationSection("signs." + key + ".location");
 
-                String world = locSec.getString("world");
-                double x = locSec.getDouble("x");
-                double y = locSec.getDouble("y");
-                double z = locSec.getDouble("z");
-                World w = Bukkit.getServer().getWorld(world);
+                final String world = locSec.getString("world");
+                final double x = locSec.getDouble("x");
+                final double y = locSec.getDouble("y");
+                final double z = locSec.getDouble("z");
+                final World w = Bukkit.getServer().getWorld(world);
 
                 if (w != null) {
 
-                    Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
+                    final Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
                     if (loc.getBlock().getState() instanceof Sign || loc.getBlock().getState() instanceof WallSign) {
 
-                        Sign sign = (Sign) loc.getBlock().getState();
+                        final Sign sign = (Sign) loc.getBlock().getState();
 
-                        SudoSign ss = new SudoSign(key);
+                        final SudoSign ss = new SudoSign(key, diamondBankAPI);
                         ss.setSign(sign);
 
-                        List<Map<?, ?>> pCommands = signConfig.getMapList("signs." + key + ".player-commands");
-                        List<Map<?, ?>> cCommands = signConfig.getMapList("signs." + key + ".console-commands");
-                        List<String> permissions = signConfig.getStringList("signs." + key + ".permissions");
-                        List<Map<?, ?>> messages = signConfig.getMapList("signs." + key + ".messages");
+                        final List<Map<?, ?>> pCommands = signConfig.getMapList("signs." + key + ".player-commands");
+                        final List<Map<?, ?>> cCommands = signConfig.getMapList("signs." + key + ".console-commands");
+                        final List<String> permissions = signConfig.getStringList("signs." + key + ".permissions");
+                        final List<Map<?, ?>> messages = signConfig.getMapList("signs." + key + ".messages");
 
                         if (Util.priceIsInteger()) {
 
@@ -84,11 +90,11 @@ public class SignConfig {
 
                                 ss.setPriceAsInteger((Integer) signConfig.get("signs." + key + ".price"));
 
-                            } catch (Exception e) {
+                            } catch (Exception error) {
 
-                                Bukkit.getLogger()
-                                        .info(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                                + "ERROR: Invalid price for sign " + name + "! Defaulting to 0...");
+                                UtilitiesOG.logToConsole(
+                                        SudoSigns.getPlugin().getConfig().getString("config.console-prefix"),
+                                        "ERROR: Invalid price for sign " + name + "! Defaulting to 0...");
 
                                 ss.setPriceAsInteger(0);
 
@@ -100,7 +106,7 @@ public class SignConfig {
 
                                 ss.setPriceAsDouble((Double) signConfig.get("signs." + key + ".price"));
 
-                            } catch (Exception e) {
+                            } catch (Exception error) {
 
                                 Bukkit.getLogger()
                                         .info(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
@@ -135,11 +141,7 @@ public class SignConfig {
 
                         }
 
-                        for (String perm : permissions) {
-
-                            ss.addPermission(perm);
-
-                        }
+                        permissions.forEach(ss::addPermission);
 
                         number = 0;
                         for (Map<?, ?> sc : messages) {
@@ -175,9 +177,10 @@ public class SignConfig {
 
                 }
 
-            } catch (Exception e) {
+            } catch (Exception error) {
 
-                e.printStackTrace();
+                error.printStackTrace();
+
                 return null;
 
             }
@@ -225,11 +228,7 @@ public class SignConfig {
 
         } else {
 
-            for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
-
-                saveSign(entry.getValue(), p);
-
-            }
+            SudoSigns.signs.entrySet().forEach(entry -> saveSign(entry.getValue(), p));
 
         }
 
@@ -245,7 +244,7 @@ public class SignConfig {
      */
     public void saveSign(SudoSign s, Player p) {
 
-        String name = s.getName();
+        final String name = s.getName();
         try {
 
             if (!signConfig.isConfigurationSection("signs." + name + "")) {
@@ -253,19 +252,17 @@ public class SignConfig {
                 signConfig.createSection("signs." + name + "");
                 signConfig.createSection("signs." + name + ".text");
 
-                ArrayList<String> lines = new ArrayList<>();
-
-                lines.addAll(s.getText());
+                final ArrayList<String> lines = new ArrayList<>(s.getText());
 
                 signConfig.set("signs." + name + ".text", lines);
                 signConfig.set("signs." + name + ".price", 0.0);
 
-                ConfigurationSection locSec = signConfig.createSection("signs." + name + ".location");
+                final ConfigurationSection locSec = signConfig.createSection("signs." + name + ".location");
 
-                String world = s.getSign().getWorld().getName();
-                double x = s.getSign().getLocation().getX();
-                double y = s.getSign().getLocation().getY();
-                double z = s.getSign().getLocation().getZ();
+                final String world = s.getSign().getWorld().getName();
+                final double x = s.getSign().getLocation().getX();
+                final double y = s.getSign().getLocation().getY();
+                final double z = s.getSign().getLocation().getZ();
 
                 signConfig.set("signs." + name + ".blocktype", s.getSign().getType().toString());
 
@@ -308,7 +305,7 @@ public class SignConfig {
 
             if (p != null) {
 
-                Util.sudoSignsMessage(p, "&cERROR: Failed to save sign %NAME% to the config!", name);
+                UtilitiesOG.trueogMessage(p, "&cERROR: Failed to save sign &e" + name + " &cto the config!");
                 error.printStackTrace();
 
             }
@@ -322,6 +319,7 @@ public class SignConfig {
         if (signConfig.isConfigurationSection("signs." + name + "")) {
 
             final List<String> text = signConfig.getStringList("signs." + name + ".text");
+
             text.set(lineNumber - 1, newText.content());
 
             signConfig.set("signs." + name + ".text", text);

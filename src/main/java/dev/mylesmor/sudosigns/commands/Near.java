@@ -1,12 +1,15 @@
 package dev.mylesmor.sudosigns.commands;
 
+import java.util.Map;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.data.SudoSign;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import java.util.Map;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Near {
 
@@ -27,7 +30,7 @@ public class Near {
 
                 if (args.length > 1) {
 
-                    Util.sudoSignsMessage(p,
+                    UtilitiesOG.trueogMessage(p,
                             "&cERROR: Invalid syntax! " + "&6Correct syntax: " + "&d/ss near [radius]" + "&6.");
                     return;
 
@@ -49,9 +52,9 @@ public class Near {
 
                     r = Integer.parseInt(radius);
 
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException numberFormatException) {
 
-                    Util.sudoSignsMessage(p,
+                    UtilitiesOG.trueogMessage(p,
                             "&cERROR: &e" + radius + " &cis not a valid number! &6Reverting to a radius of &e5&6.");
                     r = 5;
 
@@ -62,14 +65,18 @@ public class Near {
             boolean found = false;
             for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
-                Location signLoc = entry.getValue().getSign().getLocation();
+                final Location signLoc = entry.getValue().getSign().getLocation();
                 try {
 
                     if (signLoc.distance(p.getLocation()) <= r) {
 
-                        if (!found)
-                            Util.sudoSignsMessage(p, "&6Displaying SudoSigns within a radius of &e%NAME% &6block(s):&e",
-                                    Integer.toString(r));
+                        if (!found) {
+
+                            UtilitiesOG.trueogMessage(p, "&6Displaying SudoSigns within a radius of &e"
+                                    + Integer.toString(r) + " &6block(s):&e");
+
+                        }
+
                         found = true;
                         Util.sendSelectMenus(p, entry.getKey());
 
@@ -83,14 +90,14 @@ public class Near {
 
             if (!found) {
 
-                Util.sudoSignsMessage(p, "&6No SudoSigns found within a radius of &e%NAME% &6block(s).&e",
-                        Integer.toString(r));
+                UtilitiesOG.trueogMessage(p,
+                        "&6No SudoSigns found within a radius of &e" + Integer.toString(r) + " &6block(s).&e");
 
             }
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cYou do not have permission to do that!");
+            Util.sudoSignsPermissionsError(p);
 
         }
 

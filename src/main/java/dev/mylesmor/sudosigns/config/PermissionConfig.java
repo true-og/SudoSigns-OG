@@ -1,13 +1,15 @@
 package dev.mylesmor.sudosigns.config;
 
-import dev.mylesmor.sudosigns.data.SudoSign;
 import java.util.List;
+
 import org.bukkit.configuration.file.FileConfiguration;
+
+import dev.mylesmor.sudosigns.data.SudoSign;
 
 public class PermissionConfig {
 
-    private FileConfiguration signConfig;
-    private ConfigManager configManager;
+    private final FileConfiguration signConfig;
+    private final ConfigManager configManager;
 
     PermissionConfig(ConfigManager configManager) {
 
@@ -18,8 +20,8 @@ public class PermissionConfig {
 
     public void addPermissionToConfig(SudoSign s, String perm) {
 
-        String path = "signs." + s.getName() + ".permissions";
-        List<String> perms = signConfig.getStringList(path);
+        final String path = "signs." + s.getName() + ".permissions";
+        final List<String> perms = signConfig.getStringList(path);
         perms.add(perm);
         signConfig.set(path, perms);
         configManager.save();
@@ -28,8 +30,8 @@ public class PermissionConfig {
 
     public void deletePermissionFromConfig(SudoSign s, String perm) {
 
-        String path = "signs." + s.getName() + ".permissions";
-        List<String> perms = signConfig.getStringList(path);
+        final String path = "signs." + s.getName() + ".permissions";
+        final List<String> perms = signConfig.getStringList(path);
         perms.remove(perm);
         signConfig.set(path, perms);
         configManager.save();

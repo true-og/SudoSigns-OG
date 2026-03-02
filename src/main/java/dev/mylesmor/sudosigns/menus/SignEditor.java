@@ -1,19 +1,24 @@
 package dev.mylesmor.sudosigns.menus;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.data.PlayerInput;
 import dev.mylesmor.sudosigns.data.SudoSign;
 import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Util;
-import java.util.Map;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+import net.trueog.diamondbankog.api.DiamondBankAPIJava;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class SignEditor {
 
-    private Player p;
-    private SudoUser su;
-    private SudoSign sign;
+    private final Player p;
+    private final SudoUser su;
+    private final SudoSign sign;
     private MainMenu mainMenu;
     private PermissionsMenu permMenu;
     private CommandsMenu commandsMenu;
@@ -21,12 +26,14 @@ public class SignEditor {
     private MessageOptionsMenu messageOptionsMenu;
     private MessagesMenu messagesMenu;
     private GUIPage currentPage;
+    private final DiamondBankAPIJava diamondBankAPI;
 
-    public SignEditor(Player p, SudoSign s, SudoUser su) {
+    public SignEditor(Player p, SudoSign s, SudoUser su, DiamondBankAPIJava diamondBankAPI) {
 
         this.su = su;
         this.p = p;
         this.sign = s;
+        this.diamondBankAPI = diamondBankAPI;
 
         goToMain();
 
@@ -48,7 +55,7 @@ public class SignEditor {
 
         if (mainMenu == null) {
 
-            mainMenu = new MainMenu(p, sign, this);
+            mainMenu = new MainMenu(p, sign, this, diamondBankAPI);
 
         }
 
@@ -152,13 +159,13 @@ public class SignEditor {
 
     public void endEditor() {
 
-        Util.sudoSignsMessage(p, "&aChanges saved to sign &e%NAME%&a.", sign.getName());
+        UtilitiesOG.trueogMessage(p, "&aChanges saved to sign &e" + sign.getName() + " &a.");
 
     }
 
     public void editSignNumber() {
 
-        Util.sudoSignsMessage(p, "&6Please enter the line you would like to edit (1-4) or type &cCANCEL&6!");
+        UtilitiesOG.trueogMessage(p, "&6Please enter the line you would like to edit (1-4) or type &cCANCEL&6!");
         su.addTextInput(PlayerInput.EDIT_TEXT_NUMBER);
         p.closeInventory();
 
@@ -166,8 +173,10 @@ public class SignEditor {
 
     public void prepareRename() {
 
-        Util.sudoSignsMessage(p, "&6Please enter the new name for the sign in chat or type &cCANCEL&6!");
+        UtilitiesOG.trueogMessage(p, "&6Please enter the new name for the sign in chat or type &cCANCEL&6!");
+
         su.addTextInput(PlayerInput.RENAME);
+
         p.closeInventory();
 
     }
@@ -176,15 +185,18 @@ public class SignEditor {
 
         if (SudoSigns.signs.containsKey(s)) {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &calready exists! &6Cancelling...", s);
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + s + " &calready exists! &6Cancelling...");
 
         } else {
 
             sign.setName(s);
 
             Map.Entry<String, SudoSign> found = null;
-            for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
+            for (Iterator<Entry<String, SudoSign>> iterator = SudoSigns.signs.entrySet().iterator(); iterator
+                    .hasNext();)
+            {
 
+                final Map.Entry<String, SudoSign> entry = iterator.next();
                 if (entry.getValue().equals(sign)) {
 
                     found = entry;
@@ -198,7 +210,7 @@ public class SignEditor {
                 SudoSigns.signs.remove(found.getKey());
                 SudoSigns.signs.put(s, sign);
 
-                Util.sudoSignsMessage(p, "&aSign successfully renamed to &e%NAME%&a.", s);
+                UtilitiesOG.trueogMessage(p, "&aSign successfully renamed to &e" + s + "&a.");
 
                 SudoSigns.config.saveSign(found.getValue(), true, p);
                 SudoSigns.config.deleteSign(found.getKey());

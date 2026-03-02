@@ -1,9 +1,9 @@
 package dev.mylesmor.sudosigns.config;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +13,9 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import dev.mylesmor.sudosigns.SudoSigns;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class InvalidEntriesManager {
 
@@ -50,46 +53,48 @@ public class InvalidEntriesManager {
 
         try {
 
-            ConfigurationSection locSec = config.getConfigurationSection("signs." + s + ".location");
-            String world = locSec.getString("world");
-            double x = locSec.getDouble("x");
-            double y = locSec.getDouble("y");
-            double z = locSec.getDouble("z");
+            final ConfigurationSection locSec = config.getConfigurationSection("signs." + s + ".location");
+            final String world = locSec.getString("world");
+            final double x = locSec.getDouble("x");
+            final double y = locSec.getDouble("y");
+            final double z = locSec.getDouble("z");
             String matString = config.getString("signs." + s + ".blocktype");
-            if (SudoSigns.version.contains("1.13")) {
+            if (StringUtils.contains(SudoSigns.version, "1.13")) {
 
                 matString = "SIGN";
 
             }
 
-            Material material = Material.valueOf(matString);
-            BlockFace blockFace = BlockFace.valueOf(locSec.getString("rotation"));
-            World w = Bukkit.getServer().getWorld(world);
+            final Material material = Material.valueOf(matString);
+            final BlockFace blockFace = BlockFace.valueOf(locSec.getString("rotation"));
+            final World w = Bukkit.getServer().getWorld(world);
             if (w != null) {
 
-                Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
+                final Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
                 w.getBlockAt(loc).setType(material);
-                Block b = w.getBlockAt(loc);
+                final Block b = w.getBlockAt(loc);
                 if (b.getBlockData() instanceof org.bukkit.block.data.type.Sign) {
 
-                    org.bukkit.block.data.type.Sign facing = (org.bukkit.block.data.type.Sign) b.getBlockData();
+                    final org.bukkit.block.data.type.Sign facing = (org.bukkit.block.data.type.Sign) b.getBlockData();
                     facing.setRotation(blockFace);
                     b.setBlockData(facing);
 
                 } else if (b.getBlockData() instanceof org.bukkit.block.data.type.WallSign) {
 
-                    org.bukkit.block.data.type.WallSign facing = (org.bukkit.block.data.type.WallSign) b.getBlockData();
+                    final org.bukkit.block.data.type.WallSign facing = (org.bukkit.block.data.type.WallSign) b
+                            .getBlockData();
                     facing.setFacing(blockFace);
                     b.setBlockData(facing);
 
                 }
 
-                Sign newSign = (Sign) b.getState();
-                List<String> lines = getSignText(s);
+                final Sign newSign = (Sign) b.getState();
+                final List<String> lines = getSignText(s);
                 int i = 0;
                 for (String line : lines) {
 
-                    newSign.line(i, Util.legacySerializerAnyCase(line));
+                    newSign.line(i, UtilitiesOG.trueogColorize(line));
+
                     i++;
 
                 }
@@ -98,9 +103,9 @@ public class InvalidEntriesManager {
 
             }
 
-        } catch (Exception e) {
+        } catch (Exception error) {
 
-            e.printStackTrace();
+            error.printStackTrace();
             return false;
 
         }
@@ -135,12 +140,8 @@ public class InvalidEntriesManager {
      */
     public List<String> getSignText(String name) {
 
-        List<String> signSec = config.getStringList("signs." + name + ".text");
-        for (String item : signSec) {
-
-            item = Util.legacySerializerAnyCase(item).content();
-
-        }
+        final List<String> signSec = config.getStringList("signs." + name + ".text");
+        signSec.forEach(item -> item = UtilitiesOG.trueogColorize(item).content());
 
         if (signSec.size() != 0) {
 
@@ -164,12 +165,12 @@ public class InvalidEntriesManager {
 
         if (all) {
 
-            for (String s : invalidEntries) {
+            invalidEntries.forEach(s -> {
 
                 Bukkit.getLogger().warning(Boolean.toString(config.isConfigurationSection("signs." + s)));
                 config.set("signs." + s, null);
 
-            }
+            });
 
             configManager.loadSigns();
             configManager.save();
@@ -179,7 +180,7 @@ public class InvalidEntriesManager {
 
             for (String s : invalidEntries) {
 
-                if (name.equalsIgnoreCase(s)) {
+                if (StringUtils.equalsIgnoreCase(name, s)) {
 
                     Bukkit.getLogger().warning(Boolean.toString(config.isConfigurationSection("signs." + s)));
                     config.set("signs." + name, null);
@@ -201,11 +202,7 @@ public class InvalidEntriesManager {
 
         if (all) {
 
-            for (String s : invalidEntries) {
-
-                fixEntry(s);
-
-            }
+            invalidEntries.forEach(this::fixEntry);
 
             configManager.save();
             return true;
@@ -214,14 +211,10 @@ public class InvalidEntriesManager {
 
             for (String s : invalidEntries) {
 
-                if (name.equals(s)) {
+                if (name.equals(s) && fixEntry(s)) {
 
-                    if (fixEntry(s)) {
-
-                        configManager.save();
-                        return true;
-
-                    }
+                    configManager.save();
+                    return true;
 
                 }
 

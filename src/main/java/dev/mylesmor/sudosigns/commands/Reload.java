@@ -1,11 +1,14 @@
 package dev.mylesmor.sudosigns.commands;
 
+import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import java.util.ArrayList;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Reload {
 
@@ -19,23 +22,23 @@ public class Reload {
 
         if (p.hasPermission(Permissions.RELOAD)) {
 
-            Util.sudoSignsMessage(p, "&6Reloading config...");
+            UtilitiesOG.trueogMessage(p, "&6Reloading config...");
             SudoSigns.signs.clear();
 
             if (SudoSigns.config.loadCustomConfig()) {
 
-                ArrayList<String> invalidSigns = SudoSigns.config.loadSigns();
+                final ArrayList<String> invalidSigns = SudoSigns.config.loadSigns();
                 if (invalidSigns != null) {
 
                     if (invalidSigns.size() == 0) {
 
-                        Util.sudoSignsMessage(p, "&aConfig successfully reloaded! No invalid signs found.");
+                        UtilitiesOG.trueogMessage(p, "&aConfig successfully reloaded! No invalid signs found.");
 
                     } else {
 
-                        Util.sudoSignsMessage(p, "&aConfig successfully reloaded! &cERROR: Found &e"
+                        UtilitiesOG.trueogMessage(p, "&aConfig successfully reloaded! &cERROR: Found &e"
                                 + invalidSigns.size() + " &cinvalid signs!");
-                        for (String name : invalidSigns) {
+                        invalidSigns.forEach(name -> {
 
                             // If the player has permission to purge a sign, do this...
                             if (p.hasPermission(Permissions.PURGE)) {
@@ -57,7 +60,7 @@ public class Reload {
 
                             }
 
-                        }
+                        });
 
                     }
 
@@ -67,21 +70,21 @@ public class Reload {
 
                 Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
                         + "There was an error with the SudoSigns config!");
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&cERROR: The latest update to the SudoSigns config was invalid! &6Continuing to use old config...");
 
             } else {
 
                 Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
                         + "There was an error with the SudoSigns config!");
-                Util.sudoSignsMessage(p,
+                UtilitiesOG.trueogMessage(p,
                         "&cERROR: The latest update to the SudoSigns config was invalid! &6Please attempt to fix it before the next server restart or plugin reload attempt.");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

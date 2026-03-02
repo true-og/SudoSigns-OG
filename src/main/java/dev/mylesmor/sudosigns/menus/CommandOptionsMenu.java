@@ -1,15 +1,8 @@
 package dev.mylesmor.sudosigns.menus;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -21,14 +14,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
+import net.kyori.adventure.text.TextComponent;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 public class CommandOptionsMenu {
 
     private Inventory menu;
-    private SudoUser su;
-    private SudoSign sign;
-    private SignCommand sc;
-    private Player p;
-    private SignEditor editor;
+    private final SudoUser su;
+    private final SudoSign sign;
+    private final SignCommand sc;
+    private final Player p;
+    private final SignEditor editor;
 
     CommandOptionsMenu(SudoUser su, Player p, SudoSign sign, ItemStack item, SignEditor editor) {
 
@@ -57,13 +60,13 @@ public class CommandOptionsMenu {
 
     private SignCommand findSignCommand(ItemStack item) {
 
-        NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "command-number");
-        ItemMeta itemMeta = item.getItemMeta();
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+        final NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "command-number");
+        final ItemMeta itemMeta = item.getItemMeta();
+        final PersistentDataContainer container = itemMeta.getPersistentDataContainer();
 
         if (container.has(key, PersistentDataType.INTEGER)) {
 
-            int foundValue = container.get(key, PersistentDataType.INTEGER);
+            final int foundValue = container.get(key, PersistentDataType.INTEGER);
 
             return sign.getSignCommandByNumber(foundValue);
 
@@ -75,9 +78,9 @@ public class CommandOptionsMenu {
 
     private void createCommandOptionsMenu() {
 
-        Inventory playersInventory = p.getInventory();
-        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-        TextComponent nameHandler = Util.legacySerializerAnyCase("Command options: /" + sc.getCommand());
+        final Inventory playersInventory = p.getInventory();
+        final InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        final TextComponent nameHandler = UtilitiesOG.trueogColorize("Command options: /" + sc.getCommand());
 
         menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
         for (int i = 0; i < menu.getSize(); i++) {
@@ -86,25 +89,25 @@ public class CommandOptionsMenu {
 
         }
 
-        List<String> lore = new ArrayList<>();
-        ItemStack arrow = new ItemStack(Material.ARROW);
-        ItemMeta arrowMeta = arrow.getItemMeta();
+        final List<String> lore = new ArrayList<>();
+        final ItemStack arrow = new ItemStack(Material.ARROW);
+        final ItemMeta arrowMeta = arrow.getItemMeta();
 
-        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrowMeta.displayName(UtilitiesOG.trueogColorize("&r&dBACK"));
         arrow.setItemMeta(arrowMeta);
 
-        ItemStack clock = new ItemStack(Material.CLOCK);
-        ItemMeta clockMeta = clock.getItemMeta();
+        final ItemStack clock = new ItemStack(Material.CLOCK);
+        final ItemMeta clockMeta = clock.getItemMeta();
 
         lore.add("&eChange the delay after which the command executes");
-        clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
+        clockMeta.displayName(UtilitiesOG.trueogColorize("&r&dChange Delay"));
         clockMeta.lore(Util.convertToTextComponents(lore));
         clock.setItemMeta(clockMeta);
 
-        ItemStack barrier = new ItemStack(Material.BARRIER);
-        ItemMeta barrierMeta = barrier.getItemMeta();
+        final ItemStack barrier = new ItemStack(Material.BARRIER);
+        final ItemMeta barrierMeta = barrier.getItemMeta();
 
-        barrierMeta.displayName(Util.legacySerializerAnyCase("&r&cDelete Command"));
+        barrierMeta.displayName(UtilitiesOG.trueogColorize("&r&cDelete Command"));
         barrier.setItemMeta(barrierMeta);
 
         if (p.hasPermission(Permissions.COMMAND_OPTIONS) && p.hasPermission(Permissions.DELETE_COMMAND)) {
@@ -126,7 +129,7 @@ public class CommandOptionsMenu {
 
         p.closeInventory();
 
-        Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL&6.");
+        UtilitiesOG.trueogMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL&6.");
 
         su.addTextInput(PlayerInput.COMMAND_DELAY);
 
@@ -134,7 +137,7 @@ public class CommandOptionsMenu {
 
     public void setDelay(double delay) {
 
-        double oldDelay = sc.getDelay();
+        final double oldDelay = sc.getDelay();
         sc.setDelay(delay * 1000);
 
         SudoSigns.config.deleteCommand(sign, sc, sc.getType(), oldDelay);

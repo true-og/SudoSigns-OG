@@ -18,6 +18,7 @@ import dev.mylesmor.sudosigns.data.SignCommand;
 import dev.mylesmor.sudosigns.data.SignMessage;
 import dev.mylesmor.sudosigns.data.SudoSign;
 import net.kyori.adventure.text.TextComponent;
+import net.trueog.diamondbankog.api.DiamondBankAPIJava;
 
 /**
  * The class for managing the plugins config.
@@ -34,8 +35,11 @@ public class ConfigManager {
     private MessageConfig messageConfig;
     private CommandConfig commandConfig;
     private PermissionConfig permissionConfig;
+    private final DiamondBankAPIJava diamondBankAPI;
 
-    public ConfigManager() {
+    public ConfigManager(DiamondBankAPIJava diamondBankAPI) {
+
+        this.diamondBankAPI = diamondBankAPI;
 
         loadCustomConfig();
         loadModules();
@@ -45,7 +49,7 @@ public class ConfigManager {
     public void loadModules() {
 
         invalidEntriesManager = new InvalidEntriesManager(this, signConfig);
-        signConfigManager = new SignConfig(this);
+        signConfigManager = new SignConfig(this, diamondBankAPI);
         signConfigManager.loadSigns();
         messageConfig = new MessageConfig(this);
         commandConfig = new CommandConfig(this);
@@ -251,7 +255,7 @@ public class ConfigManager {
 
                 try {
 
-                    ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
+                    final ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
                     HashMap<String, Double> map = new HashMap<>();
                     for (String cmd : cCommands) {
 
@@ -275,7 +279,7 @@ public class ConfigManager {
 
                 try {
 
-                    ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
+                    final ArrayList<HashMap<String, Double>> mapList = new ArrayList<>();
                     HashMap<String, Double> map = new HashMap<>();
                     for (String cmd : messages) {
 

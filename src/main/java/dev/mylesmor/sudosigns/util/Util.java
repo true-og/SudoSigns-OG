@@ -1,23 +1,35 @@
 package dev.mylesmor.sudosigns.util;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.SudoSign;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
+
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.SudoSign;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.block.Sign;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Util {
 
     // Create a colored chat prefix.
     public static String chatPrefix = SudoSigns.getPlugin().getConfig().getString("config.prefix");
+
+    public static ArrayList<TextComponent> convertToTextComponents(List<String> stringList) {
+
+        final ArrayList<TextComponent> textComponents = new ArrayList<>(18);
+        stringList.stream().map(UtilitiesOG::trueogColorize)
+                .forEach(textComponent -> textComponents.add(textComponent));
+
+        return textComponents;
+
+    }
 
     // Send the sign selection menu according to permissions.
     public static void sendSelectMenus(Player p, String name) {
@@ -67,13 +79,13 @@ public class Util {
     {
 
         // The clickable part of the confirmation message.
-        TextComponent button = legacySerializerAnyCase(prefix);
+        TextComponent button = UtilitiesOG.trueogColorize(prefix);
 
         // Add a hover dialogue to the clickable confirmation text.
-        button.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, legacySerializerAnyCase(hoverMessage)));
+        button.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, UtilitiesOG.trueogColorize(hoverMessage)));
 
         // Make sure that a command is intended to be run.
-        if (!command.equals("")) {
+        if (!"".equals(command)) {
 
             // Create a click event on the delete confirmation chat text.
             button = button.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, (command)));
@@ -85,126 +97,32 @@ public class Util {
 
     }
 
-    public static TextComponent legacySerializerAnyCase(String subject) {
+    // Sends a permissions error message to the player.
+    public static void sudoSignsPermissionsError(Player p) {
 
-        int count = 0;
-        // Count the number of '&' characters to determine the size of the array
-        for (char c : subject.toCharArray()) {
-
-            if (c == '&') {
-
-                count++;
-
-            }
-
-        }
-
-        // Create an array to store the positions of '&' characters
-        int[] positions = new int[count];
-        int index = 0;
-        // Find the positions of '&' characters and store in the array
-        for (int i = 0; i < subject.length(); i++) {
-
-            if (subject.charAt(i) == '&') {
-
-                if (isUpperBukkitCode(subject.charAt(i + 1))) {
-
-                    subject = replaceCharAtIndex(subject, (i + 1), Character.toLowerCase(subject.charAt(i + 1)));
-
-                }
-
-                positions[index++] = i;
-
-            }
-
-        }
-
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(subject);
-
-    }
-
-    private static boolean isUpperBukkitCode(char input) {
-
-        char[] bukkitColorCodes = { 'A', 'B', 'C', 'D', 'E', 'F', 'K', 'L', 'M', 'N', 'O', 'R' };
-        boolean match = false;
-
-        // Loop through each character in the array.
-        for (char c : bukkitColorCodes) {
-
-            // Check if the current character in the array is equal to the input character.
-            if (c == input) {
-
-                match = true;
-
-            }
-
-        }
-
-        return match;
-
-    }
-
-    private static String replaceCharAtIndex(String original, int index, char newChar) {
-
-        // Check if the index is valid
-        if (index >= 0 && index < original.length()) {
-
-            // Create a new string with the replaced character
-            return original.substring(0, index) + newChar + original.substring(index + 1);
-
-        }
-
-        // If the index is invalid, return the original string
-        return original;
-
-    }
-
-    // Sends a formatted message to the player.
-    public static void sudoSignsMessage(Player p, String message) {
-
-        p.sendMessage(legacySerializerAnyCase(chatPrefix + message));
-
-    }
-
-    // Sends a formatted message to the player (including name replacement).
-    public static void sudoSignsMessage(Player p, String message, String name) {
-
-        if (message.contains("%NAME%")) {
-
-            message = message.replace("%NAME%", "&6" + name);
-
-        }
-
-        sudoSignsMessage(p, message);
+        UtilitiesOG.trueogMessage(p, "&c&lERROR: &cYou do not have permission to do that!");
 
     }
 
     // Sends a formatted message without a prefix to the player.
     public static void sudoSignsMessageNoPrefix(Player p, String message) {
 
-        p.sendMessage(legacySerializerAnyCase(message));
-
-    }
-
-    // Sends a standard error message to the player.
-    public static void sudoSignsErrorMessage(Player p) {
-
-        sudoSignsMessage(p, "&c&lERROR: &cYou do not have permission to do that!");
+        UtilitiesOG.trueogMessage(p, message);
 
     }
 
     // Sends a formatted prompt and clickable chat button to the player.
     public static void sudoSignsPrompt(Player player, String prompt, TextComponent button) {
 
-        player.sendMessage(legacySerializerAnyCase(prompt).append(button));
+        player.sendMessage(UtilitiesOG.trueogColorize(prompt).append(button));
 
     }
 
     public static boolean checkName(String name) {
 
-        String regex = "^[A-z0-9]+$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(name);
+        final String regex = "^[A-z0-9]+$";
+        final Pattern pattern = Pattern.compile(regex);
+        final Matcher matcher = pattern.matcher(name);
 
         return matcher.matches();
 
@@ -215,7 +133,7 @@ public class Util {
         String found = null;
         for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
-            Sign sign = entry.getValue().getSign();
+            final Sign sign = entry.getValue().getSign();
             if (sign != null && sign.equals(s)) {
 
                 found = entry.getKey();
@@ -225,21 +143,6 @@ public class Util {
         }
 
         return found;
-
-    }
-
-    public static ArrayList<TextComponent> convertToTextComponents(List<String> stringList) {
-
-        ArrayList<TextComponent> textComponents = new ArrayList<TextComponent>(18);
-
-        for (String str : stringList) {
-
-            TextComponent textComponent = legacySerializerAnyCase(str);
-            textComponents.add(textComponent);
-
-        }
-
-        return textComponents;
 
     }
 

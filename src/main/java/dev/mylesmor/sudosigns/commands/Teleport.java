@@ -1,10 +1,12 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Teleport {
 
@@ -20,15 +22,15 @@ public class Teleport {
 
             if (args == null || args.length != 1) {
 
-                Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss tp <name>&6.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss tp <name>&6.");
                 return;
 
             }
 
-            String name = args[0];
+            final String name = args[0];
             if (SudoSigns.signs.containsKey(name)) {
 
-                Location newLoc = SudoSigns.signs.get(name).getSign().getLocation();
+                final Location newLoc = SudoSigns.signs.get(name).getSign().getLocation();
                 newLoc.setX(newLoc.getX() + 0.5);
                 newLoc.setZ(newLoc.getZ() + 0.5);
 
@@ -36,13 +38,13 @@ public class Teleport {
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!", name);
+                UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + name + " &cdoes not exist!");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

@@ -1,14 +1,9 @@
 package dev.mylesmor.sudosigns.listeners;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.menus.SignEditor;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -25,64 +20,83 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.menus.SignEditor;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
+import net.trueog.diamondbankog.api.DiamondBankAPIJava;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 public class SignListener implements Listener {
 
+    private final DiamondBankAPIJava diamondBankAPI;
+
+    public SignListener(DiamondBankAPIJava diamondBankAPI) {
+
+        this.diamondBankAPI = diamondBankAPI;
+
+    }
+
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent e) {
+    public void onPlayerInteract(PlayerInteractEvent playerInteractEvent) {
 
-        Player p = e.getPlayer();
-        if (e.getClickedBlock() != null) {
+        final Player p = playerInteractEvent.getPlayer();
+        if (playerInteractEvent.getClickedBlock() == null) {
 
-            SudoUser user = SudoSigns.users.get(p.getUniqueId());
-            if (user != null) {
+            return;
 
-                Block b = e.getClickedBlock();
-                if (user.isCreate()) {
+        }
 
-                    e.setCancelled(true);
-                    create(p, user, b);
+        final SudoUser user = SudoSigns.users.get(p.getUniqueId());
+        if (user != null) {
 
-                } else if (user.isSelectToCopy()) {
+            final Block b = playerInteractEvent.getClickedBlock();
+            if (user.isCreate()) {
 
-                    e.setCancelled(true);
-                    selectToCopy(p, user, b);
+                playerInteractEvent.setCancelled(true);
+                create(p, user, b);
 
-                } else if (user.isCopy()) {
+            } else if (user.isSelectToCopy()) {
 
-                    e.setCancelled(true);
-                    copy(p, user, b);
+                playerInteractEvent.setCancelled(true);
+                selectToCopy(p, user, b);
 
-                } else if (user.isEdit()) {
+            } else if (user.isCopy()) {
 
-                    e.setCancelled(true);
-                    edit(p, user, b);
+                playerInteractEvent.setCancelled(true);
+                copy(p, user, b);
 
-                } else if (user.isDelete()) {
+            } else if (user.isEdit()) {
 
-                    e.setCancelled(true);
-                    delete(p, user, b);
+                playerInteractEvent.setCancelled(true);
+                edit(p, user, b);
 
-                } else if (user.isRun()) {
+            } else if (user.isDelete()) {
 
-                    e.setCancelled(true);
-                    runRemote(p, user, b);
+                playerInteractEvent.setCancelled(true);
+                delete(p, user, b);
 
-                } else if (user.isView()) {
+            } else if (user.isRun()) {
 
-                    e.setCancelled(true);
-                    view(p, user, b);
+                playerInteractEvent.setCancelled(true);
+                runRemote(p, user, b);
 
-                } else {
+            } else if (user.isView()) {
 
-                    runSign(p, e);
-
-                }
+                playerInteractEvent.setCancelled(true);
+                view(p, user, b);
 
             } else {
 
-                runSign(p, e);
+                runSign(p, playerInteractEvent);
 
             }
+
+        } else {
+
+            runSign(p, playerInteractEvent);
 
         }
 
@@ -92,8 +106,8 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign sign = (Sign) b.getState();
-            String name = Util.findSign(sign);
+            final Sign sign = (Sign) b.getState();
+            final String name = Util.findSign(sign);
             if (name != null) {
 
                 user.setSelectToCopy(false);
@@ -101,13 +115,13 @@ public class SignListener implements Listener {
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: Failed to copy: that is not a SudoSign!");
+                UtilitiesOG.trueogMessage(p, "&cERROR: Failed to copy: that is not a SudoSign!");
 
             }
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign wasn't clicked! &6Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign wasn't clicked! &6Cancelling...");
 
         }
 
@@ -117,23 +131,21 @@ public class SignListener implements Listener {
 
     private void runSign(Player p, PlayerInteractEvent e) {
 
-        if (Objects.requireNonNull(e.getClickedBlock()).getState() instanceof Sign
+        final boolean condition = (Objects.requireNonNull(e.getClickedBlock()).getState() instanceof Sign
                 || e.getClickedBlock().getState() instanceof WallSign)
-        {
+                && (p.hasPermission(Permissions.SELECT) && e.getAction() == Action.RIGHT_CLICK_BLOCK
+                        || !p.hasPermission(Permissions.SELECT));
+        if (!condition) {
 
-            if (p.hasPermission(Permissions.SELECT) && e.getAction() == Action.RIGHT_CLICK_BLOCK
-                    || !p.hasPermission(Permissions.SELECT))
-            {
+            return;
 
-                Sign sign = (Sign) e.getClickedBlock().getState();
-                String name = Util.findSign(sign);
-                if (name != null) {
+        }
 
-                    SudoSigns.signs.get(name).executeCommands(p);
+        final Sign sign = (Sign) e.getClickedBlock().getState();
+        final String name = Util.findSign(sign);
+        if (name != null) {
 
-                }
-
-            }
+            SudoSigns.signs.get(name).executeCommands(p);
 
         }
 
@@ -143,13 +155,13 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign sign = (Sign) b.getState();
-            String name = Util.findSign(sign);
+            final Sign sign = (Sign) b.getState();
+            final String name = Util.findSign(sign);
             if (name != null) {
 
                 user.setCreate(false);
                 SudoSigns.signs.remove(user.getPassThru());
-                Util.sudoSignsMessage(p, "&cERROR: That SudoSign already exists! &6Cancelling...");
+                UtilitiesOG.trueogMessage(p, "&cERROR: That SudoSign already exists! &6Cancelling...");
                 return;
 
             }
@@ -158,7 +170,8 @@ public class SignListener implements Listener {
             SudoSigns.signs.get(user.getPassThru()).addLines();
             if (p.hasPermission(Permissions.EDIT)) {
 
-                SignEditor editor = new SignEditor(p, SudoSigns.signs.get(user.getPassThru()), user);
+                final SignEditor editor = new SignEditor(p, SudoSigns.signs.get(user.getPassThru()), user,
+                        diamondBankAPI);
                 user.setEditor(editor);
 
             }
@@ -167,7 +180,7 @@ public class SignListener implements Listener {
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign was not clicked! Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign was not clicked! Cancelling...");
             user.setCreate(false);
             SudoSigns.signs.remove(user.getPassThru());
 
@@ -181,13 +194,13 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign newSign = (Sign) b.getState();
-            String name = Util.findSign(newSign);
+            final Sign newSign = (Sign) b.getState();
+            final String name = Util.findSign(newSign);
             if (name != null) {
 
                 user.setCopy(false);
                 SudoSigns.signs.remove(user.getPassThru());
-                Util.sudoSignsMessage(p, "&cERROR: That sign is already a SudoSign! Cancelling...");
+                UtilitiesOG.trueogMessage(p, "&cERROR: That sign is already a SudoSign! Cancelling...");
                 return;
 
             }
@@ -195,11 +208,11 @@ public class SignListener implements Listener {
             SudoSigns.signs.get(user.getPassThru()).setSign(newSign);
             SudoSigns.signs.get(user.getPassThru()).addLines();
             SudoSigns.config.saveSign(SudoSigns.signs.get(user.getPassThru()), true, p);
-            Util.sudoSignsMessage(p, "&aSign has been copied to sign &e%NAME% &asuccessfully!", user.getPassThru());
+            UtilitiesOG.trueogMessage(p, "&aSign has been copied to sign &e" + user.getPassThru() + " &asuccessfully!");
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign was not clicked! &6Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign was not clicked! &6Cancelling...");
             SudoSigns.signs.remove(user.getPassThru());
 
         }
@@ -212,21 +225,21 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign sign = (Sign) b.getState();
-            String name = Util.findSign(sign);
+            final Sign sign = (Sign) b.getState();
+            final String name = Util.findSign(sign);
             if (name != null) {
 
                 p.performCommand("ss run " + name);
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: That is not a SudoSign! &6Use: &d/ss create <name> &6instead.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: That is not a SudoSign! &6Use: &d/ss create <name> &6instead.");
 
             }
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign was not clicked! Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign was not clicked! Cancelling...");
 
         }
 
@@ -238,21 +251,21 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign sign = (Sign) b.getState();
-            String name = Util.findSign(sign);
+            final Sign sign = (Sign) b.getState();
+            final String name = Util.findSign(sign);
             if (name != null) {
 
                 p.performCommand("ss edit " + name);
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: That is not a SudoSign! &6Use: &d/ss create <name> &6instead.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: That is not a SudoSign! &6Use: &d/ss create <name> &6instead.");
 
             }
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign was not clicked! Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign was not clicked! Cancelling...");
 
         }
 
@@ -264,21 +277,21 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign sign = (Sign) b.getState();
-            String name = Util.findSign(sign);
+            final Sign sign = (Sign) b.getState();
+            final String name = Util.findSign(sign);
             if (name != null) {
 
                 p.performCommand("ss delete " + name);
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: That is not a SudoSign!");
+                UtilitiesOG.trueogMessage(p, "&cERROR: That is not a SudoSign!");
 
             }
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign was not clicked! &6Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign was not clicked! &6Cancelling...");
 
         }
 
@@ -290,21 +303,21 @@ public class SignListener implements Listener {
 
         if (b.getState() instanceof Sign || b.getState() instanceof WallSign) {
 
-            Sign sign = (Sign) b.getState();
-            String name = Util.findSign(sign);
+            final Sign sign = (Sign) b.getState();
+            final String name = Util.findSign(sign);
             if (name != null) {
 
                 p.performCommand("ss view " + name);
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: That is not a SudoSign! &6Use: &d/ss create <name> &6instead.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: That is not a SudoSign! &6Use: &d/ss create <name> &6instead.");
 
             }
 
         } else {
 
-            Util.sudoSignsMessage(p, "&cERROR: A sign was not clicked! &6Cancelling...");
+            UtilitiesOG.trueogMessage(p, "&cERROR: A sign was not clicked! &6Cancelling...");
 
         }
 
@@ -313,30 +326,30 @@ public class SignListener implements Listener {
     }
 
     @EventHandler
-    public void onDestroy(BlockBreakEvent e) {
+    public void onDestroy(BlockBreakEvent blockBreakEvent) {
 
-        Player p = e.getPlayer();
-        if (e.getBlock().getState() instanceof Sign || e.getBlock().getState() instanceof WallSign) {
+        final Player p = blockBreakEvent.getPlayer();
+        if (blockBreakEvent.getBlock().getState() instanceof Sign
+                || blockBreakEvent.getBlock().getState() instanceof WallSign)
+        {
 
-            Sign sign = (Sign) e.getBlock().getState();
-            for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
+            final Sign sign = (Sign) blockBreakEvent.getBlock().getState();
+            SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                    .forEach(entry ->
+                    {
 
-                if (entry.getValue().getSign().equals(sign)) {
+                        blockBreakEvent.setCancelled(true);
+                        if (p.hasPermission(Permissions.SELECT)) {
 
-                    e.setCancelled(true);
-                    if (p.hasPermission(Permissions.SELECT)) {
+                            Util.sendSelectMenus(p, entry.getKey());
 
-                        Util.sendSelectMenus(p, entry.getKey());
+                        } else {
 
-                    } else {
+                            Util.sudoSignsPermissionsError(p);
 
-                        Util.sudoSignsMessage(p, "&cERROR: You do not have permission to destroy that sign!");
+                        }
 
-                    }
-
-                }
-
-            }
+                    });
 
         } else {
 
@@ -344,21 +357,21 @@ public class SignListener implements Listener {
                     BlockFace.WEST };
             for (BlockFace face : faces) {
 
-                Block br = e.getBlock().getRelative(face);
-                BlockState bs = br.getState();
+                final Block br = blockBreakEvent.getBlock().getRelative(face);
+                final BlockState bs = br.getState();
                 if (bs instanceof Sign || bs instanceof WallSign) {
 
-                    Sign sign = (Sign) bs;
+                    final Sign sign = (Sign) bs;
                     for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
                         if (entry.getValue().getSign().equals(sign)) {
 
                             if (br.getBlockData() instanceof Sign) {
 
-                                if (e.getBlock().equals(sign.getBlock().getRelative(BlockFace.DOWN))) {
+                                if (blockBreakEvent.getBlock().equals(sign.getBlock().getRelative(BlockFace.DOWN))) {
 
-                                    e.setCancelled(true);
-                                    Util.sudoSignsMessage(p,
+                                    blockBreakEvent.setCancelled(true);
+                                    UtilitiesOG.trueogMessage(p,
                                             "&cERROR: You cannot destroy a block that is attached to a SudoSign!");
                                     return;
 
@@ -366,13 +379,13 @@ public class SignListener implements Listener {
 
                             } else if (br.getBlockData() instanceof WallSign) {
 
-                                WallSign signData = (WallSign) sign.getBlock().getState().getBlockData();
-                                BlockFace attached = signData.getFacing().getOppositeFace();
-                                Block blockAttached = sign.getBlock().getRelative(attached);
-                                if (e.getBlock().equals(blockAttached)) {
+                                final WallSign signData = (WallSign) sign.getBlock().getState().getBlockData();
+                                final BlockFace attached = signData.getFacing().getOppositeFace();
+                                final Block blockAttached = sign.getBlock().getRelative(attached);
+                                if (blockBreakEvent.getBlock().equals(blockAttached)) {
 
-                                    e.setCancelled(true);
-                                    Util.sudoSignsMessage(p,
+                                    blockBreakEvent.setCancelled(true);
+                                    UtilitiesOG.trueogMessage(p,
                                             "&cERROR: You cannot destroy a block that is attached to a SudoSign!");
                                     return;
 
@@ -392,25 +405,18 @@ public class SignListener implements Listener {
 
     }
 
-    // The following events all attempt to prevent a SudoSign being broken
+    // The following events all attempts to prevent a SudoSign from being broken.
     @EventHandler
-    public void onEntityExplode(EntityExplodeEvent e) {
+    public void onEntityExplode(EntityExplodeEvent entityExplodeEvent) {
 
-        ArrayList<Block> blocksToRemove = new ArrayList<>();
-        for (Block block : e.blockList()) {
+        final ArrayList<Block> blocksToRemove = new ArrayList<>();
+        entityExplodeEvent.blockList().forEach(block -> {
 
             if (block.getState() instanceof Sign || block.getState() instanceof WallSign) {
 
-                Sign sign = (Sign) block.getState();
-                for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
-
-                    if (entry.getValue().getSign().equals(sign)) {
-
-                        blocksToRemove.add(block);
-
-                    }
-
-                }
+                final Sign sign = (Sign) block.getState();
+                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                        .forEach(entry -> blocksToRemove.add(block));
 
             }
 
@@ -418,53 +424,35 @@ public class SignListener implements Listener {
                     BlockFace.WEST };
             for (BlockFace face : faces) {
 
-                BlockState b = block.getRelative(face).getState();
+                final BlockState b = block.getRelative(face).getState();
                 if (b instanceof Sign || b instanceof WallSign) {
 
-                    Sign sign = (Sign) b;
-                    for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
-
-                        if (entry.getValue().getSign().equals(sign)) {
-
-                            blocksToRemove.add(block);
-
-                        }
-
-                    }
+                    final Sign sign = (Sign) b;
+                    SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                            .forEach(entry -> blocksToRemove.add(block));
 
                 }
 
             }
 
-        }
+        });
 
-        for (Block b : blocksToRemove) {
-
-            e.blockList().remove(b);
-
-        }
+        blocksToRemove.forEach(b -> entityExplodeEvent.blockList().remove(b));
 
     }
 
     @EventHandler
-    public void onBlockBurn(BlockBurnEvent e) {
+    public void onBlockBurn(BlockBurnEvent blockBurnEvent) {
 
         final BlockFace[] faces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
         for (BlockFace face : faces) {
 
-            BlockState b = e.getBlock().getRelative(face).getState();
+            final BlockState b = blockBurnEvent.getBlock().getRelative(face).getState();
             if (b instanceof Sign || b instanceof WallSign) {
 
-                Sign sign = (Sign) b;
-                for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
-
-                    if (entry.getValue().getSign().equals(sign)) {
-
-                        e.setCancelled(true);
-
-                    }
-
-                }
+                final Sign sign = (Sign) b;
+                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                        .forEach(entry -> blockBurnEvent.setCancelled(true));
 
             }
 
@@ -473,24 +461,17 @@ public class SignListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockFade(BlockFadeEvent e) {
+    public void onBlockFade(BlockFadeEvent blockFadeEvent) {
 
         final BlockFace[] faces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
         for (BlockFace face : faces) {
 
-            BlockState b = e.getBlock().getRelative(face).getState();
+            final BlockState b = blockFadeEvent.getBlock().getRelative(face).getState();
             if (b instanceof Sign || b instanceof WallSign) {
 
-                Sign sign = (Sign) b;
-                for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
-
-                    if (entry.getValue().getSign().equals(sign)) {
-
-                        e.setCancelled(true);
-
-                    }
-
-                }
+                final Sign sign = (Sign) b;
+                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                        .forEach(entry -> blockFadeEvent.setCancelled(true));
 
             }
 
@@ -499,24 +480,17 @@ public class SignListener implements Listener {
     }
 
     @EventHandler
-    public void onLeavesDecay(LeavesDecayEvent e) {
+    public void onLeavesDecay(LeavesDecayEvent leavesDecayEvent) {
 
         final BlockFace[] faces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
         for (BlockFace face : faces) {
 
-            BlockState b = e.getBlock().getRelative(face).getState();
+            final BlockState b = leavesDecayEvent.getBlock().getRelative(face).getState();
             if (b instanceof Sign || b instanceof WallSign) {
 
-                Sign sign = (Sign) b;
-                for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
-
-                    if (entry.getValue().getSign().equals(sign)) {
-
-                        e.setCancelled(true);
-
-                    }
-
-                }
+                final Sign sign = (Sign) b;
+                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                        .forEach(entry -> leavesDecayEvent.setCancelled(true));
 
             }
 

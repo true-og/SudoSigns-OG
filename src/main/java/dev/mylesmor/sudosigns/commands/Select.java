@@ -1,8 +1,10 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Select {
 
@@ -18,7 +20,7 @@ public class Select {
 
             if (args == null || args.length != 1) {
 
-                Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! " + "&6Correct syntax: &d/ss select <name> &6.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: Invalid syntax! " + "&6Correct syntax: &d/ss select <name> &6.");
 
             } else {
 
@@ -28,7 +30,7 @@ public class Select {
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

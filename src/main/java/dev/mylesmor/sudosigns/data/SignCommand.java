@@ -8,9 +8,9 @@ package dev.mylesmor.sudosigns.data;
  */
 public class SignCommand {
 
-    private String command;
-    private PlayerInput type;
-    private int number;
+    private final String command;
+    private final PlayerInput type;
+    private final int number;
     private double delay;
 
     public SignCommand(int number, String cmd, double delay, PlayerInput type) {

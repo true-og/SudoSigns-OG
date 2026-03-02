@@ -1,15 +1,8 @@
 package dev.mylesmor.sudosigns.menus;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignMessage;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -21,14 +14,24 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignMessage;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
+import net.kyori.adventure.text.TextComponent;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 public class MessageOptionsMenu {
 
     private Inventory menu;
-    private SudoUser su;
-    private SudoSign sign;
-    private SignMessage sm;
-    private Player p;
-    private SignEditor editor;
+    private final SudoUser su;
+    private final SudoSign sign;
+    private final SignMessage sm;
+    private final Player p;
+    private final SignEditor editor;
 
     MessageOptionsMenu(SudoUser su, Player p, SudoSign sign, ItemStack item, SignEditor editor) {
 
@@ -57,13 +60,13 @@ public class MessageOptionsMenu {
 
     private SignMessage findSignMessage(ItemStack item) {
 
-        NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "message-number");
-        ItemMeta itemMeta = item.getItemMeta();
-        PersistentDataContainer container = itemMeta.getPersistentDataContainer();
+        final NamespacedKey key = new NamespacedKey(SudoSigns.sudoSignsPlugin, "message-number");
+        final ItemMeta itemMeta = item.getItemMeta();
+        final PersistentDataContainer container = itemMeta.getPersistentDataContainer();
 
         if (container.has(key, PersistentDataType.INTEGER)) {
 
-            int foundValue = container.get(key, PersistentDataType.INTEGER);
+            final int foundValue = container.get(key, PersistentDataType.INTEGER);
 
             return sign.getSignMessageByNumber(foundValue);
 
@@ -75,9 +78,9 @@ public class MessageOptionsMenu {
 
     private void createMessageOptionsMenu() {
 
-        Inventory playersInventory = p.getInventory();
-        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-        TextComponent nameHandler = Util.legacySerializerAnyCase("&6Message options");
+        final Inventory playersInventory = p.getInventory();
+        final InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        final TextComponent nameHandler = UtilitiesOG.trueogColorize("&6Message options");
 
         menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 
@@ -87,26 +90,26 @@ public class MessageOptionsMenu {
 
         }
 
-        List<String> lore = new ArrayList<>();
+        final List<String> lore = new ArrayList<>();
 
-        ItemStack arrow = new ItemStack(Material.ARROW);
-        ItemMeta arrowMeta = arrow.getItemMeta();
+        final ItemStack arrow = new ItemStack(Material.ARROW);
+        final ItemMeta arrowMeta = arrow.getItemMeta();
 
-        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrowMeta.displayName(UtilitiesOG.trueogColorize("&r&dBACK"));
         arrow.setItemMeta(arrowMeta);
 
-        ItemStack clock = new ItemStack(Material.CLOCK);
-        ItemMeta clockMeta = clock.getItemMeta();
+        final ItemStack clock = new ItemStack(Material.CLOCK);
+        final ItemMeta clockMeta = clock.getItemMeta();
 
         lore.add("&eChange the delay after which the message is sent");
-        clockMeta.displayName(Util.legacySerializerAnyCase("&r&dChange Delay"));
+        clockMeta.displayName(UtilitiesOG.trueogColorize("&r&dChange Delay"));
         clockMeta.lore(Util.convertToTextComponents(lore));
         clock.setItemMeta(clockMeta);
 
-        ItemStack barrier = new ItemStack(Material.BARRIER);
-        ItemMeta barrierMeta = barrier.getItemMeta();
+        final ItemStack barrier = new ItemStack(Material.BARRIER);
+        final ItemMeta barrierMeta = barrier.getItemMeta();
 
-        barrierMeta.displayName(Util.legacySerializerAnyCase("&r&dDelete Message"));
+        barrierMeta.displayName(UtilitiesOG.trueogColorize("&r&dDelete Message"));
         barrier.setItemMeta(barrierMeta);
 
         if (p.hasPermission(Permissions.MESSAGE_OPTIONS) && p.hasPermission(Permissions.DELETE_MESSAGE)) {
@@ -127,14 +130,16 @@ public class MessageOptionsMenu {
     public void addDelay() {
 
         p.closeInventory();
-        Util.sudoSignsMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL &6.");
+
+        UtilitiesOG.trueogMessage(p, "&6Please enter the delay in seconds. To cancel, type &cCANCEL &6.");
+
         su.addTextInput(PlayerInput.MESSAGE_DELAY);
 
     }
 
     public void setDelay(double delay) {
 
-        double oldDelay = sm.getDelay();
+        final double oldDelay = sm.getDelay();
         sm.setDelay(delay * 1000);
 
         SudoSigns.config.deleteMessage(sign, sm, oldDelay);

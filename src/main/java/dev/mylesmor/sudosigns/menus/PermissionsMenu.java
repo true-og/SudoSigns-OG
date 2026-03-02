@@ -1,14 +1,8 @@
 package dev.mylesmor.sudosigns.menus;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.util.Permissions;
-import dev.mylesmor.sudosigns.util.Util;
 import java.util.ArrayList;
 import java.util.List;
-import net.kyori.adventure.text.TextComponent;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,15 +11,24 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SudoSign;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.util.Permissions;
+import dev.mylesmor.sudosigns.util.Util;
+import net.kyori.adventure.text.TextComponent;
+import net.trueog.utilitiesog.UtilitiesOG;
+
 public class PermissionsMenu {
 
     private final GUIPage PAGE = GUIPage.PERMISSIONS;
 
     private Inventory menu;
-    private Player p;
-    private SudoSign sign;
-    private SignEditor editor;
-    private SudoUser su;
+    private final Player p;
+    private final SudoSign sign;
+    private final SignEditor editor;
+    private final SudoUser su;
 
     public PermissionsMenu(SudoUser su, Player p, SudoSign sign, SignEditor editor) {
 
@@ -47,9 +50,9 @@ public class PermissionsMenu {
 
     private void createPermissionsMenu() {
 
-        Inventory playersInventory = p.getInventory();
-        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-        TextComponent nameHandler = Util.legacySerializerAnyCase("&6Default or Custom?");
+        final Inventory playersInventory = p.getInventory();
+        final InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        final TextComponent nameHandler = UtilitiesOG.trueogColorize("&6Default or Custom?");
 
         menu = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
         for (int i = 0; i < menu.getSize(); i++) {
@@ -58,42 +61,45 @@ public class PermissionsMenu {
 
         }
 
-        ItemStack arrow = new ItemStack(Material.ARROW);
-        ItemMeta arrowMeta = arrow.getItemMeta();
+        final ItemStack arrow = new ItemStack(Material.ARROW);
+        final ItemMeta arrowMeta = arrow.getItemMeta();
 
-        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrowMeta.displayName(UtilitiesOG.trueogColorize("&r&dBACK"));
         arrow.setItemMeta(arrowMeta);
 
-        ItemStack barrier = new ItemStack(Material.BARRIER);
-        ItemMeta barrierMeta = barrier.getItemMeta();
+        final ItemStack barrier = new ItemStack(Material.BARRIER);
+        final ItemMeta barrierMeta = barrier.getItemMeta();
 
-        barrierMeta.displayName(Util.legacySerializerAnyCase("&r&5Permissions"));
+        barrierMeta.displayName(UtilitiesOG.trueogColorize("&r&5Permissions"));
         barrier.setItemMeta(barrierMeta);
 
         if (p.hasPermission(Permissions.ADD_PERMISSION)) {
 
-            ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
-            ItemMeta bqMeta = bookQuill.getItemMeta();
+            final ItemStack bookQuill = new ItemStack(Material.WRITABLE_BOOK);
+            final ItemMeta bqMeta = bookQuill.getItemMeta();
 
-            bqMeta.displayName(Util.legacySerializerAnyCase("&aAdd new permission"));
+            bqMeta.displayName(UtilitiesOG.trueogColorize("&aAdd new permission"));
             bookQuill.setItemMeta(bqMeta);
             menu.setItem(40, bookQuill);
 
         }
 
-        List<String> lore = new ArrayList<>();
+        final List<String> lore = new ArrayList<>();
 
         lore.add("&cClick to delete!");
 
         int i = 1;
         for (String perm : sign.getPermissions()) {
 
-            if (i > 35)
+            if (i > 35) {
+
                 break;
 
-            ItemStack book = new ItemStack(Material.BOOK);
-            ItemMeta bookMeta = book.getItemMeta();
-            bookMeta.displayName(Util.legacySerializerAnyCase("&r&6" + perm));
+            }
+
+            final ItemStack book = new ItemStack(Material.BOOK);
+            final ItemMeta bookMeta = book.getItemMeta();
+            bookMeta.displayName(UtilitiesOG.trueogColorize("&r&6" + perm));
             if (p.hasPermission(Permissions.DELETE_PERMISSION)) {
 
                 lore.add("");
@@ -103,8 +109,11 @@ public class PermissionsMenu {
 
             book.setItemMeta(bookMeta);
 
-            if (i == 9 || i == 18 || i == 27)
+            if (i == 9 || i == 18 || i == 27) {
+
                 i++;
+
+            }
 
             menu.setItem(i, book);
 
@@ -122,13 +131,13 @@ public class PermissionsMenu {
 
     public void preparePermission() {
 
-        Inventory playersInventory = p.getInventory();
-        InventoryHolder inventoryContainer = playersInventory.getHolder(false);
-        TextComponent nameHandler = Util.legacySerializerAnyCase("&6Default or Custom?");
-        Inventory choiceInv = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
+        final Inventory playersInventory = p.getInventory();
+        final InventoryHolder inventoryContainer = playersInventory.getHolder(false);
+        final TextComponent nameHandler = UtilitiesOG.trueogColorize("&6Default or Custom?");
+        final Inventory choiceInv = Bukkit.createInventory(inventoryContainer, 45, nameHandler);
 
-        int inventorySize = choiceInv.getSize();
-        ArrayList<String> lore = new ArrayList<String>(inventorySize);
+        final int inventorySize = choiceInv.getSize();
+        final ArrayList<String> lore = new ArrayList<>(inventorySize);
         for (int i = 0; i < inventorySize; i++) {
 
             lore.add("");
@@ -138,25 +147,25 @@ public class PermissionsMenu {
 
         }
 
-        ItemStack arrow = new ItemStack(Material.ARROW);
-        ItemMeta arrowMeta = arrow.getItemMeta();
+        final ItemStack arrow = new ItemStack(Material.ARROW);
+        final ItemMeta arrowMeta = arrow.getItemMeta();
 
-        arrowMeta.displayName(Util.legacySerializerAnyCase("&r&dBACK"));
+        arrowMeta.displayName(UtilitiesOG.trueogColorize("&r&dBACK"));
         arrow.setItemMeta(arrowMeta);
 
-        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta headMeta = head.getItemMeta();
-        List<String> loreString = new ArrayList<>();
+        final ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        final ItemMeta headMeta = head.getItemMeta();
+        final List<String> loreString = new ArrayList<>();
 
         loreString.add("&6sudosigns.sign." + sign.getName());
-        headMeta.displayName(Util.legacySerializerAnyCase("&r&dDefault Permission"));
+        headMeta.displayName(UtilitiesOG.trueogColorize("&r&dDefault Permission"));
         headMeta.lore(Util.convertToTextComponents(loreString));
         head.setItemMeta(headMeta);
 
-        ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
-        ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
+        final ItemStack cmdBlock = new ItemStack(Material.COMMAND_BLOCK);
+        final ItemMeta cmdBlockMeta = cmdBlock.getItemMeta();
 
-        cmdBlockMeta.displayName(Util.legacySerializerAnyCase("&r&5Custom Permission"));
+        cmdBlockMeta.displayName(UtilitiesOG.trueogColorize("&r&5Custom Permission"));
         cmdBlock.setItemMeta(cmdBlockMeta);
 
         choiceInv.setItem(21, head);
@@ -191,8 +200,9 @@ public class PermissionsMenu {
 
             p.closeInventory();
 
-            Util.sudoSignsMessage(p,
+            UtilitiesOG.trueogMessage(p,
                     "&6Please enter in chat the permission which the player must have to run this sign, or type &cCANCEL &6to cancel the operation.");
+
             su.addTextInput(PlayerInput.PERMISSION);
 
         }

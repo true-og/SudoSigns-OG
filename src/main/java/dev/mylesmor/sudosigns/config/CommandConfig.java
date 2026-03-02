@@ -1,17 +1,19 @@
 package dev.mylesmor.sudosigns.config;
 
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SignCommand;
-import dev.mylesmor.sudosigns.data.SudoSign;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.bukkit.configuration.file.FileConfiguration;
+
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SignCommand;
+import dev.mylesmor.sudosigns.data.SudoSign;
 
 public class CommandConfig {
 
-    private FileConfiguration signConfig;
-    private ConfigManager configManager;
+    private final FileConfiguration signConfig;
+    private final ConfigManager configManager;
 
     CommandConfig(ConfigManager configManager) {
 
@@ -24,25 +26,30 @@ public class CommandConfig {
 
         if (signConfig.isConfigurationSection("signs." + s.getName())) {
 
-            HashMap<String, Double> map;
+            final HashMap<String, Double> map;
             switch (type) {
 
-                case PLAYER_COMMAND:
-                    List<Map<?, ?>> pCmds = signConfig.getMapList("signs." + s.getName() + ".player-commands");
+                case PLAYER_COMMAND -> {
+
+                    final List<Map<?, ?>> pCmds = signConfig.getMapList("signs." + s.getName() + ".player-commands");
                     map = new HashMap<>();
                     map.put(cmd.getCommand(), cmd.getDelay());
                     pCmds.add(map);
                     signConfig.set("signs." + s.getName() + ".player-commands", pCmds);
-                    break;
-                case CONSOLE_COMMAND:
-                    List<Map<?, ?>> cCmds = signConfig.getMapList("signs." + s.getName() + ".console-commands");
+
+                }
+                case CONSOLE_COMMAND -> {
+
+                    final List<Map<?, ?>> cCmds = signConfig.getMapList("signs." + s.getName() + ".console-commands");
                     map = new HashMap<>();
                     map.put(cmd.getCommand(), cmd.getDelay());
                     cCmds.add(map);
                     signConfig.set("signs." + s.getName() + ".console-commands", cCmds);
-                    break;
-                default:
-                    break;
+
+                }
+                default -> {
+
+                }
 
             }
 
@@ -63,7 +70,7 @@ public class CommandConfig {
 
         if (type.equals(PlayerInput.PLAYER_COMMAND)) {
 
-            List<Map<?, ?>> mapList = signConfig.getMapList("signs." + s.getName() + ".player-commands");
+            final List<Map<?, ?>> mapList = signConfig.getMapList("signs." + s.getName() + ".player-commands");
             Map<?, ?> found = null;
             for (Map<?, ?> map : mapList) {
 
@@ -90,7 +97,7 @@ public class CommandConfig {
 
         } else if (type.equals(PlayerInput.CONSOLE_COMMAND)) {
 
-            List<Map<?, ?>> mapList = signConfig.getMapList("signs." + s.getName() + ".console-commands");
+            final List<Map<?, ?>> mapList = signConfig.getMapList("signs." + s.getName() + ".console-commands");
             Map<?, ?> found = null;
             for (Map<?, ?> map : mapList) {
 

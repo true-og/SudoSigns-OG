@@ -5,6 +5,8 @@ package dev.mylesmor.sudosigns.util;
  * 
  * @author MylesMor
  * @author https://mylesmor.dev
+ * @Maintainer NotAlexNoyle
+ * @Maintainer https://true-og.net
  */
 public final class Permissions {
 

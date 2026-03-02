@@ -1,26 +1,26 @@
 package dev.mylesmor.sudosigns.commands;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.SudoSign;
-import dev.mylesmor.sudosigns.util.Permissions;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.util.Permissions;
 
 public class SudoSignsTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String label, String[] args) {
 
-        if (commandSender instanceof Player) {
+        if (commandSender instanceof Player p) {
 
-            Player p = (Player) commandSender;
             if (args.length == 1) {
 
-                ArrayList<String> commands = new ArrayList<>();
+                final ArrayList<String> commands = new ArrayList<>();
                 if (p.hasPermission(Permissions.HELP)) {
 
                     commands.add("help");
@@ -117,46 +117,48 @@ public class SudoSignsTabCompleter implements TabCompleter {
 
             if (args.length == 2) {
 
-                ArrayList<String> suggestions = new ArrayList<>();
+                final ArrayList<String> suggestions = new ArrayList<>();
                 switch (args[0]) {
 
-                    case "create":
+                    case "create" -> {
+
                         if (p.hasPermission(Permissions.CREATE)) {
 
                             suggestions.add("<sign-name>");
 
                         }
+
                         return suggestions;
-                    case "delete":
-                    case "view":
-                    case "run":
-                    case "tp":
-                    case "copy":
-                    case "select":
-                    case "edit":
+
+                    }
+                    case "delete", "view", "run", "tp", "copy", "select", "edit" -> {
+
                         if (p.hasPermission(Permissions.SELECT) || p.hasPermission(Permissions.VIEW)
                                 || p.hasPermission(Permissions.RUN) || p.hasPermission(Permissions.TP)
                                 || p.hasPermission(Permissions.COPY) || p.hasPermission(Permissions.SELECT)
                                 || p.hasPermission(Permissions.EDIT))
                         {
 
-                            for (SudoSign s : SudoSigns.signs.values()) {
-
-                                suggestions.add(s.getName());
-
-                            }
+                            SudoSigns.signs.values().forEach(s -> suggestions.add(s.getName()));
 
                         }
+
                         return suggestions;
-                    case "fix":
-                    case "purge":
+
+                    }
+                    case "fix", "purge" -> {
+
                         if (p.hasPermission(Permissions.PURGE)) {
 
                             suggestions.addAll(SudoSigns.invalidSigns);
 
                         }
+
                         return suggestions;
-                    case "near":
+
+                    }
+                    case "near" -> {
+
                         if (p.hasPermission(Permissions.NEAR)) {
 
                             suggestions.add("2");
@@ -166,7 +168,10 @@ public class SudoSignsTabCompleter implements TabCompleter {
                             suggestions.add("50");
 
                         }
+
                         return suggestions;
+
+                    }
 
                 }
 
@@ -174,12 +179,15 @@ public class SudoSignsTabCompleter implements TabCompleter {
 
             if (args.length == 3) {
 
-                ArrayList<String> suggestions = new ArrayList<>();
+                final ArrayList<String> suggestions = new ArrayList<>();
                 switch (args[0]) {
 
-                    case "copy":
+                    case "copy" -> {
+
                         suggestions.add("<new-sign-name>");
                         return suggestions;
+
+                    }
 
                 }
 

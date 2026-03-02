@@ -1,12 +1,7 @@
 package dev.mylesmor.sudosigns.listeners;
 
-import dev.mylesmor.sudosigns.SudoSigns;
-import dev.mylesmor.sudosigns.data.PlayerInput;
-import dev.mylesmor.sudosigns.data.SudoUser;
-import dev.mylesmor.sudosigns.menus.SignEditor;
-import dev.mylesmor.sudosigns.util.Permissions;
 import java.util.Objects;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,6 +11,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+
+import dev.mylesmor.sudosigns.SudoSigns;
+import dev.mylesmor.sudosigns.data.PlayerInput;
+import dev.mylesmor.sudosigns.data.SudoUser;
+import dev.mylesmor.sudosigns.menus.SignEditor;
+import dev.mylesmor.sudosigns.util.Permissions;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 
 /**
  * InventoryListener class to listen for GUI actions.
@@ -28,50 +30,28 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
 
-        Player p = (Player) e.getWhoClicked();
-        SudoUser user = SudoSigns.users.get(p.getUniqueId());
-        if (user != null) {
+        final Player p = (Player) e.getWhoClicked();
+        final SudoUser user = SudoSigns.users.get(p.getUniqueId());
+        final boolean condition = user != null && user.isEditing()
+                && Objects.equals(e.getClickedInventory(), e.getView().getTopInventory());
+        if (condition) {
 
-            if (user.isEditing()) {
+            final SignEditor editor = user.getEditor();
+            if (e.getCurrentItem() != null) {
 
-                if (Objects.equals(e.getClickedInventory(), e.getView().getTopInventory())) {
+                e.setCancelled(true);
+                final Material m = e.getCurrentItem().getType();
+                final String itemName = e.getCurrentItem().getDisplayName();
+                switch (editor.getCurrentPage()) {
 
-                    SignEditor editor = user.getEditor();
-                    if (e.getCurrentItem() != null) {
-
-                        e.setCancelled(true);
-                        Material m = e.getCurrentItem().getType();
-                        String itemName = e.getCurrentItem().getDisplayName();
-                        switch (editor.getCurrentPage()) {
-
-                            case MAIN:
-                                checkForMainMenuClicks(editor, m);
-                                break;
-                            case COMMANDS:
-                                checkForCommandsClicks(p, editor, m, e.getCurrentItem());
-                                break;
-                            case PERMISSIONS:
-                                checkForPermissionsClicks(p, editor, m, itemName);
-                                break;
-                            case CHOOSE_COMMAND:
-                                chooseCommandType(editor, m, itemName);
-                                break;
-                            case CHOOSE_PERMISSION:
-                                choosePermissionType(editor, m);
-                                break;
-                            case MESSAGES:
-                                checkForMessagesClicks(p, editor, m, e.getCurrentItem());
-                                break;
-                            case COMMAND_OPTIONS:
-                                checkForCommandOptionClicks(p, editor, m, itemName);
-                                break;
-                            case MESSAGE_OPTIONS:
-                                checkForMessageOptionClicks(p, editor, m, itemName);
-                                break;
-
-                        }
-
-                    }
+                    case MAIN -> checkForMainMenuClicks(editor, m);
+                    case COMMANDS -> checkForCommandsClicks(p, editor, m, e.getCurrentItem());
+                    case PERMISSIONS -> checkForPermissionsClicks(p, editor, m, itemName);
+                    case CHOOSE_COMMAND -> chooseCommandType(editor, m, itemName);
+                    case CHOOSE_PERMISSION -> choosePermissionType(editor, m);
+                    case MESSAGES -> checkForMessagesClicks(p, editor, m, e.getCurrentItem());
+                    case COMMAND_OPTIONS -> checkForCommandOptionClicks(p, editor, m, itemName);
+                    case MESSAGE_OPTIONS -> checkForMessageOptionClicks(p, editor, m, itemName);
 
                 }
 
@@ -84,28 +64,25 @@ public class InventoryListener implements Listener {
     @EventHandler
     public void closeInventory(InventoryCloseEvent e) {
 
-        Player p = (Player) e.getPlayer();
-        SudoUser user = SudoSigns.users.get(p.getUniqueId());
-        if (user != null) {
+        final Player p = (Player) e.getPlayer();
+        final SudoUser user = SudoSigns.users.get(p.getUniqueId());
+        final boolean condition = user != null && user.isEditing();
+        // Checks whether the user has closed the GUI.
+        if (condition) {
 
-            // Checks whether the user has closed the GUI.
-            if (user.isEditing()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(SudoSigns.sudoSignsPlugin, () -> {
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(SudoSigns.sudoSignsPlugin, () -> {
+                final InventoryView currentInv = p.getOpenInventory();
+                if (PlainTextComponentSerializer.plainText().serialize(currentInv.title()).equalsIgnoreCase("CRAFTING")
+                        && !user.isTextInput())
+                {
 
-                    InventoryView currentInv = p.getOpenInventory();
-                    if (PlainTextComponentSerializer.plainText().serialize(currentInv.title())
-                            .equalsIgnoreCase("CRAFTING") && !user.isTextInput())
-                    {
+                    user.getEditor().endEditor();
+                    user.removeEditor();
 
-                        user.getEditor().endEditor();
-                        user.removeEditor();
+                }
 
-                    }
-
-                }, 5L);
-
-            }
+            }, 5L);
 
         }
 
@@ -128,26 +105,15 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case NAME_TAG:
-                editor.prepareRename();
-                break;
-            case WRITABLE_BOOK:
-                editor.editSignNumber();
-                break;
-            case BARRIER:
-                editor.goToPermissions();
-                break;
-            case COMMAND_BLOCK:
-                editor.goToCommands();
-                break;
-            case BIRCH_SIGN:
-                editor.goToMessages();
-                break;
-            case GOLD_NUGGET:
-                editor.getMainMenu().prepareSetPrice();
-                break;
-            default:
-                break;
+            case NAME_TAG -> editor.prepareRename();
+            case WRITABLE_BOOK -> editor.editSignNumber();
+            case BARRIER -> editor.goToPermissions();
+            case COMMAND_BLOCK -> editor.goToCommands();
+            case BIRCH_SIGN -> editor.goToMessages();
+            case GOLD_NUGGET -> editor.getMainMenu().prepareSetPrice();
+            default -> {
+
+            }
 
         }
 
@@ -164,21 +130,20 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case WRITABLE_BOOK:
-                editor.getCommandsMenu().prepareCommand();
-                break;
-            case BOOK:
+            case WRITABLE_BOOK -> editor.getCommandsMenu().prepareCommand();
+            case BOOK -> {
+
                 if (p.hasPermission(Permissions.COMMAND_OPTIONS)) {
 
                     editor.goToCommandOptionsMenu(item);
 
                 }
-                break;
-            case ARROW:
-                editor.goToMain();
-                break;
-            default:
-                break;
+
+            }
+            case ARROW -> editor.goToMain();
+            default -> {
+
+            }
 
         }
 
@@ -195,21 +160,20 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case CLOCK:
-                editor.getCommandOptionsMenu().addDelay();
-                break;
-            case BARRIER:
+            case CLOCK -> editor.getCommandOptionsMenu().addDelay();
+            case BARRIER -> {
+
                 if (p.hasPermission(Permissions.DELETE_COMMAND)) {
 
                     editor.getCommandOptionsMenu().deleteCommand();
 
                 }
-                break;
-            case ARROW:
-                editor.goToCommands();
-                break;
-            default:
-                break;
+
+            }
+            case ARROW -> editor.goToCommands();
+            default -> {
+
+            }
 
         }
 
@@ -226,21 +190,20 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case CLOCK:
-                editor.getMessageOptionsMenu().addDelay();
-                break;
-            case BARRIER:
+            case CLOCK -> editor.getMessageOptionsMenu().addDelay();
+            case BARRIER -> {
+
                 if (p.hasPermission(Permissions.DELETE_MESSAGE)) {
 
                     editor.getMessageOptionsMenu().deleteMessage();
 
                 }
-                break;
-            case ARROW:
-                editor.goToMessages();
-                break;
-            default:
-                break;
+
+            }
+            case ARROW -> editor.goToMessages();
+            default -> {
+
+            }
 
         }
 
@@ -257,21 +220,20 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case WRITABLE_BOOK:
-                editor.getMessagesMenu().prepareMessage();
-                break;
-            case BOOK:
+            case WRITABLE_BOOK -> editor.getMessagesMenu().prepareMessage();
+            case BOOK -> {
+
                 if (p.hasPermission(Permissions.MESSAGE_OPTIONS)) {
 
                     editor.goToMessageOptionsMenu(item);
 
                 }
-                break;
-            case ARROW:
-                editor.goToMain();
-                break;
-            default:
-                break;
+
+            }
+            case ARROW -> editor.goToMain();
+            default -> {
+
+            }
 
         }
 
@@ -281,17 +243,12 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case PLAYER_HEAD:
-                editor.getPermMenu().addPermission(true, null);
-                break;
-            case COMMAND_BLOCK:
-                editor.getPermMenu().addPermission(false, null);
-                break;
-            case ARROW:
-                editor.goToPermissions();
-                break;
-            default:
-                break;
+            case PLAYER_HEAD -> editor.getPermMenu().addPermission(true, null);
+            case COMMAND_BLOCK -> editor.getPermMenu().addPermission(false, null);
+            case ARROW -> editor.goToPermissions();
+            default -> {
+
+            }
 
         }
 
@@ -301,17 +258,12 @@ public class InventoryListener implements Listener {
 
         switch (m) {
 
-            case PLAYER_HEAD:
-                editor.getCommandsMenu().chooseCommandType(PlayerInput.PLAYER_COMMAND);
-                break;
-            case COMMAND_BLOCK:
-                editor.getCommandsMenu().chooseCommandType(PlayerInput.CONSOLE_COMMAND);
-                break;
-            case ARROW:
-                editor.goToCommands();
-                break;
-            default:
-                break;
+            case PLAYER_HEAD -> editor.getCommandsMenu().chooseCommandType(PlayerInput.PLAYER_COMMAND);
+            case COMMAND_BLOCK -> editor.getCommandsMenu().chooseCommandType(PlayerInput.CONSOLE_COMMAND);
+            case ARROW -> editor.goToCommands();
+            default -> {
+
+            }
 
         }
 

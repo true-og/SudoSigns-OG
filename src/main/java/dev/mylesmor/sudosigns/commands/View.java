@@ -1,11 +1,13 @@
 package dev.mylesmor.sudosigns.commands;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import dev.mylesmor.sudosigns.SudoSigns;
 import dev.mylesmor.sudosigns.data.SudoSign;
 import dev.mylesmor.sudosigns.util.Permissions;
 import dev.mylesmor.sudosigns.util.Util;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class View {
 
@@ -24,7 +26,7 @@ public class View {
             String name = null;
             if (args == null) {
 
-                Util.sudoSignsMessage(p, "&6Please click on the sign you would like to view.");
+                UtilitiesOG.trueogMessage(p, "&6Please click on the sign you would like to view.");
                 SudoSigns.users.get(p.getUniqueId()).setView(true);
                 return;
 
@@ -32,18 +34,18 @@ public class View {
 
             if (args.length > 1) {
 
-                Util.sudoSignsMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss view [name]&6.");
+                UtilitiesOG.trueogMessage(p, "&cERROR: Invalid syntax! &6Correct syntax: &d/ss view [name]&6.");
                 return;
 
             }
 
             name = args[0];
-            SudoSign sign = SudoSigns.signs.get(name);
+            final SudoSign sign = SudoSigns.signs.get(name);
             if (sign != null) {
 
-                Location signLoc = sign.getSign().getLocation();
-                String locString = "x=" + signLoc.getX() + " y=" + signLoc.getY() + " z=" + signLoc.getZ() + "  ";
-                Util.sudoSignsMessage(p, "&6Displaying details for sign &e%NAME%&6:", name);
+                final Location signLoc = sign.getSign().getLocation();
+                final String locString = "x=" + signLoc.getX() + " y=" + signLoc.getY() + " z=" + signLoc.getZ() + "  ";
+                UtilitiesOG.trueogMessage(p, "&6Displaying details for sign &e" + name + "&6:");
                 if (p.hasPermission(Permissions.TP)) {
 
                     // Send a teleport confirmation menu with a clickable button.
@@ -52,7 +54,7 @@ public class View {
 
                 } else {
 
-                    Util.sudoSignsMessage(p, "&6Location: &e" + locString);
+                    UtilitiesOG.trueogMessage(p, "&6Location: &e" + locString);
 
                 }
 
@@ -62,13 +64,13 @@ public class View {
 
                         if (sign.getPriceAsInteger() == 1) {
 
-                            Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger()
+                            UtilitiesOG.trueogMessage(p, "&6Price: &e" + sign.getPriceAsInteger()
                                     + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
                                     + "&6.");
 
                         } else {
 
-                            Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsInteger()
+                            UtilitiesOG.trueogMessage(p, "&6Price: &e" + sign.getPriceAsInteger()
                                     + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
                                     + "&6.");
 
@@ -78,13 +80,13 @@ public class View {
 
                         if (sign.getPriceAsDouble() == 1.0) {
 
-                            Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble()
+                            UtilitiesOG.trueogMessage(p, "&6Price: &e" + sign.getPriceAsDouble()
                                     + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-singular")
                                     + "&6.");
 
                         } else {
 
-                            Util.sudoSignsMessage(p, "&6Price: &e" + sign.getPriceAsDouble()
+                            UtilitiesOG.trueogMessage(p, "&6Price: &e" + sign.getPriceAsDouble()
                                     + SudoSigns.getPlugin().getConfig().getString("config.currency-symbol-plural")
                                     + "&6.");
 
@@ -98,7 +100,7 @@ public class View {
 
                         if (sign.getPriceAsInteger() == 1) {
 
-                            Util.sudoSignsMessage(p,
+                            UtilitiesOG.trueogMessage(p,
                                     "&6Price: "
                                             + SudoSigns.getPlugin().getConfig()
                                                     .getString("config.currency-symbol-singular")
@@ -106,7 +108,7 @@ public class View {
 
                         } else {
 
-                            Util.sudoSignsMessage(p,
+                            UtilitiesOG.trueogMessage(p,
                                     "&6Price: "
                                             + SudoSigns.getPlugin().getConfig()
                                                     .getString("config.currency-symbol-plural")
@@ -118,7 +120,7 @@ public class View {
 
                         if (sign.getPriceAsDouble() == 1.0) {
 
-                            Util.sudoSignsMessage(p,
+                            UtilitiesOG.trueogMessage(p,
                                     "&6Price: "
                                             + SudoSigns.getPlugin().getConfig()
                                                     .getString("config.currency-symbol-singular")
@@ -126,7 +128,7 @@ public class View {
 
                         } else {
 
-                            Util.sudoSignsMessage(p,
+                            UtilitiesOG.trueogMessage(p,
                                     "&6Price: "
                                             + SudoSigns.getPlugin().getConfig()
                                                     .getString("config.currency-symbol-plural")
@@ -138,21 +140,21 @@ public class View {
 
                 }
 
-                Util.sudoSignsMessage(p, "&bPrice: " + sign.getMessages().size());
-                Util.sudoSignsMessage(p, "&6Messages: &e" + sign.getMessages().size());
-                Util.sudoSignsMessage(p, "&6Permissions: &e" + sign.getPermissions().size());
-                Util.sudoSignsMessage(p, "&6Player Commands: &e" + sign.getPlayerCommands().size());
-                Util.sudoSignsMessage(p, "&6Console Commands: &e" + sign.getConsoleCommands().size());
+                UtilitiesOG.trueogMessage(p, "&bPrice: " + sign.getMessages().size());
+                UtilitiesOG.trueogMessage(p, "&6Messages: &e" + sign.getMessages().size());
+                UtilitiesOG.trueogMessage(p, "&6Permissions: &e" + sign.getPermissions().size());
+                UtilitiesOG.trueogMessage(p, "&6Player Commands: &e" + sign.getPlayerCommands().size());
+                UtilitiesOG.trueogMessage(p, "&6Console Commands: &e" + sign.getConsoleCommands().size());
 
             } else {
 
-                Util.sudoSignsMessage(p, "&cERROR: A sign with the name &e%NAME% &cdoes not exist!", name);
+                UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + name + " &cdoes not exist!");
 
             }
 
         } else {
 
-            Util.sudoSignsErrorMessage(p);
+            Util.sudoSignsPermissionsError(p);
 
         }
 

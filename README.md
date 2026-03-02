@@ -1,5 +1,3 @@
-![SudoSigns logo](https://mylesmor.dev/sudosigns/logo.png)
-
 # SudoSigns-OG
 
 A modern fork of SudoSigns: A Spigot plugin used to run commands by interacting with a sign. Some inspiration for commands has been taken from [Nokorbis' Command Signs](https://www.spigotmc.org/resources/command-signs.10512/). MylesMor implemented a convenient inventory-based GUI. NotAlexNoyle updated the plugin for 1.19 on behalf of [TrueOG Network](https://true-og.net).
@@ -39,6 +37,12 @@ In your issue report, please include as much information as possible including:
 - Fix messages being sent to chat that should only be captured by SudoSigns.
 
 ## Changelog:
+
+**1.3:**
+
+- Switch from Vault API to [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API.
+
+- Refactor chat messages.
 
 **1.2.3:**
 
