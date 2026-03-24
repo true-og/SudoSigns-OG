@@ -2,7 +2,7 @@ name: SudoSigns-OG
 version: '${version}' 
 authors: [ MylesMor, NotAlexNoyle ]
 main: dev.mylesmor.sudosigns.SudoSigns
-depend: DiamondBank-OG
+depend: [DiamondBank-OG]
 softdepend: [Multiverse-Core]
 api-version: '${apiVersion}'
 commands:
