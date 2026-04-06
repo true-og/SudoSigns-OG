@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 
@@ -143,6 +145,31 @@ public class Util {
         }
 
         return found;
+
+    }
+
+    public static boolean isSignState(BlockState blockState) {
+
+        return blockState instanceof Sign;
+
+    }
+
+    public static boolean isSignBlock(Block block) {
+
+        return isSignState(block.getState());
+
+    }
+
+    public static Sign getSign(Block block) {
+
+        final BlockState blockState = block.getState();
+        if (isSignState(blockState)) {
+
+            return (Sign) blockState;
+
+        }
+
+        return null;
 
     }
 

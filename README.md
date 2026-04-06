@@ -38,6 +38,10 @@ In your issue report, please include as much information as possible including:
 
 ## Changelog:
 
+**1.3.1:**
+
+- Fix sign detection.
+
 **1.3:**
 
 - Switch from Vault API to [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API.

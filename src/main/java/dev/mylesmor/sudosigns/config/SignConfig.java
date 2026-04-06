@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Rotatable;
 import org.bukkit.block.data.type.WallSign;
 import org.bukkit.configuration.ConfigurationSection;
@@ -72,9 +73,8 @@ public class SignConfig {
                 if (w != null) {
 
                     final Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
-                    if (loc.getBlock().getState() instanceof Sign || loc.getBlock().getState() instanceof WallSign) {
-
-                        final Sign sign = (Sign) loc.getBlock().getState();
+                    final Sign sign = Util.getSign(loc.getBlock());
+                    if (sign != null) {
 
                         final SudoSign ss = new SudoSign(key, diamondBankAPI);
                         ss.setSign(sign);
@@ -271,22 +271,17 @@ public class SignConfig {
                 locSec.set("y", y);
                 locSec.set("z", z);
 
-                if (s.getSign().getWorld().getBlockAt(s.getSign().getLocation()).getBlockData() instanceof Sign) {
+                final BlockData blockData = s.getSign().getWorld().getBlockAt(s.getSign().getLocation()).getBlockData();
+                if (blockData instanceof Rotatable) {
 
-                    final Sign facing = (Sign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
-                            .getBlockData();
-
-                    final Rotatable data = (Rotatable) facing.getBlockData();
+                    final Rotatable data = (Rotatable) blockData;
                     final BlockFace rotation = data.getRotation();
 
                     locSec.set("rotation", rotation);
 
-                } else if (s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
-                        .getBlockData() instanceof WallSign)
-                {
+                } else if (blockData instanceof WallSign) {
 
-                    final WallSign facing = (WallSign) s.getSign().getWorld().getBlockAt(s.getSign().getLocation())
-                            .getBlockData();
+                    final WallSign facing = (WallSign) blockData;
 
                     locSec.set("rotation", facing.getFacing().toString());
 

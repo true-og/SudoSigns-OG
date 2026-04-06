@@ -7,9 +7,7 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -71,13 +69,7 @@ public class SudoSign {
         if (worldName != null) {
 
             final Location loc = new Location(Bukkit.getWorld(worldName), x, y, z);
-
-            final BlockState blockState = loc.getBlock().getState();
-            if (blockState instanceof Sign || blockState instanceof WallSign) {
-
-                return (Sign) blockState;
-
-            }
+            return Util.getSign(loc.getBlock());
 
         }
 
