@@ -27,7 +27,7 @@ kotlin { jvmToolchain(17) }
 /* ----------------------------- Metadata ------------------------------ */
 group = "net.trueog.sudosigns-og" // Declare bundle identifier.
 
-version = "1.3.1" // Declare plugin version (will be in .jar).
+version = "1.3.2" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.19" // Declare minecraft server target version.
 

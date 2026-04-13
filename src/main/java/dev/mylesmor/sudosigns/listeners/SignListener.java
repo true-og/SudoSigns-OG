@@ -337,8 +337,8 @@ public class SignListener implements Listener {
         final Sign sign = Util.getSign(blockBreakEvent.getBlock());
         if (sign != null) {
 
-            SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
-                    .forEach(entry ->
+            SudoSigns.signs.entrySet().stream()
+                    .filter(entry -> Util.sameBlockLocation(entry.getValue(), sign.getLocation())).forEach(entry ->
                     {
 
                         blockBreakEvent.setCancelled(true);
@@ -367,7 +367,7 @@ public class SignListener implements Listener {
                     final Sign nearbySign = (Sign) bs;
                     for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
-                        if (entry.getValue().getSign().equals(nearbySign)) {
+                        if (Util.sameBlockLocation(entry.getValue(), nearbySign.getLocation())) {
 
                             if (br.getBlockData() instanceof Sign) {
 
@@ -420,7 +420,8 @@ public class SignListener implements Listener {
             final Sign sign = Util.getSign(block);
             if (sign != null) {
 
-                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                SudoSigns.signs.entrySet().stream()
+                        .filter(entry -> Util.sameBlockLocation(entry.getValue(), sign.getLocation()))
                         .forEach(entry -> blocksToRemove.add(block));
 
             }
@@ -433,7 +434,8 @@ public class SignListener implements Listener {
                 if (Util.isSignState(b)) {
 
                     final Sign nearbySign = (Sign) b;
-                    SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(nearbySign))
+                    SudoSigns.signs.entrySet().stream()
+                            .filter(entry -> Util.sameBlockLocation(entry.getValue(), nearbySign.getLocation()))
                             .forEach(entry -> blocksToRemove.add(block));
 
                 }
@@ -456,7 +458,8 @@ public class SignListener implements Listener {
             if (Util.isSignState(b)) {
 
                 final Sign sign = (Sign) b;
-                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                SudoSigns.signs.entrySet().stream()
+                        .filter(entry -> Util.sameBlockLocation(entry.getValue(), sign.getLocation()))
                         .forEach(entry -> blockBurnEvent.setCancelled(true));
 
             }
@@ -475,7 +478,8 @@ public class SignListener implements Listener {
             if (Util.isSignState(b)) {
 
                 final Sign sign = (Sign) b;
-                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                SudoSigns.signs.entrySet().stream()
+                        .filter(entry -> Util.sameBlockLocation(entry.getValue(), sign.getLocation()))
                         .forEach(entry -> blockFadeEvent.setCancelled(true));
 
             }
@@ -494,7 +498,8 @@ public class SignListener implements Listener {
             if (Util.isSignState(b)) {
 
                 final Sign sign = (Sign) b;
-                SudoSigns.signs.entrySet().stream().filter(entry -> entry.getValue().getSign().equals(sign))
+                SudoSigns.signs.entrySet().stream()
+                        .filter(entry -> Util.sameBlockLocation(entry.getValue(), sign.getLocation()))
                         .forEach(entry -> leavesDecayEvent.setCancelled(true));
 
             }

@@ -2,6 +2,7 @@ package dev.mylesmor.sudosigns.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,6 +53,7 @@ public class SignConfig {
     public ArrayList<String> loadSigns() {
 
         final Map<String, SudoSign> tempSigns = new HashMap<>();
+        final Set<String> loadedLocations = new HashSet<>();
         final Set<String> signSection = signConfig.getConfigurationSection("signs").getKeys(false);
 
         String name;
@@ -73,6 +75,19 @@ public class SignConfig {
                 if (w != null) {
 
                     final Location loc = new Location(Bukkit.getServer().getWorld(world), x, y, z);
+                    final String locationKey = world + ":" + loc.getBlockX() + ":" + loc.getBlockY() + ":"
+                            + loc.getBlockZ();
+                    if (!loadedLocations.add(locationKey)) {
+
+                        invalidSigns.add(key);
+                        Bukkit.getLogger()
+                                .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                                        + "ERROR: Failed to load Sign " + key
+                                        + "! Another SudoSign already uses that block location. Skipping...");
+                        continue;
+
+                    }
+
                     final Sign sign = Util.getSign(loc.getBlock());
                     if (sign != null) {
 

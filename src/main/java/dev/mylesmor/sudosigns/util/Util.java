@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -135,8 +138,7 @@ public class Util {
         String found = null;
         for (Map.Entry<String, SudoSign> entry : SudoSigns.signs.entrySet()) {
 
-            final Sign sign = entry.getValue().getSign();
-            if (sign != null && sign.equals(s)) {
+            if (sameBlockLocation(entry.getValue(), s.getLocation())) {
 
                 found = entry.getKey();
 
@@ -148,19 +150,72 @@ public class Util {
 
     }
 
+    public static boolean sameBlockLocation(Location first, Location second) {
+
+        if (first == null || second == null || first.getWorld() == null || second.getWorld() == null) {
+
+            return false;
+
+        }
+
+        return first.getWorld().getName().equals(second.getWorld().getName()) && first.getBlockX() == second.getBlockX()
+                && first.getBlockY() == second.getBlockY() && first.getBlockZ() == second.getBlockZ();
+
+    }
+
+    public static boolean sameBlockLocation(SudoSign sign, Location location) {
+
+        if (sign == null || sign.getWorldName() == null || location == null || location.getWorld() == null) {
+
+            return false;
+
+        }
+
+        return sign.getWorldName().equals(location.getWorld().getName()) && sign.getBlockX() == location.getBlockX()
+                && sign.getBlockY() == location.getBlockY() && sign.getBlockZ() == location.getBlockZ();
+
+    }
+
     public static boolean isSignState(BlockState blockState) {
 
         return blockState instanceof Sign;
 
     }
 
+    private static boolean isSignMaterial(Material material) {
+
+        return material != null && material.name().endsWith("SIGN");
+
+    }
+
+    private static void ensureChunkLoaded(Block block) {
+
+        final Chunk chunk = block.getChunk();
+        if (!chunk.isLoaded()) {
+
+            chunk.load();
+
+        }
+
+    }
+
     public static boolean isSignBlock(Block block) {
+
+        ensureChunkLoaded(block);
+
+        if (isSignMaterial(block.getType())) {
+
+            return true;
+
+        }
 
         return isSignState(block.getState());
 
     }
 
     public static Sign getSign(Block block) {
+
+        ensureChunkLoaded(block);
 
         final BlockState blockState = block.getState();
         if (isSignState(blockState)) {

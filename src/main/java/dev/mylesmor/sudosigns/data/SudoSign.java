@@ -79,6 +79,30 @@ public class SudoSign {
 
     }
 
+    public String getWorldName() {
+
+        return worldName;
+
+    }
+
+    public int getBlockX() {
+
+        return (int) x;
+
+    }
+
+    public int getBlockY() {
+
+        return (int) y;
+
+    }
+
+    public int getBlockZ() {
+
+        return (int) z;
+
+    }
+
     public void setName(String name) {
 
         this.name = name;

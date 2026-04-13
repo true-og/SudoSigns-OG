@@ -42,7 +42,6 @@ public class ConfigManager {
         this.diamondBankAPI = diamondBankAPI;
 
         loadCustomConfig();
-        loadModules();
 
     }
 
