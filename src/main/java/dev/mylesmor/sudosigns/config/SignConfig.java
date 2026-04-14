@@ -82,7 +82,8 @@ public class SignConfig {
                         invalidSigns.add(key);
                         Bukkit.getLogger()
                                 .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                        + "ERROR: Failed to load Sign " + key
+                                        + "ERROR: Failed to load Sign " + key + " at " + world + " " + loc.getBlockX()
+                                        + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
                                         + "! Another SudoSign already uses that block location. Skipping...");
                         continue;
 
@@ -175,10 +176,11 @@ public class SignConfig {
                     } else {
 
                         invalidSigns.add(key);
-                        Bukkit.getLogger()
-                                .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                        + "ERROR: Failed to load Sign " + key
-                                        + "! The block at the provided location is not a sign. Skipping...");
+                        final String actualBlockType = loc.getBlock().getType().toString();
+                        Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                                + "ERROR: Failed to load Sign " + key + " at " + world + " " + loc.getBlockX() + ", "
+                                + loc.getBlockY() + ", " + loc.getBlockZ() + "! The block at the provided location is "
+                                + actualBlockType + ", not a sign. Skipping...");
 
                     }
 
@@ -187,8 +189,8 @@ public class SignConfig {
                     invalidSigns.add(key);
                     Bukkit.getLogger()
                             .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                    + "ERROR: Failed to load Sign " + key
-                                    + "! The world name for this sign is invalid. Skipping...");
+                                    + "ERROR: Failed to load Sign " + key + " at " + world + " " + x + ", " + y + ", "
+                                    + z + "! The world '" + world + "' does not exist or is not loaded. Skipping...");
 
                 }
 
