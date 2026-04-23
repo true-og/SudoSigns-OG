@@ -84,7 +84,7 @@ public class SignConfig {
                                 .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
                                         + "ERROR: Failed to load Sign " + key + " at " + world + " " + loc.getBlockX()
                                         + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
-                                        + "! Another SudoSign already uses that block location. Skipping...");
+                                        + "! Cause: another SudoSign already uses that block location. Skipping...");
                         continue;
 
                     }
@@ -177,20 +177,21 @@ public class SignConfig {
 
                         invalidSigns.add(key);
                         final String actualBlockType = loc.getBlock().getType().toString();
-                        Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                + "ERROR: Failed to load Sign " + key + " at " + world + " " + loc.getBlockX() + ", "
-                                + loc.getBlockY() + ", " + loc.getBlockZ() + "! The block at the provided location is "
-                                + actualBlockType + ", not a sign. Skipping...");
+                        Bukkit.getLogger()
+                                .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                                        + "ERROR: Failed to load Sign " + key + " at " + world + " " + loc.getBlockX()
+                                        + ", " + loc.getBlockY() + ", " + loc.getBlockZ()
+                                        + "! Cause: the block at the provided location is " + actualBlockType
+                                        + ", not a sign. Skipping...");
 
                     }
 
                 } else {
 
                     invalidSigns.add(key);
-                    Bukkit.getLogger()
-                            .warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
-                                    + "ERROR: Failed to load Sign " + key + " at " + world + " " + x + ", " + y + ", "
-                                    + z + "! The world '" + world + "' does not exist or is not loaded. Skipping...");
+                    Bukkit.getLogger().warning(SudoSigns.getPlugin().getConfig().getString("config.console-prefix")
+                            + "ERROR: Failed to load Sign " + key + " at " + world + " " + x + ", " + y + ", " + z
+                            + "! Cause: the world '" + world + "' does not exist or is not loaded. Skipping...");
 
                 }
 

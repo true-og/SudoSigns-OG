@@ -49,9 +49,13 @@ public class Delete {
 
                 UtilitiesOG.trueogMessage(p, "&6Sign &e" + name + " &6successfully deleted.");
 
+            } else if (SudoSigns.config.getInvalidEntriesManager().purgeInvalidEntry(name, false)) {
+
+                UtilitiesOG.trueogMessage(p, "&6Sign &e" + name + " &6successfully deleted.");
+
             } else {
 
-                UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + " &cdoes not exist!");
+                UtilitiesOG.trueogMessage(p, "&cERROR: A sign with the name &e" + name + " &cdoes not exist!");
 
             }
 

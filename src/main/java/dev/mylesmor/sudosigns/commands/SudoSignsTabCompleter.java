@@ -131,7 +131,19 @@ public class SudoSignsTabCompleter implements TabCompleter {
                         return suggestions;
 
                     }
-                    case "delete", "view", "run", "tp", "copy", "select", "edit" -> {
+                    case "delete" -> {
+
+                        if (p.hasPermission(Permissions.DELETE)) {
+
+                            SudoSigns.signs.values().forEach(s -> suggestions.add(s.getName()));
+                            suggestions.addAll(SudoSigns.invalidSigns);
+
+                        }
+
+                        return suggestions;
+
+                    }
+                    case "view", "run", "tp", "copy", "select", "edit" -> {
 
                         if (p.hasPermission(Permissions.SELECT) || p.hasPermission(Permissions.VIEW)
                                 || p.hasPermission(Permissions.RUN) || p.hasPermission(Permissions.TP)
