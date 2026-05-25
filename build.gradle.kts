@@ -74,7 +74,7 @@ tasks.shadowJar {
     minimize()
 }
 
-tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
+tasks.jar { enabled = false } // Only the shaded jar is deployable to the server.
 
 tasks.build { dependsOn(tasks.spotlessApply, tasks.shadowJar) } // Build depends on spotless and shadow.
 
