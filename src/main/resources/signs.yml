@@ -1,23 +1,4 @@
 signs:
-  SpleggDuel:
-    text:
-    - §8[§31v1 Duel§8]
-    - §60 of 10
-    - §6Players Waiting
-    - §8[§lJOIN§8]
-    price: 0.0
-    location:
-      world: world
-      x: -1.0
-      y: 64.0
-      z: -249.0
-      rotation: SOUTH
-    blocktype: OAK_WALL_SIGN
-    permissions: {}
-    messages:
-    - Splegg is not out yet!: 0.0
-    player-commands: {}
-    console-commands: {}
   SpleggFFA:
     text:
     - §8[§aFFA§8]
