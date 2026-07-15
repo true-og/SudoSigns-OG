@@ -149,6 +149,44 @@ signs:
     permissions: {}
     messages: {}
     player-commands:
-    - buy: 0.0
+    - ranks: 0.0
+    console-commands: {}
+  withdraw4:
+    text:
+    - ''
+    - '&BWITHDRAW'
+    - '&B4 DIAMONDS'
+    - ''
+    price: 0.0
+    location:
+      world: world
+      x: -120.0
+      y: 42.0
+      z: -261.0
+      rotation: NORTH
+    blocktype: WARPED_WALL_SIGN
+    permissions: {}
+    messages: {}
+    player-commands:
+    - withdraw 4: 0.0
+    console-commands: {}
+  SpleggFFA2:
+    text:
+    - '[1v1 Duel]'
+    - 0 of 10
+    - Players Waiting
+    - '[JOIN]'
+    price: 0.0
+    location:
+      world: world
+      x: -1.0
+      y: 64.0
+      z: -249.0
+      rotation: SOUTH
+    blocktype: OAK_WALL_SIGN
+    permissions: {}
+    messages:
+    - Splegg is not out yet!: 0.0
+    player-commands: {}
     console-commands: {}
 version: 1.2.3
