@@ -14,7 +14,7 @@ This allows you to perform actions on SudoSigns such as:
 For in-depth details on the command, permissions and features of this plugin, visit the [Wiki](https://github.com/MylesMor/SudoSigns/wiki)!
 
 ## Installation
-1. Clone the git repository: [https://github.com/NotAlexNoyle/SudoSigns-OG](https://github.com/NotAlexNoyle/SudoSigns-OG).
+1. Clone the git repository: [https://git.trueog.net/trueog/SudoSigns-OG](https://git.trueog.net/trueog/SudoSigns-OG).
 2. Build the plugin with `./gradlew build`
 3. Place the JAR file from SudoSigns-OG/build/libs inside your server's `./plugins` directory.
 4. Reload or restart the server.
@@ -44,7 +44,7 @@ In your issue report, please include as much information as possible including:
 
 **1.3:**
 
-- Switch from Vault API to [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API.
+- Switch from Vault API to [DiamondBank-OG](https://git.trueog.net/trueog/DiamondBank-OG) API.
 
 - Refactor chat messages.
 
